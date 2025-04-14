@@ -3,14 +3,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
 class BillController extends Controller
 {
     public function showBillsPage(Request $request)
     {
-        // Get the dynamic customer ID (you can use $request->customer_id or a similar approach)
-        $customerId = $request->input('customer_id', 2163);  // Default to 2163 if no ID is passed
+
+        $customerId = Auth::user()->customer_id;
     
         $response = Http::withBasicAuth(env('API_USERNAME'), env('API_PASSWORD'))
             ->withHeaders([

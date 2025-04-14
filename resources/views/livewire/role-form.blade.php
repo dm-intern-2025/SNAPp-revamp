@@ -1,22 +1,31 @@
-<div>
-    <div class="modal @if($showModal) show d-block @endif">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">{{ $roleId ? 'Edit' : 'Create' }} Role</h5>
-                    <button type="button" wire:click="resetForm" class="btn-close"></button>
-                </div>
-                <div class="modal-body">
-                    <form wire:submit.prevent="save">
-                        <div class="mb-3">
-                            <label>Role Name</label>
-                            <input type="text" wire:model="title" class="form-control">
-                            @error('title') <span class="text-danger">{{ $message }}</span> @enderror
-                        </div>
-                        <button type="submit" class="btn btn-primary">Save</button>
-                    </form>
-                </div>
-            </div>
+<!-- Role Modal -->
+<flux:modal name="role-modal" class="md:w-96">
+    <div class="space-y-6">
+        <div>
+            <flux:heading size="lg">
+                {{ $editingId && $formType === 'role' ? 'Edit Role' : 'Add Role' }}
+            </flux:heading>
+            <flux:text class="mt-2">
+                {{ $editingId && $formType === 'role'
+                    ? 'Update the role name.'
+                    : 'Create a new role.' }}
+            </flux:text>
+        </div>
+
+        <flux:input
+            label="Role Name"
+            placeholder="Role name"
+            wire:model.defer="roleName"
+        />
+
+        <div class="flex">
+            <flux:spacer />
+            <flux:button
+                wire:click="saveRole"
+                variant="primary"
+            >
+                {{ $editingId && $formType === 'role' ? 'Save changes' : 'Create Role' }}
+            </flux:button>
         </div>
     </div>
-</div>
+</flux:modal>

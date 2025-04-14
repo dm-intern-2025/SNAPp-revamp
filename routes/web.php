@@ -1,10 +1,11 @@
 <?php
 
 use App\Http\Controllers\BillController;
-use App\Http\Controllers\Security\PermissionController;
-use App\Http\Controllers\Security\RoleController;
-use App\Http\Controllers\Security\RolePermission;
+use App\Http\Controllers\UserController;
+
 use App\Livewire\RolePermissionMatrix;
+
+
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -26,10 +27,6 @@ Route::get('/', function () {
     ->middleware(['auth', 'verified'])
     ->name('my-contracts');
 
-    // Route::view('my-bills', 'my-bills')
-    // ->middleware(['auth', 'verified'])
-    // ->name('my-bills');
-
     Route::get('/bills', [BillController::class, 'showBillsPage'])
     ->middleware(['auth', 'verified'])
     ->name('my-bills');
@@ -42,19 +39,13 @@ Route::get('/', function () {
     ->middleware(['auth', 'verified'])
     ->name('my-ghg-emissions');
 
-    // Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
-    //     return response()->json($request->user());
-    // });
-
 
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/roles-permissions', RolePermissionMatrix::class)->name('role-permissions');
-    
-    // Route::get('/role-permission', [RolePermission::class, 'index'])->name('role.permission.list');
-    // Route::post('/role-permission', [RolePermission::class, 'store'])->name('role.permission.store');
-    // Route::resource('permission', PermissionController::class);
-    // Route::resource('role', RoleController::class);
+
+    Route::resource('users', UserController::class);
+
 
     Route::redirect('settings', 'settings/profile');
 

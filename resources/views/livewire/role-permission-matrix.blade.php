@@ -1,23 +1,25 @@
 <div class="p-6 bg-white dark:bg-neutral-900 rounded-xl shadow-md">
-    
-<!-- Header with Add Buttons -->
+    <!-- Header with Add Buttons -->
     <div class="flex items-center justify-between mb-4">
-        <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Role & Permission Matrix</h2>
-        <div class="flex gap-2">
-    <!-- Add Role Trigger -->
-    <flux:modal.trigger name="role-modal">
-        <flux:button class="flux-btn flux-btn-primary flux-btn-sm">
-            Add Role
-        </flux:button>
-    </flux:modal.trigger>
+        <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Roles & Permissions</h2>
 
-    <!-- Add Permission Trigger -->
-    <flux:modal.trigger name="permission-modal">
-        <flux:button class="flux-btn flux-btn-primary flux-btn-sm">
-            Add Permission
-        </flux:button>
-    </flux:modal.trigger>
-</div>
+        <!-- Wrap this entire group in a div -->
+        <div class="flex gap-2">
+            <!-- Add Role Trigger -->
+            <flux:modal.trigger name="role-modal">
+                <flux:button class="flux-btn flux-btn-primary flux-btn-sm">
+                    Add Role
+                </flux:button>
+            </flux:modal.trigger>
+
+            <!-- Add Permission Trigger -->
+            <flux:modal.trigger name="permission-modal">
+                <flux:button class="flux-btn flux-btn-primary flux-btn-sm">
+                    Add Permission
+                </flux:button>
+            </flux:modal.trigger>
+        </div> <!-- ✅ This div closes the buttons flex container -->
+    </div> <!-- ✅ This div closes the header container -->
 
 <!-- Role Modal -->
 <flux:modal name="role-modal" class="md:w-96">
@@ -83,7 +85,7 @@
     </div>
 </flux:modal>
 
-    </div>
+
 
     <!-- Table -->
     <div class="overflow-x-auto">

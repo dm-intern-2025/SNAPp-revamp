@@ -72,8 +72,8 @@
 
         <flux:navlist.item 
             icon="home" 
-            :href="route('dashboard')" 
-            :current="request()->routeIs('dashboard')" 
+            :href="route('users.index')" 
+            :current="request()->routeIs('users.index')" 
             wire:navigate>
             {{ __('Customer Accounts') }}
         </flux:navlist.item>
