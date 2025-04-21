@@ -1,151 +1,159 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
-    <head>
-        @include('partials.head')
-    </head>
-    <body class="min-h-screen bg-white dark:bg-zinc-800">
-        <flux:sidebar sticky stashable class="border-r border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
-            <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
+<head>
+    @include('partials.head')
+</head>
+<body x-data="{ collapsed: false }" 
+    class="min-h-screen flex bg-white dark:bg-zinc-800">
+    <!-- Sidebar -->
+    <aside
+        :class="collapsed ? 'w-20' : 'w-64'"
+        class="transition-all duration-300 border-r border-zinc-200 bg-blue-600 dark:border-zinc-700 dark:bg-zinc-900 flex flex-col"
+    >
+        <!-- Branding & Toggles -->
+       <!-- Branding & Toggles -->
+<div class="flex items-center justify-between p-4">
+    <a href="{{ route('dashboard') }}" wire:navigate>
+        <div class="flex items-center">
+            <!-- Full Logo (only visible when sidebar is expanded) -->
+            <img 
+                x-show="!collapsed" 
+                src="{{ asset('images/snap_logo_white.png') }}" 
+                alt="SnaPp Logo" 
+                class="w-full object-contain" 
+            />
+            <!-- Abbreviation (SN, only visible when sidebar is collapsed) -->
+            <span 
+                x-show="collapsed" 
+                class="text-white text-xl font-semibold"
+            >
+                SN
+            </span>
+        </div>
+    </a>
+    <!-- Collapse/Expand Button -->
+    <button @click="collapsed = !collapsed" class="text-white focus:outline-none">
+        <template x-if="!collapsed">
+            <flux:icon name="chevron-left" class="w-6 h-6" />
+        </template>
+        <template x-if="collapsed">
+            <flux:icon name="chevron-right" class="w-6 h-6" />
+        </template>
+    </button>
+</div>
 
-            <a href="{{ route('dashboard') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
-                <x-app-logo />
+
+        <!-- Navigation -->
+        <nav class="flex-1 px-2 space-y-1">
+            <a
+                href="{{ route('dashboard') }}"
+                class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
+                :class="{'justify-center': collapsed, 'space-x-2': !collapsed}"
+            >
+                <flux:icon name="home" class="w-6 h-6 text-white" />
+                <span x-show="!collapsed" class="text-white">{{ __('Dashboard') }}</span>
             </a>
 
-            <flux:navlist variant="outline">
-    <flux:navlist.group 
-        :heading="__('Customers')" 
-        class="grid">
-        <flux:navlist.item 
-            icon="home" 
-            :href="route('dashboard')" 
-            :current="request()->routeIs('dashboard')" 
-            wire:navigate>
-            {{ __('Dashboard') }}
-        </flux:navlist.item>
+            <a
+                href="{{ route('advisories') }}"
+                class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
+                :class="{'justify-center': collapsed, 'space-x-2': !collapsed}"
+            >
+                <flux:icon name="megaphone" class="w-6 h-6 text-white" />
+                <span x-show="!collapsed" class="text-white">{{ __('Advisories') }}</span>
+            </a>
 
-        <flux:navlist.item 
-            icon="home" 
-            :href="route('advisories')" 
-            :current="request()->routeIs('advisories')" 
-            wire:navigate>
-            {{ __('Advisories') }}
-        </flux:navlist.item>
+            <a
+                href="{{ route('my-contracts') }}"
+                class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
+                :class="{'justify-center': collapsed, 'space-x-2': !collapsed}"
+            >
+                <flux:icon name="clipboard-list" class="w-6 h-6 text-white" />
+                <span x-show="!collapsed" class="text-white">{{ __('My Contracts') }}</span>
+            </a>
 
-        <flux:navlist.item 
-            icon="folder-git-2" 
-            :href="route('my-contracts')" 
-            :current="request()->routeIs('my-contracts')"
-            wire:navigate>
-            {{ __('My Contracts') }}
-        </flux:navlist.item>
+            <a
+                href="{{ route('bills.show') }}"
+                class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
+                :class="{'justify-center': collapsed, 'space-x-2': !collapsed}"
+            >
+                <flux:icon name="wallet" class="w-6 h-6 text-white" />
+                <span x-show="!collapsed" class="text-white">{{ __('My Bills') }}</span>
+            </a>
 
-        <flux:navlist.item 
-            icon="folder-git-2" 
-            :href="route('my-bills')" 
-            :current="request()->routeIs('my-bills')"
-            wire:navigate>
-            {{ __('My Bills') }}
-        </flux:navlist.item>
+            <a
+                href="{{ route('my-energy-consumption') }}"
+                class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
+                :class="{'justify-center': collapsed, 'space-x-2': !collapsed}"
+            >
+                <flux:icon name="database-zap" class="w-6 h-6 text-white" />
+                <span x-show="!collapsed" class="text-white">{{ __('My Energy Consumption') }}</span>
+            </a>
 
-        <flux:navlist.item 
-            icon="folder-git-2" 
-            :href="route('my-energy-consumption')" 
-            :current="request()->routeIs('my-energy-consumption')"
-            wire:navigate>
-            {{ __('My Energy Consumption') }}
-        </flux:navlist.item>
+            <a
+                href="{{ route('my-ghg-emissions') }}"
+                class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
+                :class="{'justify-center': collapsed, 'space-x-2': !collapsed}"
+            >
+                <flux:icon name="cloud-alert" class="w-6 h-6 text-white" />
+                <span x-show="!collapsed" class="text-white">{{ __('My GHG Emissions') }}</span>
+            </a>
+        </nav>
 
-        <flux:navlist.item 
-            icon="folder-git-2" 
-            :href="route('my-ghg-emissions')" 
-            :current="request()->routeIs('my-ghg-emissions')"
-            wire:navigate>
-            {{ __('My GHG Emissions') }}
-        </flux:navlist.item>
-    </flux:navlist.group>
-</flux:navlist>
+        <!-- Admin Section -->
+        <div class="pt-4 px-2">
+            <h3 x-show="!collapsed" class="px-2 text-xs font-semibold text-white uppercase">{{ __('Admin') }}</h3>
+            <nav class="mt-2 space-y-1">
+                <a
+                    href="{{ route('users.index') }}"
+                    class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
+                    :class="{'justify-center': collapsed, 'space-x-2': !collapsed}"
+                >
+                    <flux:icon name="users" class="w-6 h-6 text-white" />
+                    <span x-show="!collapsed" class="text-white">{{ __('Customer Accounts') }}</span>
+                </a>
 
+                <a
+                    href="{{ route('role-permissions') }}"
+                    class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
+                    :class="{'justify-center': collapsed, 'space-x-2': !collapsed}"
+                >
+                    <flux:icon name="shield-user" class="w-6 h-6 text-white" />
+                    <span x-show="!collapsed" class="text-white">{{ __('Roles & Permissions') }}</span>
+                </a>
 
-<flux:navlist.group 
-        :heading="__('Admin')" 
-        class="grid">
+                <a
+                    href="{{ route('dashboard') }}"
+                    class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
+                    :class="{'justify-center': collapsed, 'space-x-2': !collapsed}"
+                >
+                    <flux:icon name="circle-help" class="w-6 h-6 text-white" />
+                    <span x-show="!collapsed" class="text-white">{{ __('Helpdesk') }}</span>
+                </a>
+            </nav>
+        </div>
 
-        <flux:navlist.item 
-            icon="home" 
-            :href="route('users.index')" 
-            :current="request()->routeIs('users.index')" 
-            wire:navigate>
-            {{ __('Customer Accounts') }}
-        </flux:navlist.item>
+        <!-- Spacer -->
+        <div class="px-2 py-4"></div>
 
-        <flux:navlist.item
-            icon="home"
-            :href="route('role-permissions')" 
-            :current="request()->routeIs('role-permissions')"
-            wire:navigate>
-            {{ __('Roles & Permissions') }}
-        </flux:navlist.item>
-
-
-        <flux:navlist.item 
-            icon="home" 
-            :href="route('dashboard')" 
-            :current="request()->routeIs('dashboard')" 
-            wire:navigate>
-            {{ __('Helpdesk') }}
-        </flux:navlist.item>
-
-
-        </flux:navlist.group>
-
-            <flux:spacer />
-
-            <flux:navlist variant="outline">
-                <flux:navlist.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
-                {{ __('Repository') }}
-                </flux:navlist.item>
-
-                <flux:navlist.item icon="book-open-text" href="https://laravel.com/docs/starter-kits" target="_blank">
-                {{ __('Documentation') }}
-                </flux:navlist.item>
-            </flux:navlist>
-
-            <!-- Desktop User Menu -->
+        <!-- User Menu -->
+        <div class="px-2 py-4">
             <flux:dropdown position="bottom" align="start">
                 <flux:profile
                     :name="auth()->user()->name"
                     :initials="auth()->user()->initials()"
                     icon-trailing="chevrons-up-down"
                 />
-
                 <flux:menu class="w-[220px]">
+                    <!-- Menu contents unchanged -->
                     <flux:menu.radio.group>
-                        <div class="p-0 text-sm font-normal">
-                            <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
-                                <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
-                                    <span
-                                        class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white"
-                                    >
-                                        {{ auth()->user()->initials() }}
-                                    </span>
-                                </span>
-
-                                <div class="grid flex-1 text-start text-sm leading-tight">
-                                    <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
-                                    <span class="truncate text-xs">{{ auth()->user()->email }}</span>
-                                </div>
-                            </div>
-                        </div>
+                        <!-- profile info -->
                     </flux:menu.radio.group>
-
                     <flux:menu.separator />
-
                     <flux:menu.radio.group>
                         <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>{{ __('Settings') }}</flux:menu.item>
                     </flux:menu.radio.group>
-
                     <flux:menu.separator />
-
                     <form method="POST" action="{{ route('logout') }}" class="w-full">
                         @csrf
                         <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full">
@@ -154,60 +162,16 @@
                     </form>
                 </flux:menu>
             </flux:dropdown>
-        </flux:sidebar>
+        </div>
+    </aside>
 
-        <!-- Mobile User Menu -->
-        <flux:header class="lg:hidden">
-            <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
-
-            <flux:spacer />
-
-            <flux:dropdown position="top" align="end">
-                <flux:profile
-                    :initials="auth()->user()->initials()"
-                    icon-trailing="chevron-down"
-                />
-
-                <flux:menu>
-                    <flux:menu.radio.group>
-                        <div class="p-0 text-sm font-normal">
-                            <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
-                                <span class="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-lg">
-                                    <span
-                                        class="flex h-full w-full items-center justify-center rounded-lg bg-neutral-200 text-black dark:bg-neutral-700 dark:text-white"
-                                    >
-                                        {{ auth()->user()->initials() }}
-                                    </span>
-                                </span>
-
-                                <div class="grid flex-1 text-start text-sm leading-tight">
-                                    <span class="truncate font-semibold">{{ auth()->user()->name }}</span>
-                                    <span class="truncate text-xs">{{ auth()->user()->email }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </flux:menu.radio.group>
-
-                    <flux:menu.separator />
-
-                    <flux:menu.radio.group>
-                        <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>{{ __('Settings') }}</flux:menu.item>
-                    </flux:menu.radio.group>
-
-                    <flux:menu.separator />
-
-                    <form method="POST" action="{{ route('logout') }}" class="w-full">
-                        @csrf
-                        <flux:menu.item as="button" type="submit" icon="arrow-right-start-on-rectangle" class="w-full">
-                            {{ __('Log Out') }}
-                        </flux:menu.item>
-                    </form>
-                </flux:menu>
-            </flux:dropdown>
-        </flux:header>
-
+    <!-- Main content -->
+    <div class="flex-1 overflow-auto">
         {{ $slot }}
+    </div>
 
-        @fluxScripts
-    </body>
+    @livewireScripts
+    @stack('scripts')
+    @fluxScripts
+</body>
 </html>

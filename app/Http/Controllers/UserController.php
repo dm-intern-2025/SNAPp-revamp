@@ -15,7 +15,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::paginate(10);
+        $users = User::role('customer')->paginate(10);
 
         return view('admin.customer-account.customer-list',
             compact('users'));
@@ -34,19 +34,20 @@ class UserController extends Controller
      */
     public function store(StoreCustomerRequest $request)
     {
+        $password = Str::random(8);
+
         $validatedRequest = $request->validated();
 
+        $validatedRequest['password'] = bcrypt($password);
+        
         $user = User::create($validatedRequest);
 
         $user->assignRole('customer');
 
-        $password = Str::random(12);
+        // Mail::to($user->email)->send(new CustomerPasswordMail($password));
 
-        $user->update(['password' => bcrypt($password)]);
-
-        Mail::to($user->email())->send(new CustomerPasswordMail($password));
-
-        return redirect()->route('users.index')->with('success', 'Customer created and credentials sent!');
+        return redirect()->back()->with('success', 'Customer account created successfully.');
+    
     }
 
     /**

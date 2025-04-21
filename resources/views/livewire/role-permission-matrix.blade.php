@@ -89,7 +89,8 @@
 
     <!-- Table -->
     <div class="overflow-x-auto">
-        <table class="table-auto min-w-full border border-gray-300 dark:border-neutral-700 text-sm">
+    <table class="min-w-full divide-y divide-gray-200">
+        <!-- <table class="table-auto min-w-full border border-gray-300 dark:border-neutral-700 text-sm"> -->
             <thead class="bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-gray-200">
                 <tr>
                     <th class="p-3 border border-gray-300 dark:border-neutral-700">
@@ -102,16 +103,19 @@
                                 <div class="flex gap-1 mt-1">
                                 <flux:modal.trigger name="role-modal">
                                     <flux:button 
+                                        variant="primary"
+                                        icon="edit"
                                         wire:click="editRole({{ $role->id }})" 
                                         class="flux-btn flux-btn-primary flux-btn-sm">
-                                        ✏️
+                                        
                                     </flux:button>
                                 </flux:modal.trigger>          
 
                                 <flux:button 
+                                icon="trash-2"
+                                    variant="danger"
                                     wire:click="deleteRole({{ $role->id }})" 
                                     class="flux-btn flux-btn-xs flux-btn-danger">
-                                    🗑️
                                 </flux:button>
                                 </div>
                             </div>
@@ -128,16 +132,19 @@
                                 <div class="flex gap-1">
                                 <flux:modal.trigger name="permission-modal">
                                     <flux:button 
+                                        icon="edit"
+                                        variant="primary"
                                         wire:click="editPermission({{ $permission->id }})" 
                                         class="flux-btn flux-btn-xs flux-btn-info">
-                                        ✏️
+                                        
                                     </flux:button>
                                 </flux:modal.trigger>
 
                                     <flux:button 
+                                    icon="trash-2"
+                                        variant="danger"
                                         wire:click="deletePermission({{ $permission->id }})" 
                                         class="flux-btn flux-btn-xs flux-btn-danger">
-                                        🗑️
                                     </flux:button>
                                 </div>
                             </div>
