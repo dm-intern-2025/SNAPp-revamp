@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Http\Requests\EditCustomerRequest;
 use Illuminate\Support\Str;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Mail\CustomerPasswordMail;
@@ -53,32 +55,34 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function edit($id)
     {
-        //
+        // Retrieve the customer by ID
+        $user = User::findOrFail($id);
+    
+        // Return a view with the customer data for editing
+        return view('admin.customer-account.form-edit-customer', compact('user'));
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+    
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+public function update(EditCustomerRequest $request, User $user)
+{
+    $user->update($request->validated());
+    return redirect()->route('users.index')->with('success', 'Customer updated.');
+}
+
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(User $user)
     {
-        //
+        $user->delete();
+        return response()->json(['success' => true]);
     }
+    
+    
 }

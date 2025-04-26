@@ -3,8 +3,12 @@
 use App\Http\Controllers\BillController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GhgController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Security\PermissionController;
+use App\Http\Controllers\Security\RoleController;
+use App\Http\Controllers\Security\RolePermission;
 use App\Http\Controllers\UserController;
-
+// use App\Livewire\RoleForm;
 use App\Livewire\RolePermissionMatrix;
 
 
@@ -17,15 +21,10 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-    // Route::view('dashboard', 'dashboard')
-    // ->middleware(['auth', 'verified'])
-    // ->name('dashboard');
-
     Route::get('/dashboard', [DashboardController::class, 'showDashboardFields'])
     ->name('dashboard');
 
-    Route::get('/my-ghg-emissions', [GhgController::class, 'calculateEmissions'])
-    ->name('my-ghg-emissions');
+
 
     
 
@@ -45,20 +44,23 @@ Route::get('/', function () {
     ->middleware(['auth', 'verified'])
     ->name('payments.history');
 
-    Route::view('my-energy-consumption', 'my-energy-consumption')
-    ->middleware(['auth', 'verified'])
-    ->name('my-energy-consumption');
-
-    // Route::view('my-ghg-emissions', 'my-ghg-emissions')
-    // ->middleware(['auth', 'verified'])
-    // ->name('my-ghg-emissions');
-
 
 Route::middleware(['auth'])->group(function () {
+
     Route::resource('users', UserController::class);
 
-    Route::get('/roles-permissions', RolePermissionMatrix::class)->name('role-permissions');
+    Route::get('/energy-consumption', [GhgController::class, 'calculateEmissions'])
+    ->name('energy-consumption');
 
+    Route::resource('profiles', ProfileController::class);
+
+
+    // Route::get('/roles-permissions', RolePermissionMatrix::class)->name('role-permissions');
+
+    Route::get('/role-permission', [RolePermission::class, 'index'])->name('role.permission.list');
+    Route::post('/role-permission', [RolePermission::class, 'store'])->name('role.permission.store');
+    Route::resource('permission', PermissionController::class);
+    Route::resource('role', RoleController::class);
 
     Route::redirect('settings', 'settings/profile');
 

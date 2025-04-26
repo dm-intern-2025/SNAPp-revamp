@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import '../../vendor/livewire/flux/dist/flux.css';
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap');
 
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -8,37 +9,73 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-@theme {
-    --color-zinc-50: var(--color-slate-50);
-    --color-zinc-100: var(--color-slate-100);
-    --color-zinc-200: var(--color-slate-200);
-    --color-zinc-300: var(--color-slate-300);
-    --color-zinc-400: var(--color-slate-400);
-    --color-zinc-500: var(--color-slate-500);
-    --color-zinc-600: var(--color-slate-600);
-    --color-zinc-700: var(--color-slate-700);
-    --color-zinc-800: var(--color-slate-800);
-    --color-zinc-900: var(--color-slate-900);
-    --color-zinc-950: var(--color-slate-950);
-}
-@theme {
-    --color-accent: var(--color-blue-500);
-    --color-accent-content: var(--color-blue-600);
-    --color-accent-foreground: var(--color-white);
-}
-@layer theme {
+@layer base {
+    * {
+        html, body {
+            background-color: #F1F4FC !important; /* Soft light blue */
+            height: 100%;
+        }
+        --font-sans: 'Manrope', sans-serif;
+        --color-zinc-50: var(--color-slate-50);
+        --color-zinc-100: var(--color-slate-100);
+        --color-zinc-200: var(--color-slate-200);
+        --color-zinc-300: var(--color-slate-300);
+        --color-zinc-400: var(--color-slate-400);
+        --color-zinc-500: var(--color-slate-500);
+        --color-zinc-600: var(--color-slate-600);
+        --color-zinc-700: var(--color-slate-700);
+        --color-zinc-800: var(--color-slate-800);
+        --color-zinc-900: var(--color-slate-900);
+        --color-zinc-950: var(--color-slate-950);
+        
+        --color-accent: #1443e0; /* Blue color */
+        --color-accent-content: #0d38a3; /* Slightly darker blue */
+        --color-accent-foreground: var(--color-white);
+
+        
+    }
+
+    /* Apply custom accent colors in dark mode */
     .dark {
-        --color-accent: var(--color-blue-500);
-        --color-accent-content: var(--color-blue-400);
+        --color-accent: #1443e0;
         --color-accent-foreground: var(--color-white);
     }
+
     .sidebar {
-        --color-zinc-500: #ffffff; /* Set text color to white in sidebar */
+        --color-zinc-500: #ffffff; /* Set sidebar text color to white */
+    }
+}
+
+/* FOR TABLE FORMATTING UNIFORMITY */
+@layer components {
+    
+    table {
+        @apply min-w-full divide-y divide-gray-200 dark:divide-neutral-700;
+    }
+
+    .app-table {
+        @apply min-w-full divide-y divide-gray-200 dark:divide-neutral-700;
+    }
+
+    thead {
+        background-color: #1443e0; /* Use custom blue background */
+    }
+
+    th {
+        @apply px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap;
+    }
+
+    td {
+        @apply px-6 py-4 whitespace-nowrap text-sm;
+        color: #1443e0; /* Custom blue text */
+    }
+
+    tbody {
+        @apply bg-white dark:bg-neutral-900 divide-y divide-gray-200 dark:divide-neutral-700;
     }
 }
 
 @layer base {
-
     *,
     ::after,
     ::before,
@@ -53,7 +90,7 @@
 }
 
 [data-flux-label] {
-    @apply  !mb-0 !leading-tight;
+    @apply !mb-0 !leading-tight;
 }
 
 input:focus[data-flux-control],
@@ -61,7 +98,3 @@ textarea:focus[data-flux-control],
 select:focus[data-flux-control] {
     @apply outline-hidden ring-2 ring-accent ring-offset-2 ring-offset-accent-foreground;
 }
-
-/* \[:where(&)\]:size-4 {
-    @apply size-4;
-} */

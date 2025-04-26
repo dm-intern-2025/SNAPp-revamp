@@ -8,29 +8,34 @@
     <!-- Sidebar -->
     <aside
         :class="collapsed ? 'w-20' : 'w-64'"
-        class="transition-all duration-300 border-r border-zinc-200 bg-blue-600 dark:border-zinc-700 dark:bg-zinc-900 flex flex-col"
-    >
-        <!-- Branding & Toggles -->
+        class="transition-all duration-300 border-r border-zinc-200 bg-[#1443e0] dark:border-zinc-700 dark:bg-[#1443e0] flex flex-col"
+        >
        <!-- Branding & Toggles -->
 <div class="flex items-center justify-between p-4">
-    <a href="{{ route('dashboard') }}" wire:navigate>
-        <div class="flex items-center">
-            <!-- Full Logo (only visible when sidebar is expanded) -->
+<a href="{{ route('dashboard') }}" wire:navigate>
+    <div class="flex items-center h-10 w-full" x-data="{ collapsed: false }">
+        <!-- Full Logo (only visible when sidebar is expanded) -->
+        <template x-if="!collapsed">
             <img 
-                x-show="!collapsed" 
                 src="{{ asset('images/snap_logo_white.png') }}" 
                 alt="SnaPp Logo" 
-                class="w-full object-contain" 
+                class="h-10 w-auto object-contain transition-all duration-300 ease-in-out"
+                x-cloak
             />
-            <!-- Abbreviation (SN, only visible when sidebar is collapsed) -->
+        </template>
+
+        <!-- Abbreviation (SN, only visible when sidebar is collapsed) -->
+        <template x-if="collapsed">
             <span 
-                x-show="collapsed" 
-                class="text-white text-xl font-semibold"
+                class="text-white text-xl font-semibold transition-all duration-300 ease-in-out"
+                x-cloak
             >
                 SN
             </span>
-        </div>
-    </a>
+        </template>
+    </div>
+</a>
+
     <!-- Collapse/Expand Button -->
     <button @click="collapsed = !collapsed" class="text-white focus:outline-none">
         <template x-if="!collapsed">
@@ -53,7 +58,30 @@
                 <flux:icon name="home" class="w-6 h-6 text-white" />
                 <span x-show="!collapsed" class="text-white">{{ __('Dashboard') }}</span>
             </a>
-
+            <a
+                href="{{ route('bills.show') }}"
+                class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
+                :class="{'justify-center': collapsed, 'space-x-2': !collapsed}"
+            >
+                <flux:icon name="wallet" class="w-6 h-6 text-white" />
+                <span x-show="!collapsed" class="text-white">{{ __('My Bills') }}</span>
+            </a>
+            <a
+                href="{{ route('my-contracts') }}"
+                class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
+                :class="{'justify-center': collapsed, 'space-x-2': !collapsed}"
+            >
+                <flux:icon name="clipboard-list" class="w-6 h-6 text-white" />
+                <span x-show="!collapsed" class="text-white">{{ __('My Contracts') }}</span>
+            </a>
+            <a
+                href="{{ route('energy-consumption') }}"
+                class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
+                :class="{'justify-center': collapsed, 'space-x-2': !collapsed}"
+            >
+            <flux:icon name="database-zap" class="w-6 h-6 text-white" />
+            <span x-show="!collapsed" class="text-white">{{ __('Energy Consumption Report') }}</span>
+            </a>
             <a
                 href="{{ route('advisories') }}"
                 class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
@@ -64,45 +92,20 @@
             </a>
 
             <a
-                href="{{ route('my-contracts') }}"
-                class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
-                :class="{'justify-center': collapsed, 'space-x-2': !collapsed}"
-            >
-                <flux:icon name="clipboard-list" class="w-6 h-6 text-white" />
-                <span x-show="!collapsed" class="text-white">{{ __('My Contracts') }}</span>
-            </a>
-
-            <a
-                href="{{ route('bills.show') }}"
-                class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
-                :class="{'justify-center': collapsed, 'space-x-2': !collapsed}"
-            >
-                <flux:icon name="wallet" class="w-6 h-6 text-white" />
-                <span x-show="!collapsed" class="text-white">{{ __('My Bills') }}</span>
-            </a>
-
-            <a
-                href="{{ route('my-energy-consumption') }}"
+                href="{{ route('profiles.index') }}"
                 class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
                 :class="{'justify-center': collapsed, 'space-x-2': !collapsed}"
             >
                 <flux:icon name="database-zap" class="w-6 h-6 text-white" />
-                <span x-show="!collapsed" class="text-white">{{ __('My Energy Consumption') }}</span>
+                <span x-show="!collapsed" class="text-white">{{ __('Profile') }}</span>
             </a>
-
-            <a
-                href="{{ route('my-ghg-emissions') }}"
-                class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
-                :class="{'justify-center': collapsed, 'space-x-2': !collapsed}"
-            >
-                <flux:icon name="cloud-alert" class="w-6 h-6 text-white" />
-                <span x-show="!collapsed" class="text-white">{{ __('My GHG Emissions') }}</span>
-            </a>
+            
         </nav>
 
         <!-- Admin Section -->
         <div class="pt-4 px-2">
-            <h3 x-show="!collapsed" class="px-2 text-xs font-semibold text-white uppercase">{{ __('Admin') }}</h3>
+            <h3 
+                class="px-2 text-xs font-semibold text-white uppercase">{{ __('Admin') }}</h3>
             <nav class="mt-2 space-y-1">
                 <a
                     href="{{ route('users.index') }}"
@@ -114,7 +117,7 @@
                 </a>
 
                 <a
-                    href="{{ route('role-permissions') }}"
+                    href="{{ route('role.permission.list') }}"
                     class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
                     :class="{'justify-center': collapsed, 'space-x-2': !collapsed}"
                 >
@@ -142,7 +145,7 @@
                 <flux:profile
                     :name="auth()->user()->name"
                     :initials="auth()->user()->initials()"
-                    icon-trailing="chevrons-up-down"
+                    class="text-white"
                 />
                 <flux:menu class="w-[220px]">
                     <!-- Menu contents unchanged -->

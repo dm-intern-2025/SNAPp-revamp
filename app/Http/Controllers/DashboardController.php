@@ -4,83 +4,54 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
+use App\Services\OracleInvoiceService;
 use Illuminate\Support\Carbon;
 
 class DashboardController extends Controller
 {
-    private function apiHeaders()
+    protected $oracleInvoiceService;
+
+    // Inject the service into the controller
+    public function __construct(OracleInvoiceService $oracleInvoiceService)
     {
-        return [
-            'Content-Type' => 'application/vnd.oracle.adf.resourcecollection+json',
-            'Accept'       => 'application/json',
-        ];
+        $this->oracleInvoiceService = $oracleInvoiceService;
     }
 
-    private function apiAuth()
+    public function showDashboardFields()
     {
-        return [
-            env('API_USERNAME'),
-            env('API_PASSWORD'),
-        ];
-    }
+        $user = Auth::user();
+        $customerId = $user->customer_id;
 
-   public function showDashboardFields()
-{
-    $user = Auth::user();
-    $customerId = $user->customer_id;
+        // Fetch invoice data from the service
+        $items = $this->oracleInvoiceService->fetchInvoiceData($customerId);
+        $latestInvoice = collect($items)->first();
 
-    // Step 1: Fetch invoice using customerId
-    $response = Http::withBasicAuth(...$this->apiAuth())
-        ->withHeaders($this->apiHeaders())
-        ->get('https://fa-evjn-dev1-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/receivablesInvoices', [
-            'finder' => "invoiceSearch;
-                TransactionSource=SNAP AUTOINVOICE,
-                TransactionType=TRADE-RES,
-                BusinessUnit=SNAPR BU,
-                BillToCustomerNumber={$customerId}"
-        ]);
+        $billingPeriod = isset($latestInvoice['TransactionDate']) 
+            ? Carbon::parse($latestInvoice['TransactionDate'])->format('F Y')
+            : 'N/A';
 
-    $items = $response->successful() ? $response->json()['items'] ?? [] : [];
-    $latestInvoice = collect($items)->first();
+        $dueDate = isset($latestInvoice['DueDate']) 
+            ? Carbon::parse($latestInvoice['DueDate'])->format('m/d/Y')
+            : 'N/A';
 
-    $billingPeriod = isset($latestInvoice['TransactionDate']) 
-        ? Carbon::parse($latestInvoice['TransactionDate'])->format('F Y')
-        : 'N/A';
+        $previousBalance = $latestInvoice['InvoiceBalanceAmount'] ?? 0;
+        $currentAmount = $latestInvoice['EnteredAmount'] ?? 0;
 
-    $dueDate = isset($latestInvoice['DueDate']) 
-        ? Carbon::parse($latestInvoice['DueDate'])->format('m/d/Y')
-        : 'N/A';
-
-    $previousBalance = $latestInvoice['InvoiceBalanceAmount'] ?? 0;
-    $currentAmount = $latestInvoice['EnteredAmount'] ?? 0;
-
-    // Step 2: Fetch line items using CustomerTransactionId
-    $consumption = 0;
-    $transactionId = $latestInvoice['CustomerTransactionId'] ?? null;
-
-    if ($transactionId) {
-        $lineResponse = Http::withBasicAuth(...$this->apiAuth())
-            ->withHeaders($this->apiHeaders())
-            ->get("https://fa-evjn-dev1-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/receivablesInvoices/{$transactionId}/child/receivablesInvoiceLines");
-
-        $lineItems = $lineResponse->successful() ? $lineResponse->json()['items'] ?? [] : [];
-
-        foreach ($lineItems as $line) {
-            $consumption = $lineItems[0]['Quantity'] ?? 0;
-
+        $transactionId = $latestInvoice['CustomerTransactionId'] ?? null;
+        $consumption = 0;
+    
+        if ($transactionId) {
+            $consumption = $this->oracleInvoiceService->fetchConsumption($transactionId); // No loop, just get the total
         }
+
+        return view('dashboard', [
+            'customerName'    => $user->name ?? 'Customer',
+            'customerId'      => $customerId,
+            'billingPeriod'   => $billingPeriod,
+            'consumption'     => $consumption,
+            'previousBalance' => number_format($previousBalance, 2),
+            'currentAmount'   => number_format($currentAmount, 2),
+            'dueDate'         => $dueDate
+        ]);
     }
-
-    return view('dashboard', [
-        'customerName'    => $user->name ?? 'Customer',
-        'customerId'      => $customerId,
-        'billingPeriod'   => $billingPeriod,
-        'consumption'     => number_format($consumption, 2),
-        'previousBalance' => number_format($previousBalance, 2),
-        'currentAmount'   => number_format($currentAmount, 2),
-        'dueDate'         => $dueDate
-    ]);
-}
-
 }

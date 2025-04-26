@@ -25,9 +25,8 @@ class RoleController extends Controller
      */
     public function create()
     {
-        return view('admin.role-permission.form-role');
+        return view('role-permissions.form-create-role');
     }
-
     /**
      * Store a newly created resource in storage.
      *
@@ -38,7 +37,6 @@ class RoleController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|unique:roles,name', // Adjust if 'title' is a separate column
-            'status' => 'required|boolean',
         ]);
     
         Role::create([

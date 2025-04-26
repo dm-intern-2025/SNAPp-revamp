@@ -1,17 +1,18 @@
 <div class="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
-    <table class="min-w-full">
-        <thead class="bg-gray-50 dark:bg-neutral-800">
-            <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-wider whitespace-nowrap">Billing Period</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-wider whitespace-nowrap">Bill Number</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-wider whitespace-nowrap">Bill Date</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-wider whitespace-nowrap">Terms</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-wider whitespace-nowrap">Due Date</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-wider whitespace-nowrap">Status</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-neutral-400 uppercase tracking-wider whitespace-nowrap">Total Amount</th>
-            </tr>
-        </thead>
-        <tbody class="bg-white dark:bg-neutral-900 divide-y divide-gray-200 dark:divide-neutral-700">
+    <table>
+    <thead>
+    <tr>
+        <th >Billing Period</th>
+        <th >Bill Number</th>
+        <th >Bill Date</th>
+        <th >Terms</th>
+        <th >Due Date</th>
+        <th >Status</th>
+        <th >Total Amount</th>
+    </tr>
+</thead>
+
+        <tbody>
             @foreach($data as $item)
                 <tr>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">{{ $item['Billing Period'] }}</td>

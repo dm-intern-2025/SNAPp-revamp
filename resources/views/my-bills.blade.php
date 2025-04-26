@@ -36,8 +36,6 @@
                 @include('bills.payments-history-table', ['data' => $payments])
             @endif
         </div>
-
-        
     </div>
 
 </x-layouts.app>
