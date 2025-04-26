@@ -96,7 +96,7 @@
                 class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
                 :class="{'justify-center': collapsed, 'space-x-2': !collapsed}"
             >
-                <flux:icon name="database-zap" class="w-6 h-6 text-white" />
+                <flux:icon name="id-card" class="w-6 h-6 text-white" />
                 <span x-show="!collapsed" class="text-white">{{ __('Profile') }}</span>
             </a>
             

@@ -10,8 +10,8 @@
                 <flux:field>
                     <flux:input label="Account Name" placeholder="Enter Account Name" />
                     <flux:input label="Short Name" placeholder="Enter Short Name" />
-                    <flux:input label="Business Address" placeholder="Enter Business Address" />
-                    <flux:input label="Facility Address" placeholder="Enter Facility Address" />
+                    <flux:input badge="customer" label="Business Address" placeholder="Enter Business Address" />
+                    <flux:input badge="customer" label="Facility Address" placeholder="Enter Facility Address" />
                     <flux:input label="Customer Category" placeholder="Enter Customer Category" />
                 </flux:field>
             </div>
@@ -26,7 +26,7 @@
                     <flux:input label="Cooperation Period End Date" placeholder="Enter End Date" type="date" />
                     <flux:input label="Contract Price" placeholder="Enter Contract Price" />
                     <flux:input label="Contract Demand" placeholder="Enter Contract Demand" />
-                    <flux:textarea label="Other Information" placeholder="Enter Additional Info" />
+                    <flux:input badge="customer" label="Other Information" placeholder="Enter Additional Info" />
                 </flux:field>
             </div>
 
@@ -36,12 +36,12 @@
                     <h2 class="text-lg font-bold">Contact Information</h2>
                 </div>
                 <flux:field>
-                    <flux:input label="Contact Name" placeholder="Enter Contact Name" />
-                    <flux:input label="Designation" placeholder="Enter Designation" />
-                    <flux:input label="Email" placeholder="Enter Email" type="email" />
-                    <flux:input label="Mobile Number" placeholder="Enter Mobile Number" type="tel" />
-</flux:field>
-                    </div>
+                    <flux:input badge="customer" label="Contact Name" placeholder="Enter Contact Name" />
+                    <flux:input badge="customer" label="Designation" placeholder="Enter Designation" />
+                    <flux:input badge="customer"label="Email" placeholder="Enter Email" type="email" />
+                    <flux:input badge="customer" label="Mobile Number" placeholder="Enter Mobile Number" type="tel" />
+                </flux:field>
+            </div>
 
         </div>
     </div>
