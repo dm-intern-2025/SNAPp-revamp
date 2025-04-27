@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdvisoryController;
 use App\Http\Controllers\BillController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GhgController;
@@ -23,10 +24,6 @@ Route::get('/', function () {
 
     Route::get('/dashboard', [DashboardController::class, 'showDashboardFields'])
     ->name('dashboard');
-
-
-
-    
 
     Route::view('advisories', 'advisories')
     ->middleware(['auth', 'verified'])
@@ -61,6 +58,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/role-permission', [RolePermission::class, 'store'])->name('role.permission.store');
     Route::resource('permission', PermissionController::class);
     Route::resource('role', RoleController::class);
+
+    Route::resource('advisories-management', AdvisoryController::class);
 
     Route::redirect('settings', 'settings/profile');
 

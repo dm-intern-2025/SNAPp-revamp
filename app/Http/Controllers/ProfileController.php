@@ -34,8 +34,11 @@ class ProfileController extends Controller
      */
     public function store(StoreProfileRequest $request)
     {
-        //
+        Profile::create($request->validated());
+    
+        return back()->with('success', 'Customer account created successfully.');
     }
+    
 
     /**
      * Display the specified resource.

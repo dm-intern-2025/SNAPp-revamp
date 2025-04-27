@@ -3,7 +3,7 @@
 
         <!-- Header with Add Buttons -->
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Roles & Permissions</h2>
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-white">User Accounts</h2>
             <div class="flex gap-2">
 
                 <!-- Flux Button to Trigger the Modal -->
@@ -13,12 +13,6 @@
                     </flux:button>
                 </flux:modal.trigger>
 
-                <!-- Add Permission Trigger -->
-                <flux:modal.trigger name="permission-modal">
-                    <flux:button class="flux-btn flux-btn-primary flux-btn-sm">
-                        Add Admin
-                    </flux:button>
-                </flux:modal.trigger>
             </div>
         </div>
 
