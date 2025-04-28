@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreAdvisoryRequest;
 use App\Models\Advisory;
 use Illuminate\Http\Request;
 
@@ -32,9 +33,14 @@ class AdvisoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreAdvisoryRequest $request)
     {
-        //
+        $validatedRequest = $request->validated();
+        Advisory::create($validatedRequest);
+
+
+        return redirect()->back()->with('success', 'Customer account created successfully.');
+
     }
 
     /**

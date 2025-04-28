@@ -43,7 +43,7 @@ class RoleController extends Controller
             'name' => $validated['title'], // Use 'title' as 'name' if no separate title column
             'guard_name' => 'web',
         ]);
-    
+        session()->flash('message', 'Post successfully updated.');
         return redirect()->route('role.permission.list')->with('success', 'Role created successfully.');
     }
 
@@ -112,9 +112,9 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
-        $role = Role::findOrFail($id);
-        $role->delete();
-        return redirect()->route('role.permission.list')->with('success', 'Role deleted successfully.');
+        // $role = Role::findOrFail($id);
+        // $role->delete();
+        // return redirect()->route('role.permission.list')->with('success', 'Role deleted successfully.');
     }
     
 }

@@ -1,66 +1,75 @@
-<x-layouts.app :title="__('Dashboard')">
-    <div class="flex flex-col md:flex-row justify-between gap-6 p-6">
-        <!-- LEFT: Customer Info -->
-        <div class="md:w-1/2 space-y-4">
-            <h1 class="text-3xl font-bold text-neutral-800 dark:text-white">
-                HELLO {{ strtoupper($customerName) }}!
-            </h1>
-            <p class="text-lg text-neutral-600 dark:text-neutral-400 mb-6">Welcome to your SnaPp Account.</p>
+<x-layouts.app>
+    <div class="h-full w-full px-4 py-6 space-y-6">
 
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Customer ID</label>
-                    <input type="text" readonly class="mt-1 w-3/4 px-3 py-2 rounded-md bg-gray-100 dark:bg-neutral-800 border border-gray-300 dark:border-neutral-600 text-sm" 
-                           value="{{ $customerId }}">
+        <!-- Top Section: Chart and More Advisories -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+            <!-- Chart (Left) -->
+            <div class="col-span-1 md:col-span-3 bg-white rounded-2xl shadow p-6 flex flex-col">
+                <h2 class="text-lg font-bold text-[#1443e0]">Energy Consumption</h2>
+                <!-- Chart Placeholder -->
+                <div class="mt-6 h-64 bg-gray-100 flex items-center justify-center text-gray-400">
+                    Chart Placeholder
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Billing Period</label>
-                    <input type="text" readonly class="mt-1 w-3/4 px-3 py-2 rounded-md bg-gray-100 dark:bg-neutral-800 border border-gray-300 dark:border-neutral-600 text-sm" 
-                           value="{{ $billingPeriod }}">
+            </div>
+
+            <!-- More Advisories (Right) -->
+            <div class="col-span-1 md:col-span-2 bg-white rounded-2xl shadow p-6 flex flex-col">
+                <h2 class="text-lg font-bold text-[#1443e0]">More Advisories</h2>
+
+                <div class="mt-4 space-y-4 flex-grow">
+                    <div>
+                        <h4 class="text-md font-semibold text-[#1443e0]">Headline One</h4>
+                        <p class="text-sm text-[#1443e0] mt-1">Brief description for advisory one.</p>
+                        <hr class="border-t border-gray-200 my-2">
+                    </div>
+                    <div>
+                        <h4 class="text-md font-semibold text-[#1443e0]">Headline Two</h4>
+                        <p class="text-sm text-[#1443e0] mt-1">Brief description for advisory two.</p>
+                        <hr class="border-t border-gray-200 my-2">
+                    </div>
+                    <div>
+                        <h4 class="text-md font-semibold text-[#1443e0]">Headline Three</h4>
+                        <p class="text-sm text-[#1443e0] mt-1">Brief description for advisory three.</p>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Total Consumption</label>
-                    <input type="text" readonly class="mt-1 w-3/4 px-3 py-2 rounded-md bg-gray-100 dark:bg-neutral-800 border border-gray-300 dark:border-neutral-600 text-sm" 
-                           value="{{ $consumption }} kWh">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Previous Balance</label>
-                    <input type="text" readonly class="mt-1 w-3/4 px-3 py-2 rounded-md bg-gray-100 dark:bg-neutral-800 border border-gray-300 dark:border-neutral-600 text-sm" 
-                           value="₱{{ $previousBalance }}">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Total Amount Due</label>
-                    <input type="text" readonly class="mt-1 w-3/4 px-3 py-2 rounded-md bg-gray-100 dark:bg-neutral-800 border border-gray-300 dark:border-neutral-600 text-sm" 
-                           value="₱{{ $currentAmount }}">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Due Date</label>
-                    <input type="text" readonly class="mt-1 w-3/4 px-3 py-2 rounded-md bg-gray-100 dark:bg-neutral-800 border border-gray-300 dark:border-neutral-600 text-sm" 
-                           value="{{ $dueDate }}">
-                </div>
+
+                <button class="mt-6 flex items-center justify-center w-full py-2 border border-[#1443e0] rounded-lg text-sm font-medium text-[#1443e0]">
+                    <span class="mr-2">Load More</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
             </div>
         </div>
 
-        <!-- RIGHT: Nav Buttons -->
-        <div class="md:w-1/2 grid grid-cols-2 gap-4 place-items-center">
-            <a href="" class="w-32 py-3 text-center rounded-lg border border-neutral-400 dark:border-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-sm font-medium">
-                Profile
-            </a>
-            <a href="{{ route('bills.show') }}" class="w-32 py-3 text-center rounded-lg border border-neutral-400 dark:border-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-sm font-medium">
-                Billing Statement
-            </a>
-            <a href="" class="w-32 py-3 text-center rounded-lg border border-neutral-400 dark:border-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-sm font-medium">
-                Contract
-            </a>
-            <a href="" class="w-32 py-3 text-center rounded-lg border border-neutral-400 dark:border-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-sm font-medium">
-                Consumption
-            </a>
-            <a href="" class="w-32 py-3 text-center rounded-lg border border-neutral-400 dark:border-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-sm font-medium">
-                GHG
-            </a>
-            <a href="" class="w-32 py-3 text-center rounded-lg border border-neutral-400 dark:border-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-sm font-medium">
-                Contact Us
-            </a>
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+    <!-- Billing Statement Card (wider) -->
+    <div class="col-span-1 md:col-span-3 bg-white rounded-2xl shadow p-6 flex flex-col justify-center">
+        <div class="flex items-center justify-between">
+            <!-- Total Amount -->
+            <div class="flex-1 text-center">
+                <span class="text-xs font-medium text-[#1443e0]">Total Amount</span>
+                <div class="text-2xl font-bold text-[#1443e0] mt-1">₱{{ $currentAmount }}</div>
+            </div>
+
+            <!-- Divider -->
+            <div class="h-12 w-px bg-gray-300 mx-4"></div>
+
+            <!-- Due Date -->
+            <div class="flex-1 text-center">
+                <span class="text-xs font-medium text-[#1443e0]">Due Date</span>
+                <div class="text-2xl font-bold text-[#1443e0] mt-1">{{ $dueDate }}</div>
+            </div>
         </div>
+    </div>
+
+    <!-- Contract Expiration Card (smaller) -->
+    <div class="col-span-1 md:col-span-2 bg-white rounded-2xl shadow p-6 flex flex-col justify-center items-center">
+        <span class="text-xs font-medium text-[#1443e0]">Contract Expiration</span>
+        <div class="text-2xl font-bold text-[#1443e0] mt-2">What data to place?</div>
+    </div>
+</div>
+
+
     </div>
 </x-layouts.app>

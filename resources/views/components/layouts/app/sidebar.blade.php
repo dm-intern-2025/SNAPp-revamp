@@ -48,6 +48,7 @@
 
 
         <!-- Navigation -->
+@role('customer')
         <nav class="flex-1 px-2 space-y-1">
             <a
                 href="{{ route('dashboard') }}"
@@ -94,7 +95,9 @@
             </a>
 
         </nav>
-        @role('admin')
+
+@endrole
+@role('admin')
 
         <!-- Admin Section -->
         <div class="pt-1 px-2">
@@ -145,27 +148,28 @@
                 </a>
             </nav>
         </div>
-        @endrole
+@endrole
 
 
         <!-- Spacer -->
         <div class="px-2 py-4"></div>
 
-        <!-- User Menu -->
-        <div class="px-2 py-4">
+     <!-- Fixed User Menu at Bottom -->
+     <div class="mt-auto px-2 py-4">
             <flux:dropdown position="bottom" align="start">
                 <flux:profile
                     :name="auth()->user()->name"
                     :initials="auth()->user()->initials()"
                     class="text-white" />
                 <flux:menu class="w-[220px]">
-                    <!-- Menu contents unchanged -->
                     <flux:menu.radio.group>
                         <!-- profile info -->
                     </flux:menu.radio.group>
                     <flux:menu.separator />
                     <flux:menu.radio.group>
-                        <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>{{ __('Settings') }}</flux:menu.item>
+                        <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>
+                            {{ __('Settings') }}
+                        </flux:menu.item>
                     </flux:menu.radio.group>
                     <flux:menu.separator />
                     <form method="POST" action="{{ route('logout') }}" class="w-full">

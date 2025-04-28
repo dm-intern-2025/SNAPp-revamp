@@ -48,5 +48,22 @@ class RolePermission extends Controller
             ->with('success', 'Permissions updated successfully.');
     }
     
+    public function destroyRole($id)
+    {
+        $role = Role::findOrFail($id);
+        $role->delete();
 
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Delete a specific permission.
+     */
+    public function destroyPermission($id)
+    {
+        $permission = Permission::findOrFail($id);
+        $permission->delete();
+
+        return response()->json(['success' => true]);
+    }
 }

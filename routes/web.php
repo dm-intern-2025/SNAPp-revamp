@@ -10,10 +10,6 @@ use App\Http\Controllers\Security\PermissionController;
 use App\Http\Controllers\Security\RoleController;
 use App\Http\Controllers\Security\RolePermission;
 use App\Http\Controllers\UserController;
-// use App\Livewire\RoleForm;
-use App\Livewire\RolePermissionMatrix;
-
-
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
@@ -59,7 +55,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/role-permission', [RolePermission::class, 'store'])->name('role.permission.store');
     Route::resource('permission', PermissionController::class);
     Route::resource('role', RoleController::class);
-
+    Route::delete('roles/{id}', [RolePermission::class, 'destroyRole'])->name('roles.destroy');
+    Route::delete('permissions/{id}', [RolePermission::class, 'destroyPermission'])->name('permission.destroy');
+    
     Route::resource('account-executives', AccountExecutiveController::class);
 
     Route::resource('advisories-management', AdvisoryController::class);
