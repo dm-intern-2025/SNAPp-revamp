@@ -2,23 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Advisory;
+use App\Models\AccountExecutive;
 use Illuminate\Http\Request;
 
-class AdvisoryController extends Controller
+class AccountExecutiveController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('admin.advisory-management.advisory-list');
-    }
-
-    public function adminList()
-    {
-        $advisories = Advisory::orderBy('created_at', 'desc')->paginate(10); // Changed
-        return view('admin.advisory-management.advisory-list', compact('advisories'));
+        return view('admin.account-executive.account-executive-list');
     }
 
     /**
@@ -40,7 +34,7 @@ class AdvisoryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Advisory $advisory)
+    public function show(AccountExecutive $accountExecutive)
     {
         //
     }
@@ -48,7 +42,7 @@ class AdvisoryController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Advisory $advisory)
+    public function edit(AccountExecutive $accountExecutive)
     {
         //
     }
@@ -56,7 +50,7 @@ class AdvisoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Advisory $advisory)
+    public function update(Request $request, AccountExecutive $accountExecutive)
     {
         //
     }
@@ -64,7 +58,7 @@ class AdvisoryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Advisory $advisory)
+    public function destroy(AccountExecutive $accountExecutive)
     {
         //
     }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountExecutiveController;
 use App\Http\Controllers\AdvisoryController;
 use App\Http\Controllers\BillController;
 use App\Http\Controllers\DashboardController;
@@ -46,20 +47,23 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('users', UserController::class);
 
+    Route::get('/admin-list', [UserController::class, 'showAdmins'])
+    ->name('admin-list');
+
     Route::get('/energy-consumption', [GhgController::class, 'calculateEmissions'])
     ->name('energy-consumption');
 
     Route::resource('profiles', ProfileController::class);
-
-
-    // Route::get('/roles-permissions', RolePermissionMatrix::class)->name('role-permissions');
 
     Route::get('/role-permission', [RolePermission::class, 'index'])->name('role.permission.list');
     Route::post('/role-permission', [RolePermission::class, 'store'])->name('role.permission.store');
     Route::resource('permission', PermissionController::class);
     Route::resource('role', RoleController::class);
 
+    Route::resource('account-executives', AccountExecutiveController::class);
+
     Route::resource('advisories-management', AdvisoryController::class);
+    Route::get('/admin/advisories', [AdvisoryController::class, 'adminList'])->name('advisories.list');
 
     Route::redirect('settings', 'settings/profile');
 

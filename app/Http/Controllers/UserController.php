@@ -26,9 +26,10 @@ class UserController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function showAdmins()
     {
-        
+        $admins = User::role('admin')->paginate(10);
+        return view('admin.admin-account.admin-list', compact('admins'));
     }
 
     /**

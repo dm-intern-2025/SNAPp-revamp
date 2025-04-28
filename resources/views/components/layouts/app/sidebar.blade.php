@@ -110,13 +110,20 @@
                     <flux:menu class="w-48">
                         <flux:menu.item
                             href="{{ route('users.index') }}"
-                            icon="user-group">{{ __('Customer Management') }}</flux:menu.item>
+                            icon="user-group">{{ __('Customer List') }}
+                        </flux:menu.item>
                         <flux:menu.item
-                            href="{{ route('advisories-management.index') }}"
-                            icon="megaphone">{{ __('Advisory Management') }}</flux:menu.item>
+                            href="{{ route('admin-list') }}"
+                            icon="user-group">{{ __('Admin List') }}
+                        </flux:menu.item>
                         <flux:menu.item
-                            href=""
-                            icon="briefcase">{{ __('Account Executives') }}</flux:menu.item>
+                            href="{{ route('account-executives.index') }}"
+                            icon="briefcase">{{ __('Account Executives') }}
+                        </flux:menu.item>
+                        <flux:menu.item
+                            href="{{ route('advisories.list') }}"
+                            icon="megaphone">{{ __('Advisory Management') }}
+                        </flux:menu.item>
                     </flux:menu>
                 </flux:dropdown>
 
