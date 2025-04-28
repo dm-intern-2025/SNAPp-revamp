@@ -19,35 +19,40 @@ class RolePermission extends Controller
     public function store(Request $request)
     {
         $permissionsByRole = [];
-    
+
         // Gather selected permissions for each role
         foreach ($request->input('permission', []) as $roleId => $permissionIds) {
             foreach ($permissionIds as $permissionId) {
-                $permissionsByRole[$roleId][] = $permissionId;
+                // Get the Permission instance by ID
+                $permission = Permission::find($permissionId); // Use the actual Permission model here
+                if ($permission) {
+                    $permissionsByRole[$roleId][] = $permission; // Store the Permission model
+                }
             }
         }
-    
+
         // Update permissions for each role
-        foreach ($permissionsByRole as $roleId => $permissionIds) {
+        foreach ($permissionsByRole as $roleId => $permissions) {
             $role = Role::find($roleId);
-            $role->syncPermissions($permissionIds);
+            $role->syncPermissions($permissions); // Pass the Permission models instead of IDs
         }
-    
+
         // Clear permissions for roles with no checkboxes
         $allRoles = Role::all();
         foreach ($allRoles as $role) {
             if (!isset($permissionsByRole[$role->id])) {
-                $role->syncPermissions([]);
+                $role->syncPermissions([]); // Clear permissions for this role
             }
         }
-    
+
         // Return to the view with success message and updated roles & permissions
         $roles = Role::all();
         $permissions = Permission::all();
         return view('role-permissions.role-permissions', compact('roles', 'permissions'))
             ->with('success', 'Permissions updated successfully.');
     }
-    
+
+
     public function destroyRole($id)
     {
         $role = Role::findOrFail($id);
