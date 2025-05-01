@@ -10,7 +10,7 @@
     <!-- Sidebar -->
     <aside
         :class="collapsed ? 'w-20' : 'w-64'"
-        class="transition-all duration-300 border-r border-zinc-200 bg-[#1443e0] dark:border-zinc-700 dark:bg-[#1443e0] flex flex-col">
+        class="transition-all duration-300 border-r border-zinc-200 bg-[#1443e0] dark:border-zinc-700 dark:bg-[#1443e0] flex flex-col fixed h-full">
         <!-- Branding & Toggles -->
         <div class="flex items-center justify-between p-4">
             <a href="{{ route('dashboard') }}" wire:navigate>
@@ -46,116 +46,126 @@
             </button>
         </div>
 
-
-        <!-- Navigation -->
-@role('customer')
-        <nav class="flex-1 px-2 space-y-1">
-            <a
-                href="{{ route('dashboard') }}"
-                class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
-                :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
-                <flux:icon name="home" class="w-6 h-6 text-white" />
-                <span x-show="!collapsed" class="text-white">{{ __('     Dashboard') }}</span>
-            </a>
-            <a
-                href="{{ route('bills.show') }}"
-                class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
-                :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
-                <flux:icon name="wallet" class="w-6 h-6 text-white" />
-                <span x-show="!collapsed" class="text-white">{{ __('     My Bills') }}</span>
-            </a>
-            <a
-                href="{{ route('my-contracts') }}"
-                class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
-                :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
-                <flux:icon name="clipboard-list" class="w-6 h-6 text-white" />
-                <span x-show="!collapsed" class="text-white">{{ __('     My Contracts') }}</span>
-            </a>
-            <a
-                href="{{ route('energy-consumption') }}"
-                class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
-                :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
-                <flux:icon name="database-zap" class="w-6 h-6 text-white" />
-                <span x-show="!collapsed" class="text-white">{{ __('     Energy Consumption Report') }}</span>
-            </a>
-            <a
-                href="{{ route('advisories') }}"
-                class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
-                :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
-                <flux:icon name="megaphone" class="w-6 h-6 text-white" />
-                <span x-show="!collapsed" class="text-white">{{ __('     Advisories') }}</span>
-            </a>
-
-            <a
-                href="{{ route('profiles.index') }}"
-                class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
-                :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
-                <flux:icon name="id-card" class="w-6 h-6 text-white" />
-                <span x-show="!collapsed" class="text-white">{{ __('     Profile') }}</span>
-            </a>
-
-        </nav>
-
-@endrole
-@role('admin')
-
-        <!-- Admin Section -->
-        <div class="pt-1 px-2">
-            <nav class="mt-2 space-y-1">
-                <!-- New Dropdown Menu -->
-                <flux:dropdown position="right-start" class="w-full">
-                    <button class="group flex items-center w-full p-2 rounded-md hover:bg-blue-500 transition-colors"
-                        :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
-                        <flux:icon name="squares-plus" class="w-6 h-6 text-white" />
-                        <span x-show="!collapsed" class="text-white">{{ __('     Management') }}</span>
-                    </button>
-
-                    <flux:menu class="w-48">
-                        <flux:menu.item
-                            href="{{ route('users.index') }}"
-                            icon="user-group">{{ __('Customer List') }}
-                        </flux:menu.item>
-                        <flux:menu.item
-                            href="{{ route('admin-list') }}"
-                            icon="user-group">{{ __('Admin List') }}
-                        </flux:menu.item>
-                        <flux:menu.item
-                            href="{{ route('account-executives.index') }}"
-                            icon="briefcase">{{ __('Account Executives') }}
-                        </flux:menu.item>
-                        <flux:menu.item
-                            href="{{ route('advisories.list') }}"
-                            icon="megaphone">{{ __('Advisory Management') }}
-                        </flux:menu.item>
-                    </flux:menu>
-                </flux:dropdown>
-
-
-                <a
-                    href="{{ route('role.permission.list') }}"
-                    class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
-                    :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
-                    <flux:icon name="shield-user" class="w-6 h-6 text-white" />
-                    <span x-show="!collapsed" class="text-white">{{ __('     Roles & Permissions') }}</span>
-                </a>
-
+        <!-- Scrollable Navigation Container -->
+        <div class="flex-1 overflow-y-auto">
+            <!-- Main Navigation -->
+            <nav class="px-2 space-y-1">
                 <a
                     href="{{ route('dashboard') }}"
                     class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
                     :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
-                    <flux:icon name="circle-help" class="w-6 h-6 text-white" />
-                    <span x-show="!collapsed" class="text-white">{{ __('     Helpdesk') }}</span>
+                    <flux:icon name="home" class="w-6 h-6 text-white" />
+                    <span x-show="!collapsed" class="text-white">{{ __('Dashboard') }}</span>
                 </a>
+                @can('can view bills')
+                <a
+                    href="{{ route('bills.show') }}"
+                    class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
+                    :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
+                    <flux:icon name="wallet" class="w-6 h-6 text-white" />
+                    <span x-show="!collapsed" class="text-white">{{ __('My Bills') }}</span>
+                </a>
+                @endcan
+                @can('can view contracts')
+                <a
+                    href="{{ route('my-contracts') }}"
+                    class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
+                    :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
+                    <flux:icon name="clipboard-list" class="w-6 h-6 text-white" />
+                    <span x-show="!collapsed" class="text-white">{{ __('My Contracts') }}</span>
+                </a>
+                @endcan
+                @can('can view econ')
+                <a
+                    href="{{ route('energy-consumption') }}"
+                    class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
+                    :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
+                    <flux:icon name="database-zap" class="w-6 h-6 text-white" />
+                    <span x-show="!collapsed" class="text-white">{{ __('Energy Consumption Report') }}</span>
+                </a>
+                @endcan
+                @can('can view advisories')
+                <a
+                    href="{{ route('advisories') }}"
+                    class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
+                    :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
+                    <flux:icon name="megaphone" class="w-6 h-6 text-white" />
+                    <span x-show="!collapsed" class="text-white">{{ __('Advisories') }}</span>
+                </a>
+                @endcan
+
+                @can('can view profile')
+                <a
+                    href="{{ route('profiles.index') }}"
+                    class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
+                    :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
+                    <flux:icon name="id-card" class="w-6 h-6 text-white" />
+                    <span x-show="!collapsed" class="text-white">{{ __('Profile') }}</span>
+                </a>
+                @endcan
             </nav>
+
+            @role('admin')
+            <!-- Admin Section -->
+            <div class="pt-1 px-2">
+                <nav class="mt-2 space-y-1">
+                    <!-- New Dropdown Menu -->
+                    <flux:dropdown position="right-start" class="w-full">
+                        <button class="group flex items-center w-full p-2 rounded-md hover:bg-blue-500 transition-colors"
+                            :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
+                            <flux:icon name="squares-plus" class="w-6 h-6 text-white" />
+                            <span x-show="!collapsed" class="text-white">{{ __('Accounts') }}</span>
+                        </button>
+
+                        <flux:menu class="w-48">
+                            <flux:menu.item
+                                href="{{ route('all-user-list') }}"
+                                icon="user-group">{{ __('All User List') }}
+                            </flux:menu.item>
+                            <flux:menu.item
+                                href="{{ route('users.index') }}"
+                                icon="user-group">{{ __('Customer List') }}
+                            </flux:menu.item>
+                            <flux:menu.item
+                                href="{{ route('admin-list') }}"
+                                icon="user-group">{{ __('Admin List') }}
+                            </flux:menu.item>
+                            <flux:menu.item
+                                href="{{ route('account-executive-list') }}"
+                                icon="briefcase">{{ __('Account Executives') }}
+                            </flux:menu.item>
+                        </flux:menu>
+                    </flux:dropdown>
+
+                    <a
+                        href="{{ route('role.permission.list') }}"
+                        class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
+                        :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
+                        <flux:icon name="shield-user" class="w-6 h-6 text-white" />
+                        <span x-show="!collapsed" class="text-white">{{ __('Roles & Permissions') }}</span>
+                    </a>
+                    <a
+                        href="{{ route('advisories.list') }}"
+                        class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
+                        :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
+                        <flux:icon name="megaphone" class="w-6 h-6 text-white" />
+                        <span x-show="!collapsed" class="text-white">{{ __('Manage Advisories') }}</span>
+                    </a>
+
+                    <a
+                        href="{{ route('dashboard') }}"
+                        class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
+                        :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
+                        <flux:icon name="circle-help" class="w-6 h-6 text-white" />
+                        <span x-show="!collapsed" class="text-white">{{ __('Helpdesk') }}</span>
+                    </a>
+                </nav>
+            </div>
+            @endrole
         </div>
-@endrole
 
-
-        <!-- Spacer -->
-        <div class="px-2 py-4"></div>
-
-     <!-- Fixed User Menu at Bottom -->
-     <div class="mt-auto px-2 py-4">
+        <!-- Fixed User Menu at Bottom -->
+        <div class="px-2 py-4 border-t border-blue-600">
             <flux:dropdown position="bottom" align="start">
                 <flux:profile
                     :name="auth()->user()->name"
@@ -184,7 +194,7 @@
     </aside>
 
     <!-- Main content -->
-    <div class="flex-1 overflow-auto">
+    <div class="flex-1 overflow-auto ml-20" :class="collapsed ? 'ml-20' : 'ml-64'">
         {{ $slot }}
     </div>
 

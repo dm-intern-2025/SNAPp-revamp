@@ -2,11 +2,10 @@
 
 namespace App\Http\Requests;
 
-use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class StoreAccountExecutive extends FormRequest
+class EditUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,21 +24,28 @@ class StoreAccountExecutive extends FormRequest
     {
         return [
             'name' => [
-                'required',
-                'string', 
-
+                'sometimes',
+                'string',
+                'max:255'
             ],
             'email' => [
-                'required',
-                'email', 
-                Rule::unique(User::class)
-            ],
-            
-            'customer_id' => [
-                'required',
-                'numeric', 
-            ],
+                'sometimes',
+                'email',
+                'max:255',
+                Rule::unique('users')->ignore($this->user)
 
+            ],
+            'customer_id' => [
+                'sometimes',
+                'nullable',
+                'string',
+                'max:255'
+            ],
+            'role' => [
+                'sometimes',
+                'string',
+                Rule::exists('roles', 'name') // Validates role exists in roles table
+            ],
         ];
     }
 }

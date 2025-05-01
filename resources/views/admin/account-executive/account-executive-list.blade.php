@@ -7,7 +7,7 @@
             <div class="flex gap-2">
 
                 <!-- Flux Button to Trigger the Modal -->
-                <flux:modal.trigger name="customer-modal">
+                <flux:modal.trigger name="create-accountexecutive">
                     <flux:button class="flux-btn flux-btn-primary flux-btn-sm">
                         Add Account Executive
                     </flux:button>
@@ -36,12 +36,18 @@
                     </tr>
                 </thead>
                 <tbody>
+                @foreach ($accountExecutives as $accountExecutive)
                     <tr>
                         <td>
+                        {{ $accountExecutive->id }}
                         </td>
                         <td>
+                        {{ $accountExecutive->name }}
+
                         </td>
                         <td>
+                        {{ $accountExecutive->email }}
+
                         </td>
                         <td>
 
@@ -75,9 +81,13 @@
                         </td>
                     </tr>
 
+                    @endforeach
 
                 </tbody>
             </table>
         </div>
     </div>
+
+    @include('admin.account-executive.form-create-accountexecutive')
+
 </x-layouts.app>

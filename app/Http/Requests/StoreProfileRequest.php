@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreProfileRequest extends FormRequest
 {
@@ -47,11 +48,11 @@ class StoreProfileRequest extends FormRequest
                 'string', 
                 'max:255'],
 
-            'cooperation_start_date' => [
+            'cooperation_period_start_date' => [
                 'nullable', 
                 'date'],
 
-            'cooperation_end_date' => [
+            'cooperation_period_end_date' => [
                 'nullable', 
                 'date'],
 
@@ -93,6 +94,12 @@ class StoreProfileRequest extends FormRequest
                 'nullable', 
                 'string', 
                 'max:20'
+            ],
+
+            'customer_id' => [
+                'required',
+                'string',
+                Rule::unique('profiles')->ignore($this->profile)
             ],
         ];
     }
