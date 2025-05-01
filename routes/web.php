@@ -41,6 +41,11 @@ Route::get('/payment-history', [BillController::class, 'showPaymentHistory'])
 
 Route::middleware(['auth'])->group(function () {
 
+    
+
+    Route::resource('profiles', ProfileController::class);
+
+
     Route::resource('users', UserController::class);
 
     Route::put('/all-user-list/{user}', [UserController::class, 'editAllUsers'])->name('all-user-list.update');
@@ -64,7 +69,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/energy-consumption', [GhgController::class, 'calculateEmissions'])
         ->name('energy-consumption');
 
-    Route::resource('profiles', ProfileController::class);
 
     Route::get('/role-permission', [RolePermission::class, 'index'])->name('role.permission.list');
     Route::post('/role-permission', [RolePermission::class, 'store'])->name('role.permission.store');

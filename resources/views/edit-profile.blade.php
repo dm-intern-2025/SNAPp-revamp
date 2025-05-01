@@ -88,9 +88,9 @@
 
                         <!-- Other Info - Customer editable only -->
                         @can('profile-editable-customer')
-                        <flux:input badge="customer" label="Other Information" placeholder="Enter Additional Info" name="other_info" value="{{ old('other_info', $profile->other_info) }}" />
+                        <flux:input badge="customer" label="Other Information" placeholder="Enter Additional Info" name="other_information" value="{{ old('other_information', $profile->other_information) }}" />
                         @else
-                        <flux:input badge="customer" label="Other Information" placeholder="Enter Additional Info" name="other_info" value="{{ old('other_info', $profile->other_info) }}" readonly variant="filled" />
+                        <flux:input badge="customer" label="Other Information" placeholder="Enter Additional Info" name="other_information" value="{{ old('other_information', $profile->other_information) }}" readonly variant="filled" />
                         @endcan
                     </flux:field>
                 </div>
@@ -124,9 +124,9 @@
 
                         <!-- Mobile - Customer editable only -->
                         @can('profile-editable-customer')
-                        <flux:input badge="customer" label="Mobile Number" placeholder="Enter Mobile Number" type="tel" name="mobile" value="{{ old('mobile', $profile->mobile) }}" />
+                        <flux:input badge="customer" label="Mobile Number" placeholder="Enter Mobile Number" type="tel" name="mobile_number" value="{{ old('mobile_number', $profile->mobile_number) }}" />
                         @else
-                        <flux:input badge="customer" label="Mobile Number" placeholder="Enter Mobile Number" type="tel" name="mobile" value="{{ old('mobile', $profile->mobile) }}" readonly variant="filled" />
+                        <flux:input badge="customer" label="Mobile Number" placeholder="Enter Mobile Number" type="tel" name="mobile_number" value="{{ old('mobile_number', $profile->mobile_number) }}" readonly variant="filled" />
                         @endcan
                     </flux:field>
                 </div>

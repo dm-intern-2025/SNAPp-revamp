@@ -39,21 +39,18 @@ class ProfileController extends Controller
     public function store(StoreProfileRequest $request)
     {
         $customerId = Auth::user()->customer_id;
+    
+        // find or build a fresh one
+        $profile = Profile::firstOrNew(['customer_id' => $customerId]);
+    
+        $profile->fill($request->validated());
+        $profile->save();
+    
+        return redirect()->route('profiles.index')->with('success', 'Profile saved successfully.');
 
-        $profile = Profile::where('customer_id')->first();
-
-        if ($profile) {
-            $profile->update($request->validated());
-            return back();
-        }
-
-        Profile::create(array_merge(
-            $request->validated(),
-            ['customer_id' => $customerId]
-        ));
-
-        return back()->with('success', 'Customer account created successfully.');
     }
+    
+    
 
 
     /**
@@ -87,15 +84,17 @@ class ProfileController extends Controller
      */
     public function update(UpdateProfileRequest $request, Profile $profile)
     {
-        // Verify the user owns this profile
+        // Ensure the authenticated user’s customer_id matches the profile's customer_id
         if (Auth::user()->customer_id !== $profile->customer_id) {
-            abort(403);
+            abort(403, 'You do not have permission to update this profile.');
         }
-
+    
+        // Update the profile with the validated request data
         $profile->update($request->validated());
-
-        return back()->with('success', 'Profile updated successfully.');
+        // Return back with a success message
+        return redirect()->route('profiles.index')->with('success', 'Profile saved successfully.');
     }
+    
 
     /**
      * Remove the specified resource from storage.

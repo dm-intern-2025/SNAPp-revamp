@@ -95,12 +95,6 @@ class StoreProfileRequest extends FormRequest
                 'string', 
                 'max:20'
             ],
-
-            'customer_id' => [
-                'required',
-                'string',
-                Rule::unique('profiles')->ignore($this->profile)
-            ],
         ];
     }
 }

@@ -24,6 +24,8 @@ class Profile extends Model
         'contact_name',
         'designation',
         'customer_id',
+        'email',
+        'mobile_number',
     ];
     public function user(): BelongsTo
     {

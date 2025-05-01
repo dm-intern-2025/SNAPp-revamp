@@ -59,7 +59,7 @@
                         <flux:input label="Contract Demand" placeholder="Enter Contract Demand" value="{{ $profiles->contract_demand ?? 'N/A' }}" readonly variant="filled" />
 
                         <!-- Other Info -->
-                        <flux:input badge="customer" label="Other Information" placeholder="Enter Additional Info" value="{{ $profiles->other_info ?? 'N/A' }}" readonly variant="filled" />
+                        <flux:input badge="customer" label="Other Information" placeholder="Enter Additional Info" value="{{ $profiles->other_information ?? 'N/A' }}" readonly variant="filled" />
                     </flux:field>
                 </div>
 
@@ -85,7 +85,7 @@
                         <flux:input badge="customer" label="Email" placeholder="Enter Email" type="email" value="{{ $profiles->email ?? 'N/A' }}" readonly variant="filled" />
 
                         <!-- Mobile -->
-                        <flux:input badge="customer" label="Mobile Number" placeholder="Enter Mobile Number" type="tel" value="{{ $profiles->mobile ?? 'N/A' }}" readonly variant="filled" />
+                        <flux:input badge="customer" label="Mobile Number" placeholder="Enter Mobile Number" type="tel" value="{{ $profiles->mobile_number ?? 'N/A' }}" readonly variant="filled" />
                     </flux:field>
                 </div>
 
