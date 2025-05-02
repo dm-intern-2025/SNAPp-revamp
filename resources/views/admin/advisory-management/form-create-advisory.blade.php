@@ -16,42 +16,31 @@
         },
         resetPreview() {
             if (this.preview) {
-                if (this.preview.startsWith('blob:')) {
-                    URL.revokeObjectURL(this.preview);
-                }
-                this.preview = null;
+                URL.revokeObjectURL(this.preview);
             }
-        },
-        setExistingPreview(url) {
-            this.resetPreview();
-            if (url) {
-                this.preview = url;
-            }
+            this.preview = null;
         }
     }"
     x-init="
         @if ($errors->any())
-            $nextTick(() => $flux.modal('advisory-show-modal').show())
+            $nextTick(() => $flux.modal('create-advisory').show())
         @endif
     ">
     <flux:modal
-        name="advisory-show-modal"
+        name="create-advisory"
         class="w-full max-w-5xl"
         :dismissible="false"
         x-on:close="resetPreview()">
+
         <form
-            action="{{ route('advisories.update', ['advisory' => ':advisory_id']) }}"
-            data-base-action="{{ route('advisories.update', ['advisory' => ':advisory_id']) }}"
+            action="{{ route('advisories.store') }}"
             method="POST"
             enctype="multipart/form-data"
-            class="flex gap-8"
-            id="edit-advisory-form">
+            class="flex gap-6"
+            id="create-form">
             @csrf
-            @method('PUT')
 
-            <input type="hidden" name="advisory_id" value="">
-
-            <!-- Left: Image upload -->
+            <!-- Left side: Image upload -->
             <div class="w-2/5 flex flex-col">
                 <flux:label class="mb-2">Attachment</flux:label>
 
@@ -62,12 +51,14 @@
                     @change="fileChosen($event)"
                     class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
 
-                <!-- Image preview: square -->
+                <!-- Image preview or placeholder -->
                 <div class="w-full mt-4 aspect-square rounded-xl bg-gray-100 dark:bg-neutral-800 flex items-center justify-center relative overflow-hidden">
+                    <!-- If a preview exists, show image -->
                     <template x-if="preview">
                         <img :src="preview" alt="Preview" class="absolute inset-0 w-full h-full object-cover rounded-xl" />
                     </template>
 
+                    <!-- If no preview, show placeholder -->
                     <template x-if="!preview">
                         <div class="flex flex-col items-center justify-center text-gray-400 dark:text-neutral-500">
                             <flux:icon name="image" class="w-14 h-14 mb-2" />
@@ -77,9 +68,11 @@
                 </div>
             </div>
 
-            <!-- Right: Form fields -->
+            <!-- Right side: Form fields -->
             <div class="w-3/5 space-y-5">
-                <flux:heading size="lg">Edit Advisory</flux:heading>
+                <flux:heading size="lg">
+                    Create New Advisory
+                </flux:heading>
 
                 <flux:field>
                     <flux:label badge="Required">Headline</flux:label>
@@ -115,44 +108,27 @@
                 </flux:field>
 
                 <div class="flex justify-end pt-2">
-                    <flux:button type="submit" variant="primary">Save Changes</flux:button>
+                    <flux:button
+                        type="button"
+                        id="create-button"
+                        variant="primary">
+                        Create Advisory
+                    </flux:button>
                 </div>
             </div>
         </form>
     </flux:modal>
 
-
     <script>
-        // Updated event listener for table rows
-        document.querySelectorAll('tr.flux-btn-info').forEach(row => {
-            row.addEventListener('click', function() {
-                const advisoryId = this.getAttribute('data-id');
-                const headline = this.getAttribute('data-headline');
-                const description = this.getAttribute('data-description');
-                const content = this.getAttribute('data-content');
-                const attachmentUrl = this.getAttribute('data-attachment');
+        // Handling form submission and disabling the button
+        document.getElementById('create-button').addEventListener('click', function() {
+            const createBtn = this;
+            const form = document.getElementById('create-form');
 
-                // Get the closest Alpine component
-                const alpineComponent = this.closest('[x-data]');
-                const alpineData = Alpine.$data(alpineComponent);
+            createBtn.disabled = true;
+            createBtn.innerText = 'Creating...';
 
-                // Update form action
-                const form = document.getElementById('edit-advisory-form');
-                const baseAction = form.getAttribute('data-base-action');
-                form.action = baseAction.replace(':advisory_id', advisoryId);
-
-                // Set form values
-                form.querySelector('input[name="advisory_id"]').value = advisoryId;
-                form.querySelector('input[name="headline"]').value = headline;
-                form.querySelector('textarea[name="description"]').value = description;
-                form.querySelector('textarea[name="content"]').value = content;
-
-                // Set image preview
-                alpineData.setExistingPreview(attachmentUrl);
-
-                // Show the modal
-                $flux.modal('advisory-show-modal').show();
-            });
+            form.submit();
         });
     </script>
 </div>

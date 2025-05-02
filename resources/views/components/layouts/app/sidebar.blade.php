@@ -86,7 +86,7 @@
                 @endcan
                 @can('can view advisories')
                 <a
-                    href="{{ route('advisories') }}"
+                    href="{{ route('advisories.index') }}"
                     class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
                     :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
                     <flux:icon name="megaphone" class="w-6 h-6 text-white" />
@@ -204,4 +204,3 @@
 </body>
 
 </html>
-<script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js" defer></script>

@@ -1,66 +1,160 @@
 <x-layouts.app>
-    <div class="h-full w-full px-4 py-6">
+    <div class="h-full w-full px-4 py-6" x-data="{
+        activeAdvisory: null,
+        showModal: false,
+        moreAdvisories: {{ Js::from($moreAdvisories) }},
+        maxVisible: 3,
+        showAll: false,
+        scrollToBottom() {
+            this.$nextTick(() => {
+                this.$refs.advisoryList.scrollTo({
+                    top: this.$refs.advisoryList.scrollHeight,
+                    behavior: 'smooth'
+                });
+            });
+        }
+    }">
         <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
 
-            <!-- Left Card: Latest Advisory (larger) -->
-            <div class="col-span-1 md:col-span-3 bg-white rounded-2xl shadow p-6 flex flex-col">
-                <span class="text-sm font-medium text-[#1443e0]">Latest Advisory</span>
+            <!-- Left Card: Latest Advisory - Now with compact layout -->
+            <div class="col-span-1 md:col-span-3 bg-white rounded-2xl shadow p-6 flex flex-col justify-between"> <!-- Added justify-between -->
+                <div> <!-- Content wrapper -->
+                    <span class="text-sm font-medium text-[#1443e0]">Latest Advisory</span>
 
-                <!-- Image Placeholder -->
-                <div class="mt-4 bg-gray-100 w-full h-48 flex items-center justify-center text-gray-400">
-                    Image Placeholder
+                    <!-- Image with constrained height -->
+                    <div class="mt-3 bg-gray-100 w-full h-80 flex items-center justify-center rounded-lg overflow-hidden">
+                        @if ($latestAdvisory?->attachment)
+                            <img src="{{ asset('storage/' . $latestAdvisory->attachment) }}" 
+                                class="h-full w-full object-cover" 
+                                alt="{{ $latestAdvisory->headline }}">
+                        @else
+                            <div class="text-gray-400 p-4">No Image Available</div>
+                        @endif
+                    </div>
+
+                    <!-- Headline -->
+                    <h3 class="text-xl font-bold mt-3 text-[#1443e0]">
+                        {{ $latestAdvisory?->headline ?? 'No advisory available' }}
+                    </h3>
+
+                    <!-- Description -->
+                    <p class="text-sm text-[#1443e0] mt-1 line-clamp-3">
+                        {{ $latestAdvisory?->description }}
+                    </p>
                 </div>
 
-                <!-- Headline -->
-                <h3 class="text-xl font-bold mt-4 text-[#1443e0]">Headline</h3>
-
-                <!-- Description -->
-                <p class="text-sm text-[#1443e0] mt-2">
-                    is the placeholder for descriptions smaller text,
-                </p>
-
-   <!-- Read More Button (aligned right) -->
-<div class="mt-6 flex justify-end">
-    <flux:button class=" bg-[#1443e0] text-white rounded-lg text-sm font-medium">
-        <span class="mr-2">Read More</span>
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        </svg>
-    </flux:button>
-</div>
+                <!-- Read More button stays at bottom -->
+                <div class="mt-4 flex justify-end">
+                    <button @click="activeAdvisory = {{ Js::from($latestAdvisory) }}; showModal = true"
+                            class="bg-[#1443e0] text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-[#0d3ab9] transition flex items-center">
+                        <span>Read More</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
             </div>
 
-            <!-- Right Card: More Advisories (slightly wider) -->
+            <!-- Right Card: Recent Advisories with scroll chevron -->
             <div class="col-span-1 md:col-span-2 bg-white rounded-2xl shadow p-6 flex flex-col">
-                <!-- Header -->
-                <h2 class="text-lg font-bold text-[#1443e0]">More Advisories</h2>
+                <h2 class="text-lg font-bold text-[#1443e0]">Recent Advisories</h2>
 
-                <!-- List of Smaller Advisories -->
-                <div class="mt-4 space-y-4 flex-grow">
-                    <div>
-                        <h4 class="text-md font-semibold text-[#1443e0]">Headline One</h4>
-                        <p class="text-sm text-[#1443e0] mt-1">Brief description for advisory one.</p>
-                        <hr class="border-t border-gray-200 my-2">
-                    </div>
+                <!-- Scrollable container with fixed height -->
+                <div class="mt-3 space-y-3 flex-grow overflow-y-auto max-h-[400px] pr-2" 
+                     id="advisories-list"
+                     x-ref="advisoryList">
+                    <template x-for="(advisory, index) in showAll ? moreAdvisories : moreAdvisories.slice(0, maxVisible)" 
+                              :key="advisory.id">
+                        <div @click="activeAdvisory = advisory; showModal = true" 
+                             class="cursor-pointer group hover:bg-blue-50 p-3 rounded-lg transition border border-gray-100 hover:border-blue-100">
+                            <h4 class="text-md font-semibold text-[#1443e0] group-hover:text-[#0d3ab9]" 
+                                x-text="advisory.headline"></h4>
+                            <p class="text-sm text-[#1443e0] mt-1 line-clamp-2" 
+                               x-text="advisory.description"></p>
+                            <div class="text-xs text-gray-500 mt-1" 
+                                 x-text="new Date(advisory.created_at).toLocaleDateString()"></div>
+                        </div>
+                    </template>
 
-                    <div>
-                        <h4 class="text-md font-semibold text-[#1443e0]">Headline Two</h4>
-                        <p class="text-sm text-[#1443e0] mt-1">Brief description for advisory two.</p>
-                        <hr class="border-t border-gray-200 my-2">
-                    </div>
-
-                    <div>
-                        <h4 class="text-md font-semibold text-[#1443e0]">Headline Three</h4>
-                        <p class="text-sm text-[#1443e0] mt-1">Brief description for advisory three.</p>
-                    </div>
+                    <template x-if="moreAdvisories.length === 0">
+                        <p class="text-sm text-gray-500 p-3">No recent advisories available.</p>
+                    </template>
                 </div>
 
-                <!-- Pagination Button -->
-                <button class="mt-6 flex items-center justify-center w-full py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700">
-                    <span class="mr-2 text-[#1443e0]">Load More</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </button>
+                <!-- Scroll Down/View All Button -->
+                <div class="mt-3 pt-2 border-t border-gray-100 text-center">
+                    <template x-if="!showAll && moreAdvisories.length > maxVisible">
+                        <button @click="showAll = true; scrollToBottom()" 
+                                class="text-[#1443e0] hover:text-[#0d3ab9] text-sm font-medium flex items-center justify-center w-full py-1">
+                            <span>View All</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                    </template>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shared Modal Component -->
+        <div x-show="showModal" 
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 z-50 overflow-y-auto">
+            <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <!-- Background overlay -->
+                <div class="fixed inset-0 transition-opacity" @click="showModal = false">
+                    <div class="absolute inset-0 bg-black opacity-50"></div>
+                </div>
+
+                <!-- Modal content -->
+                <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full"
+                     x-show="showModal"
+                     @click.away="showModal = false">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start">
+                            <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
+                                <div class="flex justify-between items-center">
+                                    <h3 class="text-xl font-bold text-[#1443e0]" x-text="activeAdvisory?.headline"></h3>
+                                    <button @click="showModal = false" class="text-gray-500 hover:text-gray-700">
+                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <!-- Improved Image Container -->
+                                    <div x-show="activeAdvisory?.attachment" class="mb-4 bg-gray-100 rounded-lg overflow-hidden flex justify-center">
+                                        <img :src="`/storage/${activeAdvisory.attachment}`" 
+                                             class="max-h-[300px] w-auto object-contain"
+                                             :alt="activeAdvisory.headline"
+                                             style="max-width: 100%; height: auto;">
+                                    </div>
+                                    
+                                    <div class="prose max-w-none" x-html="activeAdvisory?.description || activeAdvisory?.description"></div>
+                                    <br>
+                                    <div class="prose max-w-none" x-html="activeAdvisory?.content || activeAdvisory?.content"></div>
+
+                                    <div class="mt-4 text-sm text-gray-500">
+                                        Published on <span x-text="new Date(activeAdvisory?.created_at).toLocaleString('en-US', {month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'})"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                        <button type="button" 
+                                @click="showModal = false"
+                                class="w-full sm:w-auto inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#1443e0] text-base font-medium text-white hover:bg-[#0d3ab9] sm:ml-3 sm:text-sm">
+                            Close
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

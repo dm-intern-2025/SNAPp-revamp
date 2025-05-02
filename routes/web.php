@@ -22,9 +22,9 @@ Route::get('/', function () {
 Route::get('/dashboard', [DashboardController::class, 'showDashboardFields'])
     ->name('dashboard');
 
-Route::view('advisories', 'advisories')
-    ->middleware(['auth', 'verified'])
-    ->name('advisories');
+// Route::view('advisories', 'advisories')
+//     ->middleware(['auth', 'verified'])
+//     ->name('advisories');
 
 Route::view('my-contracts', 'my-contracts')
     ->middleware(['auth', 'verified'])
@@ -41,7 +41,7 @@ Route::get('/payment-history', [BillController::class, 'showPaymentHistory'])
 
 Route::middleware(['auth'])->group(function () {
 
-    
+    Route::get('/dashboard/load-more', [DashboardController::class, 'loadMore'])->name('dashboard.load-more');
 
     Route::resource('profiles', ProfileController::class);
 
@@ -79,9 +79,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Route::resource('account-executives', AccountExecutiveController::class);
 
-    Route::resource('advisories-management', AdvisoryController::class);
+    Route::resource('advisories', AdvisoryController::class);
     Route::get('/admin/advisories', [AdvisoryController::class, 'adminList'])->name('advisories.list');
-
+    Route::get('/advisories/load-more', [AdvisoryController::class, 'loadMore'])->name('advisories.load-more');
     Route::redirect('settings', 'settings/profile');
 
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');

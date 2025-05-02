@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreAdvisoryRequest;
+use App\Http\Requests\UpdateAdvisoryRequest;
 use App\Models\Advisory;
 use Illuminate\Http\Request;
 
@@ -13,7 +14,25 @@ class AdvisoryController extends Controller
      */
     public function index()
     {
-        return view('admin.advisory-management.advisory-list');
+        $latestAdvisory = Advisory::select('id', 'headline', 'description', 'content', 'attachment', 'created_at')
+        ->orderBy('created_at', 'desc')
+        ->first();
+    
+    $moreAdvisories = Advisory::select('id', 'headline', 'description', 'content', 'attachment', 'created_at')
+        ->orderBy('created_at', 'desc')
+        ->skip(1)
+        ->take(3)
+        ->get();
+
+        return view('advisories', compact('latestAdvisory', 'moreAdvisories'));
+    }
+    public function loadMore(Request $request)
+    {
+        return Advisory::latest()
+            ->where('id', '!=', Advisory::latest()->value('id'))
+            ->skip($request->skip ?? 0)
+            ->take(5)
+            ->get();
     }
 
     public function adminList()
@@ -36,11 +55,18 @@ class AdvisoryController extends Controller
     public function store(StoreAdvisoryRequest $request)
     {
         $validatedRequest = $request->validated();
+
+        // Handle file upload if it exists
+        if ($request->hasFile('attachment')) {
+            $filePath = $request->file('attachment')->store('advisory_attachments', 'public');
+            $validatedRequest['attachment'] = $filePath;
+        }
+
+        $validatedRequest['created_by'] = auth()->id();
+
         Advisory::create($validatedRequest);
 
-
-        return redirect()->back()->with('success', 'Customer account created successfully.');
-
+        return redirect()->back()->with('success', 'Advisory created successfully.');
     }
 
     /**
@@ -62,7 +88,7 @@ class AdvisoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Advisory $advisory)
+    public function update(UpdateAdvisoryRequest $request, Advisory $advisory)
     {
         //
     }

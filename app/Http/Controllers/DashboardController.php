@@ -6,12 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Services\OracleInvoiceService;
 use Illuminate\Support\Carbon;
+use App\Models\Advisory;
 
 class DashboardController extends Controller
 {
     protected $oracleInvoiceService;
 
-    // Inject the service into the controller
     public function __construct(OracleInvoiceService $oracleInvoiceService)
     {
         $this->oracleInvoiceService = $oracleInvoiceService;
@@ -22,7 +22,7 @@ class DashboardController extends Controller
         $user = Auth::user();
         $customerId = $user->customer_id;
 
-        // Fetch invoice data from the service
+        // Fetch invoice data
         $items = $this->oracleInvoiceService->fetchInvoiceData($customerId);
         $latestInvoice = collect($items)->first();
 
@@ -39,10 +39,15 @@ class DashboardController extends Controller
 
         $transactionId = $latestInvoice['CustomerTransactionId'] ?? null;
         $consumption = 0;
-    
+
         if ($transactionId) {
-            $consumption = $this->oracleInvoiceService->fetchConsumption($transactionId); // No loop, just get the total
+            $consumption = $this->oracleInvoiceService->fetchConsumption($transactionId);
         }
+
+        // Fetch advisories
+        $moreAdvisories = Advisory::latest()
+        ->take(3)
+        ->get();
 
         return view('dashboard', [
             'customerName'    => $user->name ?? 'Customer',
@@ -51,7 +56,15 @@ class DashboardController extends Controller
             'consumption'     => $consumption,
             'previousBalance' => number_format($previousBalance, 2),
             'currentAmount'   => number_format($currentAmount, 2),
-            'dueDate'         => $dueDate
+            'dueDate'         => $dueDate,
+            'moreAdvisories' => $moreAdvisories,
         ]);
     }
+    public function loadMore(Request $request)
+{
+    return Advisory::latest()
+        ->skip($request->skip ?? 0)
+        ->take(3)
+        ->get();
+}
 }
