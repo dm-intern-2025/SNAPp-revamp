@@ -21,3 +21,10 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+# Laravel Telescope - ignore all published/config/resources
+config/telescope.php
+public/vendor/telescope/
+resources/views/vendor/telescope/
+routes/telescope.php
+storage/telescope/
+database/migrations/*_create_telescope_entries_table.php

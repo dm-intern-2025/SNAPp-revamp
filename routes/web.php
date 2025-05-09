@@ -13,34 +13,37 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
+Route::get('account/deactivated', function () {
+    return view('auth.deactivated');
+})->name('account.deactivated');
+
+Route::redirect('/', '/login');
 
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
 
-Route::get('/dashboard', [DashboardController::class, 'showDashboardFields'])
-    ->name('dashboard');
-
-// Route::view('advisories', 'advisories')
-//     ->middleware(['auth', 'verified'])
-//     ->name('advisories');
 
 Route::view('my-contracts', 'my-contracts')
     ->middleware(['auth', 'verified'])
     ->name('my-contracts');
 
-Route::get('/my-bills', [BillController::class, 'showBillsPage'])
-    ->middleware(['auth', 'verified'])
-    ->name('bills.show');
-
-Route::get('/payment-history', [BillController::class, 'showPaymentHistory'])
-    ->middleware(['auth', 'verified'])
-    ->name('payments.history');
-
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'showDashboardFields'])
+    ->name('dashboard');
 
+    Route::get('/my-bills', [BillController::class, 
+    'showBillsPage'])
+    ->name('bills.show');
+
+Route::get('/payment-history', [BillController::class, 
+    'showPaymentHistory'])
+    ->name('payments.history');
+
+    Route::get('/bills/export', [BillController::class, 
+    'exportBills'])->name('bills.export');
+    Route::get('/payments/export', [BillController::class, 
+    'exportPayments'])->name('payments.export');
+    
     Route::get('/dashboard/load-more', [DashboardController::class, 'loadMore'])->name('dashboard.load-more');
 
     Route::resource('profiles', ProfileController::class);
@@ -54,10 +57,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin-list', [UserController::class, 'showAdmins'])
         ->name('admin-list');
 
-        Route::post('/admin/users/store-admin', [UserController::class, 'storeAdmins'])
+    Route::post('/admin/users/store-admin', [UserController::class, 'storeAdmins'])
         ->name('admin.users.store-admin');
 
-        Route::post('/admin/users/store-account-executive', [UserController::class, 'storeAE'])
+    Route::put('/admin/users/{user}/update-admin', [UserController::class, 'updateAdmins'])
+        ->name('admin.users.update-admin');
+
+
+    Route::post('/admin/users/store-account-executive', [UserController::class, 'storeAE'])
         ->name('admin.users.store-account-executive');
 
     Route::get('/account-executive-list', [UserController::class, 'showAE'])

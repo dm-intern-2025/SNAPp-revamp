@@ -5,7 +5,9 @@ namespace App\Http\Requests;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\ValidationException;
 class StoreAdminRequest extends FormRequest
 {
     /**
@@ -41,4 +43,17 @@ class StoreAdminRequest extends FormRequest
             ],
         ];
     }
+
+    protected function failedValidation(Validator $validator)
+    {
+        session()->flash('show_modal', 'create-admin'); // 👈 Add this
+    
+        throw new HttpResponseException(
+            redirect()
+                ->back()
+                ->withErrors($validator)
+                ->withInput()
+        );
+    }
+
 }

@@ -46,6 +46,10 @@ class EditUserRequest extends FormRequest
                 'string',
                 Rule::exists('roles', 'name') // Validates role exists in roles table
             ],
+            'active' => [
+                'sometimes',
+                'boolean' // Accepts true/false, 1/0
+            ] 
         ];
     }
 }

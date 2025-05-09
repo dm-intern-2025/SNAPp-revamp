@@ -36,6 +36,19 @@ new #[Layout('components.layouts.auth')] class extends Component {
                 'email' => __('auth.failed'),
             ]);
         }
+        
+        $user = auth()->user();
+
+        if (! $user->active) {
+            Auth::logout();
+            Session::invalidate();
+            Session::regenerateToken();
+    
+            throw ValidationException::withMessages([
+                'email' => __('Your account is deactivated. Please contact support.'),
+            ]);
+        }
+
 
         RateLimiter::clear($this->throttleKey());
         Session::regenerate();

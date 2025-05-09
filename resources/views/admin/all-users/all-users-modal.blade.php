@@ -1,9 +1,11 @@
-<flux:modal name="edit-customer-modal" class="md:w-96">
+<flux:modal name="all-users-modal" class="md:w-96">
     <form
-        action="{{ route('all-user-list.update', ['user' => ':user_id']) }}"
-        data-base-action="{{ route('all-user-list.update', ['user' => ':user_id']) }}"
+        action="{{ route('all-user-list.update', 
+        ['user' => ':user_id']) }}"
+        data-base-action="{{ route('all-user-list.update', 
+        ['user' => ':user_id']) }}"
         method="POST"
-        id="edit-customer-form"
+        id="edit-user-form"
         class="space-y-6">
         @csrf
         @method('PUT')
@@ -55,6 +57,22 @@
             </flux:select>
         </flux:field>
 
+        <flux:field>
+    <flux:label>Account Status</flux:label>
+
+    <div class="flex items-center gap-3 mt-1">
+        <flux:switch id="account-status-switch" />
+        <span id="account-status-label" class="text-sm font-medium text-gray-700">Loading...</span>
+    </div>
+
+    <input type="hidden" name="active" id="active-value" value="">
+
+    <flux:error name="active" />
+</flux:field>
+
+
+
+
 
         <div class="flex justify-end">
             <flux:button type="submit" variant="primary">Save Changes</flux:button>
@@ -63,7 +81,6 @@
 </flux:modal>
 
 <script>
-    // Populate the edit modal with the clicked user's data
     document.querySelectorAll('.flux-btn-info').forEach(button => {
         button.addEventListener('click', function() {
             const userId = this.getAttribute('data-id');
@@ -71,18 +88,24 @@
             const userEmail = this.getAttribute('data-email');
             const customerId = this.getAttribute('data-customer-id');
             const userRole = this.getAttribute('data-role');
+            const active = this.getAttribute('data-active'); // "1" or "0"
 
-            // Update form action using base-action to avoid double replacements
-            const form = document.getElementById('edit-customer-form');
+            const form = document.getElementById('edit-user-form');
             const baseAction = form.getAttribute('data-base-action');
             form.action = baseAction.replace(':user_id', userId);
 
-            // Set hidden and input field values
             form.querySelector('input[name="user_id"]').value = userId;
             form.querySelector('input[name="name"]').value = userName;
             form.querySelector('input[name="email"]').value = userEmail;
             form.querySelector('input[name="customer_id"]').value = customerId;
             form.querySelector('select[name="role"]').value = userRole;
+            // Determine what value to submit (toggle logic)
+            const newValue = active === '1' ? '0' : '1';
+            const labelText = active === '1' ? 'Deactivate' : 'Activate';
+
+            document.getElementById('account-status-label').textContent = labelText;
+            document.getElementById('active-value').value = newValue;
+
         });
     });
 </script>

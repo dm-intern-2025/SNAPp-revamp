@@ -21,65 +21,25 @@
             <table>
                 <thead>
                     <tr>
-                        <th>
-                            ID
-                        </th>
-                        <th>
-                            Full Name
-                        </th>
-                        <th>
-                            Email Address
-                        </th>
-                        <th>
-                            Actions
-                        </th>
+                        <th>ID</th>
+                        <th>Full Name</th>
+                        <th>Email Address</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($admins as $admin)
-                    <tr>
-                        <td>
-                            {{ $admin->id }}
-                        </td>
-                        <td>
+                    <tr
+                        class="cursor-pointer hover:bg-gray-100 dark:hover:bg-neutral-800 transition flux-btn-info"
+                        data-id="{{ $admin->id }}"
+                        data-name="{{ $admin->name }}"
+                        data-email="{{ $admin->email }}"
+                        data-customer-id="{{ $admin->customer_id }}"
+                        onclick="document.getElementById('open-edit-modal').click()"
+                    >
 
-                            {{ $admin->name }}
-
-                        </td>
-                        <td>
-                            {{ $admin->email }}
-
-                        </td>
-                        <td>
-
-                            <div class="flex items-center gap-2">
-                                <!-- Edit Button with Modal Trigger -->
-
-                                <flux:modal.trigger name="edit-customer-modal">
-                                    <flux:button
-                                        icon="edit"
-                                        variant="primary"
-                                        class="flux-btn flux-btn-xs flux-btn-info"
-                                        data-id=""
-                                        data-name=""
-                                        data-email=""
-                                        data-customer-id="">
-                                    </flux:button>
-                                </flux:modal.trigger>
-
-
-                                <!-- Delete Button -->
-                                <flux:modal.trigger name="confirm-delete">
-                                    <flux:button
-                                        icon="trash-2"
-                                        variant="danger"
-                                        class="flux-btn flux-btn-xs flux-btn-danger">
-                                    </flux:button>
-                                </flux:modal.trigger>
-
-
-                            </div>
-                        </td>
+                        <td>{{ $admin->id }}</td>
+                        <td>{{ $admin->name }}</td>
+                        <td>{{ $admin->email }}</td>
                     </tr>
 
                     @endforeach
@@ -87,8 +47,15 @@
                 </tbody>
             </table>
         </div>
-    </div>
+        
+        <!-- Hidden Modal Trigger for Edit -->
+        <flux:modal.trigger name="edit-admin-modal">
+            <button id="open-edit-modal" class="hidden"></button>
+        </flux:modal.trigger>
 
+    </div>
+    @include('admin.admin-account.form-edit-admin')
     @include('admin.admin-account.form-create-admin')
+
 
 </x-layouts.app>

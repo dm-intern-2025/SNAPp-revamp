@@ -1,5 +1,7 @@
 <x-layouts.app>
-    <div class="w-full px-4 py-6 space-y-6" x-data="{
+    <div class="min-h-screen w-full px-4 py-6 space-y-6 overflow-x-hidden" 
+    
+            x-data="{
         activeAdvisory: null,
         showModal: false,
         moreAdvisories: {{ Js::from($moreAdvisories) }},

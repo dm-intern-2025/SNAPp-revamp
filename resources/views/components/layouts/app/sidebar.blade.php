@@ -170,7 +170,8 @@
                 <flux:profile
                     :name="auth()->user()->name"
                     :initials="auth()->user()->initials()"
-                    class="text-white" />
+                    class="!text-white" />
+
                 <flux:menu class="w-[220px]">
                     <flux:menu.radio.group>
                         <!-- profile info -->
@@ -193,10 +194,44 @@
         </div>
     </aside>
 
+    <!-- Global Manual Loader Overlay -->
+    <div
+        id="global-loader"
+        class="hidden fixed inset-0 bg-white/75 z-[9999] flex items-center justify-center">
+        <button type="button" class="bg-indigo-600 text-white px-4 py-2 rounded inline-flex items-center" disabled>
+            <svg class="animate-spin h-5 w-5 mr-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            </svg>
+            Loading Customer Data…
+        </button>
+    </div>
+
     <!-- Main content -->
     <div class="flex-1 overflow-auto ml-20" :class="collapsed ? 'ml-20' : 'ml-64'">
         {{ $slot }}
     </div>
+
+    <!-- Manual loader JS -->
+    <script>
+        const loader = document.getElementById('global-loader');
+
+        document.addEventListener('click', e => {
+            const a = e.target.closest('a');
+            if (a && a.href && !a.href.startsWith('#') && !a.target) {
+                loader.classList.remove('hidden');
+            }
+        });
+
+        document.addEventListener('submit', () => {
+            loader.classList.remove('hidden');
+        });
+
+        window.addEventListener('pageshow', () => {
+            loader.classList.add('hidden');
+        });
+    </script>
+
 
     @livewireScripts
     @stack('scripts')

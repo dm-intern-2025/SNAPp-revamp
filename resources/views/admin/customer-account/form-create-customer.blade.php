@@ -1,4 +1,11 @@
-<div x-data>
+<div 
+  x-data 
+  x-init="
+    @if ($errors->hasAny(['name','email','customer_id']))
+      $dispatch('open-modal', { name: 'customer-modal' })
+    @endif
+  "
+>
     <flux:modal 
         name="customer-modal" 
         class="md:w-96"
@@ -69,6 +76,7 @@
                 </flux:button>
             </div>
         </form>
+        
     </flux:modal>
 
     <script>
@@ -83,4 +91,5 @@
             form.submit();
         });
     </script>
+    
 </div>

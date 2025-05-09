@@ -1,16 +1,11 @@
-<flux:modal name="edit-customer-modal"
-    class="md:w-96"
-    :dismissible="false"
-    x-data
-    x-on:close="$el.querySelector('form').reset()">
-
-    
+<flux:modal name="edit-admin-modal"
+    class="md:w-96">
     <form
-        data-base-action="{{ route('users.update', 
+        data-base-action="{{ route('admin.users.update-admin', 
                         ['user' => ':user_id']) }}"
 
         method="POST"
-        id="edit-customer-form"
+        id="edit-admin-form"
         class="space-y-6">
         @csrf
         @method('PUT')
@@ -19,11 +14,11 @@
 
         <div>
             <flux:heading size="lg">
-                Edit Customer Account
+                Edit admin Account
             </flux:heading>
 
             <flux:text class="mt-2">
-                Update the customer details below.
+                Update the admin details below.
             </flux:text>
         </div>
 
@@ -32,7 +27,7 @@
             <flux:input
                 name="name"
                 value="{{ old('name', '') }}"
-                placeholder="Enter customer name" />
+                placeholder="Enter admin name" />
                 @error('name')
                     <p class="mt-2 text-red-500 dark:text-red-400 text-xs">{{ $message }}</p>
                 @enderror
@@ -43,7 +38,7 @@
             <flux:input
                 name="email"
                 value="{{ old('email', '') }}"
-                placeholder="Enter customer email" />
+                placeholder="Enter admin email" />
                 @error('email')
                     <p class="mt-2 text-red-500 dark:text-red-400 text-xs">{{ $message }}</p>
                 @enderror
@@ -54,7 +49,7 @@
             <flux:input
                 name="customer_id"
                 value="{{ old('customer_id', '') }}"
-                placeholder="Enter customer ID" />
+                placeholder="Enter admin ID" />
                 @error('customer_id')
                     <p class="mt-2 text-red-500 dark:text-red-400 text-xs">{{ $message }}</p>
                 @enderror
@@ -76,7 +71,7 @@
             const customerId = this.getAttribute('data-customer-id');
 
             // Dynamically update the form action URL with the correct user ID
-            const form = document.getElementById('edit-customer-form');
+            const form = document.getElementById('edit-admin-form');
             const baseAction = form.getAttribute('data-base-action');
             form.action = baseAction.replace(':user_id', userId);
 

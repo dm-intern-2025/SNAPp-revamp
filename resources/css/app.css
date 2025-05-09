@@ -48,7 +48,9 @@
 
 /* FOR TABLE FORMATTING UNIFORMITY */
 @layer components {
-    
+    [data-flux-profile] span.truncate {
+        color: white !important;
+      }
     table {
         @apply min-w-full divide-y divide-gray-200 dark:divide-neutral-700;
     }

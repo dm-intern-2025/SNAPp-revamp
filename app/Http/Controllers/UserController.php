@@ -8,7 +8,9 @@ use App\Http\Requests\StoreAccountExecutive;
 use App\Http\Requests\StoreAdminRequest;
 use Illuminate\Support\Str;
 use App\Http\Requests\StoreCustomerRequest;
+use App\Http\Requests\UpdateAdminRequest;
 use App\Mail\CustomerPasswordMail;
+use App\Models\Scopes\HasActiveScope;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -99,6 +101,15 @@ class UserController extends Controller
         return redirect()->back()->with('success', 'Customer account created successfully.');
     }
 
+    public function updateAdmins(UpdateAdminRequest $request, User $user)
+    {
+        $user->update($request->validated());
+        return redirect()
+        ->route('admin-list')
+        ->with('success', 'Admin updated.');
+
+    }
+
     /** AE ACCCOUNTS  */
 
     public function showAE()
@@ -124,19 +135,85 @@ class UserController extends Controller
     }
 
 
-    /** ALL USERS  */
-    public function showAllUsers()
-    {
-        $allUsers = User::paginate(10);
-        $roles = Role::all(); // available roles
-        return view('admin.all-users.all-users-list', compact('allUsers', 'roles'));
+   
+/** ALL USERS */
+public function showAllUsers(Request $request)
+{
+    $query = User::query()
+                 ->withoutGlobalScope(HasActiveScope::class);
+
+    // 1. Role filter (only if non‑empty)
+    if ($request->filled('role')) {
+        $query->whereHas('roles', function ($q) use ($request) {
+            $q->where('name', $request->role);
+        });
     }
 
-    public function editAllUsers(EditUserRequest $request, User $user)
-    {
-        $user->update($request->validated());
+    // 2. Active/inactive filter (only if non‑empty)
+    if ($request->filled('active')) {
+        $query->where('active', $request->active);
+    }
+
+    // 3. Search by name/email
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where(function ($q) use ($search) {
+            $q->where('name',  'like', "%{$search}%")
+              ->orWhere('email', 'like', "%{$search}%");
+        });
+    }
+
+    // 4. Sorting: support name A–Z, name Z–A, newest, oldest
+    $sort = $request->input('sort', 'created_at_desc');
+    switch ($sort) {
+        case 'name_asc':
+            $query->orderBy('name', 'asc');
+            break;
+        case 'name_desc':
+            $query->orderBy('name', 'desc');
+            break;
+        case 'created_at_asc':
+            $query->orderBy('created_at', 'asc');
+            break;
+        case 'created_at_desc':
+        default:
+            $query->orderBy('created_at', 'desc');
+            break;
+    }
+
+    // Paginate & preserve query string
+    $allUsers = $query
+        ->paginate(10)
+        ->appends($request->only(['role','active','search','sort']));
+
+    $roles = Role::all();
+
+    return view('admin.all-users.all-users-list', compact('allUsers', 'roles'));
+}
+
+
+
+
+public function editAllUsers(EditUserRequest $request, $id)
+{
+    // dd($request->all());
+    // Bypass global scope so even inactive users can be updated
+    $user = User::withoutGlobalScope(HasActiveScope::class)->findOrFail($id);
+
+    // Update only active status
+    $user->active = (int) $request->input('active', 0);
+
+    // Optionally update other validated fields (like name/email)
+    $validated = $request->validated();
+    $user->fill($validated)->save();
+
+    // Update role if provided
+    if ($request->filled('role')) {
         $user->syncRoles([$request->role]);
-
-        return redirect()->route('all-user-list');
     }
+
+    return redirect()->route('all-user-list')->with('success', 'User status updated.');
+}
+
+    
 }

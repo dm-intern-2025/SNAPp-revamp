@@ -1,4 +1,12 @@
-<div x-data>
+<div
+    x-data="{}"
+    x-init="
+    @if (session('show_modal') === 'create-admin')
+        $nextTick(() => $flux.modal('create-admin').show())
+    @endif
+"
+
+>
     <flux:modal 
         name="create-admin" 
         class="md:w-96"
@@ -6,7 +14,6 @@
         x-data
         x-on:close="$el.querySelector('form').reset()"
     >
-        
         <form 
             action="{{ route('admin.users.store-admin') }}" 
             method="POST" 
@@ -72,14 +79,13 @@
     </flux:modal>
 
     <script>
-        document.getElementById('create-button').addEventListener('click', function() {
+        document.getElementById('create-button').addEventListener('click', function () {
             const createBtn = this;
             const form = document.getElementById('create-form');
 
             createBtn.disabled = true;
             createBtn.innerText = 'Creating Account...';
 
-            // Submit the form
             form.submit();
         });
     </script>

@@ -99,6 +99,6 @@ function generateSignedURL(contractName) {
         }
     });
 }
-</script>
 
+</script>
 </x-layouts.app>
