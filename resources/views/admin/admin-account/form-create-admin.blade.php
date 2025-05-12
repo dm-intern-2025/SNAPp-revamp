@@ -5,14 +5,10 @@
         $nextTick(() => $flux.modal('create-admin').show())
     @endif
 "
-
 >
     <flux:modal 
         name="create-admin" 
         class="md:w-96"
-        :dismissible="false"
-        x-data
-        x-on:close="$el.querySelector('form').reset()"
     >
         <form 
             action="{{ route('admin.users.store-admin') }}" 

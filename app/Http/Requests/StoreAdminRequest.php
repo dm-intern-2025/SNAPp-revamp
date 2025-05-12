@@ -46,8 +46,7 @@ class StoreAdminRequest extends FormRequest
 
     protected function failedValidation(Validator $validator)
     {
-        session()->flash('show_modal', 'create-admin'); // 👈 Add this
-    
+        session()->flash('show_modal', 'create-admin'); 
         throw new HttpResponseException(
             redirect()
                 ->back()

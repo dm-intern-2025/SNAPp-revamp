@@ -1,16 +1,14 @@
 <?php
 
 namespace App\Http\Requests;
-
-use App\Models\User;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateAdminRequest extends FormRequest
-{
 
+class UpdateAERequest extends FormRequest
+{
     /**
      * Determine if the user is authorized to make this request.
      */

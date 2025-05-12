@@ -5,7 +5,7 @@
 
             <!-- Button aligned right -->
             <flux:modal.trigger name="create-advisory">
-                <flux:button class="flux-btn flux-btn-primary flux-btn-sm ml-auto">
+                <flux:button variant="primary">
                     Create Advisory
                 </flux:button>
             </flux:modal.trigger>

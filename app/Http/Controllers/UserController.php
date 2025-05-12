@@ -9,6 +9,7 @@ use App\Http\Requests\StoreAdminRequest;
 use Illuminate\Support\Str;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateAdminRequest;
+use App\Http\Requests\UpdateAERequest;
 use App\Mail\CustomerPasswordMail;
 use App\Models\Scopes\HasActiveScope;
 use App\Models\User;
@@ -63,8 +64,17 @@ class UserController extends Controller
      */
     public function update(EditCustomerRequest $request, User $user)
     {
-        $user->update($request->validated());
-        return redirect()->route('users.index')->with('success', 'Customer updated.');
+        $validated = $request->validated();
+        
+        $user->update([
+            'name' => $validated['edit_name'],
+            'email' => $validated['edit_email'],
+            'customer_id' => $validated['edit_customer_id']
+        ]);
+    
+        return redirect()->
+        route('users.index')->
+        with('success', 'Customer updated.');
     }
 
 
@@ -103,12 +113,19 @@ class UserController extends Controller
 
     public function updateAdmins(UpdateAdminRequest $request, User $user)
     {
-        $user->update($request->validated());
+        $validated = $request->validated();
+        
+        $user->update([
+            'name' => $validated['edit_name'],
+            'email' => $validated['edit_email'],
+            'customer_id' => $validated['edit_customer_id']
+        ]);        
         return redirect()
         ->route('admin-list')
         ->with('success', 'Admin updated.');
 
     }
+
 
     /** AE ACCCOUNTS  */
 
@@ -134,7 +151,20 @@ class UserController extends Controller
         return redirect()->back()->with('success', 'Customer account created successfully.');
     }
 
+    public function updateAE(UpdateAERequest $request, User $user)
+    {
+        $validated = $request->validated();
+        
+        $user->update([
+            'name' => $validated['edit_name'],
+            'email' => $validated['edit_email'],
+            'customer_id' => $validated['edit_customer_id']
+        ]);        
+        return redirect()
+        ->route('admin-list')
+        ->with('success', 'Admin updated.');
 
+    }
    
 /** ALL USERS */
 public function showAllUsers(Request $request)

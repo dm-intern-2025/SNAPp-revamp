@@ -1,9 +1,9 @@
 <div x-data="{}" x-init="
-    @if (session('show_modal') === 'edit-customer-modal')
-        $nextTick(() => $flux.modal('edit-customer-modal').show())
+    @if (session('show_modal') === 'edit-accountexecutive-modal')
+        $nextTick(() => $flux.modal('edit-accountexecutive-modal').show())
     @endif
     ">
-    <flux:modal name="edit-customer-modal"
+    <flux:modal name="edit-accountexecutive-modal"
         class="md:w-96">
 
         <form
@@ -18,11 +18,11 @@
             <input type="hidden" name="user_id" value="">
             <div>
                 <flux:heading size="lg">
-                    Edit Customer Account
+                    Edit Account Executive Account
                 </flux:heading>
 
                 <flux:text class="mt-2">
-                    Update the customer details below.
+                    Update the Account Executive details below.
                 </flux:text>
             </div>
             <!-- Add 'edit_' prefix to all fields -->
@@ -31,7 +31,7 @@
                 <flux:input
                     name="edit_name"
                     value="{{ old('edit_name', '') }}"
-                    placeholder="Enter customer name" />
+                    placeholder="Enter Account Executive name" />
                 @error('edit_name') <!-- Update error key -->
                 <p class="mt-2 text-red-500 dark:text-red-400 text-xs">{{ $message }}</p>
                 @enderror
@@ -42,7 +42,7 @@
                 <flux:input
                     name="edit_email"
                     value="{{ old('edit_email', '') }}"
-                    placeholder="Enter customer email" />
+                    placeholder="Enter Account Executive email" />
                 @error('edit_email')
                 <p class="mt-2 text-red-500 dark:text-red-400 text-xs">{{ $message }}</p>
                 @enderror
@@ -53,7 +53,7 @@
                 <flux:input
                     name="edit_customer_id"
                     value="{{ old('edit_customer_id', '') }}"
-                    placeholder="Enter customer ID" />
+                    placeholder="Enter Account Executive ID" />
                 @error('edit_customer_id')
                 <p class="mt-2 text-red-500 dark:text-red-400 text-xs">{{ $message }}</p>
                 @enderror
@@ -61,7 +61,9 @@
 
             <div class="flex">
                 <flux:spacer />
-                <flux:button type="submit" variant="primary">Save Changes</flux:button>
+                <flux:button 
+                    type="submit" 
+                    variant="primary">Save Changes</flux:button>
             </div>
         </form>
     </flux:modal>

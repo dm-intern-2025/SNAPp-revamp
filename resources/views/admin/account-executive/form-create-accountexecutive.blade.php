@@ -1,10 +1,13 @@
-<div x-data>
-    <flux:modal 
+<div
+    x-data="{}"
+    x-init="
+    @if (session('show_modal') === 'create-accountexecutive')
+        $nextTick(() => $flux.modal('create-accountexecutive').show())
+    @endif
+"
+>    <flux:modal 
         name="create-accountexecutive" 
         class="md:w-96"
-        :dismissible="false"
-        x-data
-        x-on:close="$el.querySelector('form').reset()"
     >
         
         <form 

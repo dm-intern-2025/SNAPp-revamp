@@ -6,7 +6,7 @@
             <h2 class="text-xl font-semibold text-gray-800 dark:text-white">User Accounts</h2>
             <div class="flex gap-2">
                 <flux:modal.trigger name="customer-modal">
-                    <flux:button class="flux-btn flux-btn-primary flux-btn-sm">
+                    <flux:button variant="primary">
                         Add Customer
                     </flux:button>
                 </flux:modal.trigger>

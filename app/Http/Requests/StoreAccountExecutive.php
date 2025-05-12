@@ -5,6 +5,8 @@ namespace App\Http\Requests;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class StoreAccountExecutive extends FormRequest
 {
@@ -41,5 +43,15 @@ class StoreAccountExecutive extends FormRequest
             ],
 
         ];
+    }
+    protected function failedValidation(Validator $validator)
+    {
+        session()->flash('show_modal', 'create-accountexecutive'); 
+        throw new HttpResponseException(
+            redirect()
+                ->back()
+                ->withErrors($validator)
+                ->withInput()
+        );
     }
 }

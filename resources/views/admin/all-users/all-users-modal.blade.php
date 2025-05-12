@@ -81,31 +81,53 @@
 </flux:modal>
 
 <script>
-    document.querySelectorAll('.flux-btn-info').forEach(button => {
-        button.addEventListener('click', function() {
-            const userId = this.getAttribute('data-id');
-            const userName = this.getAttribute('data-name');
-            const userEmail = this.getAttribute('data-email');
-            const customerId = this.getAttribute('data-customer-id');
-            const userRole = this.getAttribute('data-role');
-            const active = this.getAttribute('data-active'); // "1" or "0"
+  document.querySelectorAll('.flux-btn-info').forEach(button => {
+    button.addEventListener('click', function() {
+      const userId     = this.getAttribute('data-id');
+      const userName   = this.getAttribute('data-name');
+      const userEmail  = this.getAttribute('data-email');
+      const customerId = this.getAttribute('data-customer-id');
+      const userRole   = this.getAttribute('data-role');
+      const active     = this.getAttribute('data-active'); // "1" or "0"
 
-            const form = document.getElementById('edit-user-form');
-            const baseAction = form.getAttribute('data-base-action');
-            form.action = baseAction.replace(':user_id', userId);
+      // 1) Populate the form fields and action
+      const form       = document.getElementById('edit-user-form');
+      const baseAction = form.getAttribute('data-base-action');
+      form.action      = baseAction.replace(':user_id', userId);
 
-            form.querySelector('input[name="user_id"]').value = userId;
-            form.querySelector('input[name="name"]').value = userName;
-            form.querySelector('input[name="email"]').value = userEmail;
-            form.querySelector('input[name="customer_id"]').value = customerId;
-            form.querySelector('select[name="role"]').value = userRole;
-            // Determine what value to submit (toggle logic)
-            const newValue = active === '1' ? '0' : '1';
-            const labelText = active === '1' ? 'Deactivate' : 'Activate';
+      form.querySelector('input[name="user_id"]').value     = userId;
+      form.querySelector('input[name="name"]').value        = userName;
+      form.querySelector('input[name="email"]').value       = userEmail;
+      form.querySelector('input[name="customer_id"]').value = customerId;
+      form.querySelector('select[name="role"]').value       = userRole;
 
-            document.getElementById('account-status-label').textContent = labelText;
-            document.getElementById('active-value').value = newValue;
+      // 2) Initialize the switch (no flip)
+      const isActive = active === '1';
+      // flux:switch renders a checkbox input under the hood
+      const switchContainer = document.getElementById('account-status-switch');
+      const checkbox = switchContainer.querySelector('input[type="checkbox"]');
+      if (checkbox) {
+        checkbox.checked = isActive;
+      }
 
+      // 3) Set initial label & hidden input
+      document.getElementById('account-status-label').textContent = isActive ? 'Deactivate' : 'Activate';
+      document.getElementById('active-value').value              = isActive ? '1' : '0';
+
+      // 4) Remove any old listener and add a fresh one
+      if (checkbox) {
+        const newCheckbox = checkbox.cloneNode(true);
+        checkbox.replaceWith(newCheckbox);
+
+        newCheckbox.addEventListener('change', function() {
+          const nowActive = this.checked;
+          document.getElementById('account-status-label').textContent = nowActive ? 'Deactivate' : 'Activate';
+          document.getElementById('active-value').value              = nowActive ? '1' : '0';
         });
+      }
+
+      // 5) Finally open the modal
+      $flux.modal('all-users-modal').show();
     });
+  });
 </script>

@@ -8,8 +8,8 @@
 
                 <!-- Flux Button to Trigger the Modal -->
                 <flux:modal.trigger name="create-admin">
-                    <flux:button class="flux-btn flux-btn-primary flux-btn-sm">
-                        Create Admin Account
+                    <flux:button variant="primary">
+                        Add Admin Account
                     </flux:button>
                 </flux:modal.trigger>
 
@@ -41,9 +41,7 @@
                         <td>{{ $admin->name }}</td>
                         <td>{{ $admin->email }}</td>
                     </tr>
-
                     @endforeach
-
                 </tbody>
             </table>
         </div>
