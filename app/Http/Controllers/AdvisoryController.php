@@ -6,6 +6,7 @@ use App\Http\Requests\StoreAdvisoryRequest;
 use App\Http\Requests\UpdateAdvisoryRequest;
 use App\Models\Advisory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AdvisoryController extends Controller
 {
@@ -88,9 +89,34 @@ class AdvisoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateAdvisoryRequest $request, Advisory $advisory)
+ public function update(UpdateAdvisoryRequest $request, Advisory $advisory)
     {
-        //
+        $validated = $request->validated();
+
+        $data = [
+            'headline'    => $validated['edit_headline'],
+            'description' => $validated['edit_description'],
+            'content'     => $validated['edit_content'],
+        ];
+
+        if ($request->hasFile('edit_attachment')) {
+            // Optionally delete the old file
+            if ($advisory->attachment) {
+                Storage::disk('public')->delete($advisory->attachment);
+            }
+            // Store the new file and set its path
+            $data['attachment'] = $request
+                ->file('edit_attachment')
+                ->store('advisory_attachments', 'public');
+        }
+
+        // 4. Perform update
+        $advisory->update($data);
+
+        // 5. Redirect with success
+        return redirect()
+            ->route('advisories.list')
+            ->with('success', 'Advisory updated successfully.');
     }
 
     /**

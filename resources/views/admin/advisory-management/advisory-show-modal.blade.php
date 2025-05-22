@@ -1,6 +1,8 @@
 <div
+    id="advisory-modal-root"
     x-data="{
         preview: null,
+
         fileChosen(event) {
             const file = event.target.files[0];
             if (!file || !file.type.startsWith('image/')) {
@@ -8,20 +10,15 @@
                 return;
             }
             this.preview = URL.createObjectURL(file);
-            this.$watch('preview', (newPreview, oldPreview) => {
-                if (oldPreview) {
-                    URL.revokeObjectURL(oldPreview);
-                }
-            });
         },
+
         resetPreview() {
-            if (this.preview) {
-                if (this.preview.startsWith('blob:')) {
-                    URL.revokeObjectURL(this.preview);
-                }
-                this.preview = null;
+            if (this.preview && this.preview.startsWith('blob:')) {
+                URL.revokeObjectURL(this.preview);
             }
+            this.preview = null;
         },
+
         setExistingPreview(url) {
             this.resetPreview();
             if (url) {
@@ -33,41 +30,57 @@
         @if ($errors->any())
             $nextTick(() => $flux.modal('advisory-show-modal').show())
         @endif
-    ">
+    "
+>
     <flux:modal
         name="advisory-show-modal"
         class="w-full max-w-5xl"
         :dismissible="false"
-        x-on:close="resetPreview()">
+        x-on:close="resetPreview()"
+    >
         <form
             action="{{ route('advisories.update', ['advisory' => ':advisory_id']) }}"
             data-base-action="{{ route('advisories.update', ['advisory' => ':advisory_id']) }}"
             method="POST"
             enctype="multipart/form-data"
             class="flex gap-8"
-            id="edit-advisory-form">
+            id="edit-advisory-form"
+        >
             @csrf
             @method('PUT')
 
             <input type="hidden" name="advisory_id" value="">
 
-            <!-- Left: Image upload -->
+            <!-- Left: Image upload & preview -->
             <div class="w-2/5 flex flex-col">
                 <flux:label class="mb-2">Attachment</flux:label>
 
                 <input
                     type="file"
-                    name="attachment"
+                    name="edit_attachment"
                     accept="image/*"
                     @change="fileChosen($event)"
-                    class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    class="w-full text-sm text-gray-500
+                           file:mr-4 file:py-2 file:px-4 file:border-0
+                           file:bg-blue-50 file:text-blue-700
+                           hover:file:bg-blue-100"
+                >
 
-                <!-- Image preview: square -->
-                <div class="w-full mt-4 aspect-square rounded-xl bg-gray-100 dark:bg-neutral-800 flex items-center justify-center relative overflow-hidden">
+                <div class="w-full mt-4 aspect-square rounded-xl
+                            bg-gray-100 dark:bg-neutral-800
+                            flex items-center justify-center
+                            relative overflow-hidden"
+                >
+                    <!-- If preview is set (either existing URL or new blob), show it -->
                     <template x-if="preview">
-                        <img :src="preview" alt="Preview" class="absolute inset-0 w-full h-full object-cover rounded-xl" />
+                        <img
+                            :src="preview"
+                            alt="Preview"
+                            class="absolute inset-0 w-full h-full object-cover rounded-xl"
+                        />
                     </template>
 
+                    <!-- Otherwise, display the “No image selected” placeholder -->
                     <template x-if="!preview">
                         <div class="flex flex-col items-center justify-center text-gray-400 dark:text-neutral-500">
                             <flux:icon name="image" class="w-14 h-14 mb-2" />
@@ -77,82 +90,54 @@
                 </div>
             </div>
 
-            <!-- Right: Form fields -->
+            <!-- Right: Text fields -->
             <div class="w-3/5 space-y-5">
                 <flux:heading size="lg">Edit Advisory</flux:heading>
 
                 <flux:field>
                     <flux:label badge="Required">Headline</flux:label>
                     <flux:input
-                        name="headline"
-                        value="{{ old('headline') }}"
-                        placeholder="Enter headline" />
-                    @error('headline')
-                    <p class="mt-1 text-red-500 text-xs">{{ $message }}</p>
+                        name="edit_headline"
+                        placeholder="Enter headline"
+                    />
+                    @error('edit_headline')
+                        <p class="mt-1 text-red-500 text-xs">{{ $message }}</p>
                     @enderror
                 </flux:field>
 
                 <flux:field>
                     <flux:label>Description</flux:label>
                     <flux:textarea
-                        name="description"
+                        name="edit_description"
                         placeholder="Short description"
-                        rows="2">{{ old('description') }}</flux:textarea>
-                    @error('description')
-                    <p class="mt-1 text-red-500 text-xs">{{ $message }}</p>
+                        rows="2"
+                    ></flux:textarea>
+                    @error('edit_description')
+                        <p class="mt-1 text-red-500 text-xs">{{ $message }}</p>
                     @enderror
                 </flux:field>
 
                 <flux:field>
                     <flux:label>Content</flux:label>
                     <flux:textarea
-                        name="content"
+                        name="edit_content"
                         placeholder="Full advisory content"
-                        rows="4">{{ old('content') }}</flux:textarea>
-                    @error('content')
-                    <p class="mt-1 text-red-500 text-xs">{{ $message }}</p>
+                        rows="4"
+                    ></flux:textarea>
+                    @error('edit_content')
+                        <p class="mt-1 text-red-500 text-xs">{{ $message }}</p>
                     @enderror
                 </flux:field>
 
-                <div class="flex justify-end pt-2">
+                <div class="flex justify-end pt-2 gap-3">
+                    <flux:button
+                        type="button"
+                        variant="primary"
+                        @click="$flux.modal('advisory-show-modal').hide()"
+                    >Cancel</flux:button>
                     <flux:button type="submit" variant="primary">Save Changes</flux:button>
                 </div>
             </div>
         </form>
     </flux:modal>
-
-
-    <script>
-        // Updated event listener for table rows
-        document.querySelectorAll('tr.flux-btn-info').forEach(row => {
-            row.addEventListener('click', function() {
-                const advisoryId = this.getAttribute('data-id');
-                const headline = this.getAttribute('data-headline');
-                const description = this.getAttribute('data-description');
-                const content = this.getAttribute('data-content');
-                const attachmentUrl = this.getAttribute('data-attachment');
-
-                // Get the closest Alpine component
-                const alpineComponent = this.closest('[x-data]');
-                const alpineData = Alpine.$data(alpineComponent);
-
-                // Update form action
-                const form = document.getElementById('edit-advisory-form');
-                const baseAction = form.getAttribute('data-base-action');
-                form.action = baseAction.replace(':advisory_id', advisoryId);
-
-                // Set form values
-                form.querySelector('input[name="advisory_id"]').value = advisoryId;
-                form.querySelector('input[name="headline"]').value = headline;
-                form.querySelector('textarea[name="description"]').value = description;
-                form.querySelector('textarea[name="content"]').value = content;
-
-                // Set image preview
-                alpineData.setExistingPreview(attachmentUrl);
-
-                // Show the modal
-                $flux.modal('advisory-show-modal').show();
-            });
-        });
-    </script>
 </div>

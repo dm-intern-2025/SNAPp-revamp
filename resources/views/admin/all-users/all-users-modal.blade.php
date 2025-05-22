@@ -83,50 +83,46 @@
 <script>
   document.querySelectorAll('.flux-btn-info').forEach(button => {
     button.addEventListener('click', function() {
-      const userId     = this.getAttribute('data-id');
-      const userName   = this.getAttribute('data-name');
-      const userEmail  = this.getAttribute('data-email');
-      const customerId = this.getAttribute('data-customer-id');
-      const userRole   = this.getAttribute('data-role');
-      const active     = this.getAttribute('data-active'); // "1" or "0"
+      // Gather data-attributes
+      const userId     = this.dataset.id;
+      const userName   = this.dataset.name;
+      const userEmail  = this.dataset.email;
+      const customerId = this.dataset.customerId;
+      const userRole   = this.dataset.role;
+      const active     = this.dataset.active; // "1" or "0"
 
-      // 1) Populate the form fields and action
+      // Populate form fields + action
       const form       = document.getElementById('edit-user-form');
-      const baseAction = form.getAttribute('data-base-action');
+      const baseAction = form.dataset.baseAction;
       form.action      = baseAction.replace(':user_id', userId);
+      form.user_id.value        = userId;
+      form.name.value           = userName;
+      form.email.value          = userEmail;
+      form.customer_id.value    = customerId;
+      form.role.value           = userRole;
 
-      form.querySelector('input[name="user_id"]').value     = userId;
-      form.querySelector('input[name="name"]').value        = userName;
-      form.querySelector('input[name="email"]').value       = userEmail;
-      form.querySelector('input[name="customer_id"]').value = customerId;
-      form.querySelector('select[name="role"]').value       = userRole;
-
-      // 2) Initialize the switch (no flip)
-      const isActive = active === '1';
-      // flux:switch renders a checkbox input under the hood
+      // Initialize state
+      let isActive = active === '1';
+      const label = document.getElementById('account-status-label');
+      const hidden = document.getElementById('active-value');
       const switchContainer = document.getElementById('account-status-switch');
-      const checkbox = switchContainer.querySelector('input[type="checkbox"]');
-      if (checkbox) {
-        checkbox.checked = isActive;
-      }
 
-      // 3) Set initial label & hidden input
-      document.getElementById('account-status-label').textContent = isActive ? 'Deactivate' : 'Activate';
-      document.getElementById('active-value').value              = isActive ? '1' : '0';
+      // Set initial UI
+      label.textContent = isActive ? 'Deactivate' : 'Activate';
+      hidden.value      = isActive ? '1' : '0';
 
-      // 4) Remove any old listener and add a fresh one
-      if (checkbox) {
-        const newCheckbox = checkbox.cloneNode(true);
-        checkbox.replaceWith(newCheckbox);
+      // Remove old handler if any
+      switchContainer.replaceWith(switchContainer.cloneNode(true));
+      const freshSwitch = document.getElementById('account-status-switch');
 
-        newCheckbox.addEventListener('change', function() {
-          const nowActive = this.checked;
-          document.getElementById('account-status-label').textContent = nowActive ? 'Deactivate' : 'Activate';
-          document.getElementById('active-value').value              = nowActive ? '1' : '0';
-        });
-      }
+      // Toggle on click
+      freshSwitch.addEventListener('click', () => {
+        isActive = !isActive;
+        label.textContent = isActive ? 'Deactivate' : 'Activate';
+        hidden.value      = isActive ? '1' : '0';
+      });
 
-      // 5) Finally open the modal
+      // Show the modal
       $flux.modal('all-users-modal').show();
     });
   });

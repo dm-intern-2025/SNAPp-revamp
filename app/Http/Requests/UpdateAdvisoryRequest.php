@@ -22,23 +22,20 @@ class UpdateAdvisoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'headline' => [
-                'required',
-                'string',
+            'edit_headline' => [
+                'string', 
                 'max:100'
             ],
-            'description' => [
-                'required',
+            'edit_description' => [
                 'string',
                 'max:255'
             ],
 
-            'content' => [
-                'required',
+            'edit_content' => [
                 'string',
                 'max:255'
             ],
-            'attachment' => [
+            'edit_attachment' => [
                 'nullable',
                 'file',
                 'mimes:jpg,jpeg,png',
