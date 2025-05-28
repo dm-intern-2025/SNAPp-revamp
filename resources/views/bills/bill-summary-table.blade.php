@@ -9,6 +9,7 @@
         <th >Due Date</th>
         <th >Status</th>
         <th >Total Amount</th>
+
     </tr>
 </thead>
 

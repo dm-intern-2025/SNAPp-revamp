@@ -30,22 +30,19 @@
         @if ($errors->any())
             $nextTick(() => $flux.modal('advisory-show-modal').show())
         @endif
-    "
->
+    ">
     <flux:modal
         name="advisory-show-modal"
         class="w-full max-w-5xl"
         :dismissible="false"
-        x-on:close="resetPreview()"
-    >
+        x-on:close="resetPreview()">
         <form
             action="{{ route('advisories.update', ['advisory' => ':advisory_id']) }}"
             data-base-action="{{ route('advisories.update', ['advisory' => ':advisory_id']) }}"
             method="POST"
             enctype="multipart/form-data"
             class="flex gap-8"
-            id="edit-advisory-form"
-        >
+            id="edit-advisory-form">
             @csrf
             @method('PUT')
 
@@ -63,21 +60,18 @@
                     class="w-full text-sm text-gray-500
                            file:mr-4 file:py-2 file:px-4 file:border-0
                            file:bg-blue-50 file:text-blue-700
-                           hover:file:bg-blue-100"
-                >
+                           hover:file:bg-blue-100">
 
                 <div class="w-full mt-4 aspect-square rounded-xl
                             bg-gray-100 dark:bg-neutral-800
                             flex items-center justify-center
-                            relative overflow-hidden"
-                >
+                            relative overflow-hidden">
                     <!-- If preview is set (either existing URL or new blob), show it -->
                     <template x-if="preview">
                         <img
                             :src="preview"
                             alt="Preview"
-                            class="absolute inset-0 w-full h-full object-cover rounded-xl"
-                        />
+                            class="absolute inset-0 w-full h-full object-cover rounded-xl" />
                     </template>
 
                     <!-- Otherwise, display the “No image selected” placeholder -->
@@ -98,10 +92,9 @@
                     <flux:label badge="Required">Headline</flux:label>
                     <flux:input
                         name="edit_headline"
-                        placeholder="Enter headline"
-                    />
+                        placeholder="Enter headline" />
                     @error('edit_headline')
-                        <p class="mt-1 text-red-500 text-xs">{{ $message }}</p>
+                    <p class="mt-1 text-red-500 text-xs">{{ $message }}</p>
                     @enderror
                 </flux:field>
 
@@ -110,10 +103,9 @@
                     <flux:textarea
                         name="edit_description"
                         placeholder="Short description"
-                        rows="2"
-                    ></flux:textarea>
+                        rows="2"></flux:textarea>
                     @error('edit_description')
-                        <p class="mt-1 text-red-500 text-xs">{{ $message }}</p>
+                    <p class="mt-1 text-red-500 text-xs">{{ $message }}</p>
                     @enderror
                 </flux:field>
 
@@ -122,22 +114,74 @@
                     <flux:textarea
                         name="edit_content"
                         placeholder="Full advisory content"
-                        rows="4"
-                    ></flux:textarea>
+                        rows="4"></flux:textarea>
                     @error('edit_content')
-                        <p class="mt-1 text-red-500 text-xs">{{ $message }}</p>
+                    <p class="mt-1 text-red-500 text-xs">{{ $message }}</p>
                     @enderror
                 </flux:field>
+
+                <flux:field>
+                    <flux:label>Archive Status</flux:label>
+                    <div class="flex items-center gap-3 mt-1">
+                        <flux:switch id="archive-status-switch" />
+                        <span id="archive-status-label" class="text-sm font-medium text-gray-700">Loading…</span>
+                    </div>
+                    <input type="hidden" name="is_archive" id="archive-value" value="">
+                    <flux:error name="is_archive" />
+                </flux:field>
+
+
+
 
                 <div class="flex justify-end pt-2 gap-3">
                     <flux:button
                         type="button"
                         variant="primary"
-                        @click="$flux.modal('advisory-show-modal').hide()"
-                    >Cancel</flux:button>
+                        @click="$flux.modal('advisory-show-modal').hide()">Cancel</flux:button>
                     <flux:button type="submit" variant="primary">Save Changes</flux:button>
                 </div>
             </div>
         </form>
     </flux:modal>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('tr.flux-btn-info').forEach(row => {
+            row.addEventListener('click', function() {
+                // Read current archive state
+                let isArchived = this.dataset.isArchive === '1';
+
+                // Grab modal elements
+                const label = document.getElementById('archive-status-label');
+                const hidden = document.getElementById('archive-value');
+                const toggle = document.getElementById('archive-status-switch');
+
+                // Initialize UI
+                label.textContent = isArchived ? 'Unarchive' : 'Archive';
+                hidden.value = isArchived ? '1' : '0';
+
+                // Clear old listener, bind new one
+                const newToggle = toggle.cloneNode(true);
+                toggle.parentNode.replaceChild(newToggle, toggle);
+                newToggle.addEventListener('click', () => {
+                    isArchived = !isArchived;
+                    label.textContent = isArchived ? 'Unarchive' : 'Archive';
+                    hidden.value = isArchived ? '1' : '0';
+                });
+
+                // Populate the rest of the form
+                const form = document.getElementById('edit-advisory-form');
+                form.action = form.dataset.baseAction.replace(':advisory_id', this.dataset.id);
+                form.querySelector('input[name="advisory_id"]').value = this.dataset.id;
+                form.querySelector('input[name="edit_headline"]').value = this.dataset.headline;
+                form.querySelector('textarea[name="edit_description"]').value = this.dataset.description;
+                form.querySelector('textarea[name="edit_content"]').value = this.dataset.content;
+                Alpine.$data(document.getElementById('advisory-modal-root'))
+                    .setExistingPreview(this.dataset.attachment || null);
+
+                // Show it
+                $flux.modal('advisory-show-modal').show();
+            });
+        });
+    });
+</script>

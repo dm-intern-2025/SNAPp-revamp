@@ -14,6 +14,9 @@
         html, body {
             background-color: #F1F4FC !important; /* Soft light blue */
             height: 100%;
+            
+            /* overflow: hidden; */
+
         }
         --font-sans: 'Manrope', sans-serif;
         --color-zinc-50: var(--color-slate-50);

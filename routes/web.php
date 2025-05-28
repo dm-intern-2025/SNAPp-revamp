@@ -22,28 +22,35 @@ Route::redirect('/', '/login');
 
 
 
-Route::view('my-contracts', 'my-contracts')
-    ->middleware(['auth', 'verified'])
-    ->name('my-contracts');
-
-
 Route::middleware(['auth'])->group(function () {
+
+    Route::view('my-contracts', 'my-contracts')
+        ->name('my-contracts');
+
     Route::get('/dashboard', [DashboardController::class, 'showDashboardFields'])
-    ->name('dashboard');
+        ->name('dashboard');
 
-    Route::get('/my-bills', [BillController::class, 
-    'showBillsPage'])
-    ->name('bills.show');
+    Route::get('/my-bills', [
+        BillController::class,
+        'showBillsPage'
+    ])
+        ->name('bills.show');
 
-Route::get('/payment-history', [BillController::class, 
-    'showPaymentHistory'])
-    ->name('payments.history');
+    Route::get('/payment-history', [
+        BillController::class,
+        'showPaymentHistory'
+    ])
+        ->name('payments.history');
 
-    Route::get('/bills/export', [BillController::class, 
-    'exportBills'])->name('bills.export');
-    Route::get('/payments/export', [BillController::class, 
-    'exportPayments'])->name('payments.export');
-    
+    Route::get('/bills/export', [
+        BillController::class,
+        'exportBills'
+    ])->name('bills.export');
+    Route::get('/payments/export', [
+        BillController::class,
+        'exportPayments'
+    ])->name('payments.export');
+
     Route::get('/dashboard/load-more', [DashboardController::class, 'loadMore'])->name('dashboard.load-more');
 
     Route::resource('profiles', ProfileController::class);

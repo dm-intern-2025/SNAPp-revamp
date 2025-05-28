@@ -41,6 +41,10 @@ class UpdateAdvisoryRequest extends FormRequest
                 'mimes:jpg,jpeg,png',
                 'max:2048'
             ],
+            'is_archive' => [
+                'nullable',
+                'boolean' // Accepts true/false, 1/0
+            ] 
         ];
     }
 }

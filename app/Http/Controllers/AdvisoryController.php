@@ -15,39 +15,33 @@ class AdvisoryController extends Controller
      */
     public function index()
     {
-        $latestAdvisory = Advisory::select('id', 'headline', 'description', 'content', 'attachment', 'created_at')
-        ->orderBy('created_at', 'desc')
-        ->first();
-    
-    $moreAdvisories = Advisory::select('id', 'headline', 'description', 'content', 'attachment', 'created_at')
-        ->orderBy('created_at', 'desc')
-        ->skip(1)
-        ->take(3)
-        ->get();
+        $latestAdvisory = Advisory::where('is_archive', false)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        $moreAdvisories = Advisory::where('is_archive', false)
+            ->where('id', '!=', optional($latestAdvisory)->id)
+            ->orderBy('created_at', 'desc')
+            ->take(3)
+            ->get();
 
         return view('advisories', compact('latestAdvisory', 'moreAdvisories'));
     }
+
     public function loadMore(Request $request)
     {
-        return Advisory::latest()
-            ->where('id', '!=', Advisory::latest()->value('id'))
+        return Advisory::where('is_archive', false)
+            ->where('id', '!=', Advisory::where('is_archive', false)->latest()->value('id'))
             ->skip($request->skip ?? 0)
             ->take(5)
             ->get();
     }
 
+
     public function adminList()
     {
         $advisories = Advisory::orderBy('created_at', 'desc')->paginate(10); // Changed
         return view('admin.advisory-management.advisory-list', compact('advisories'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -71,25 +65,9 @@ class AdvisoryController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(Advisory $advisory)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Advisory $advisory)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
- public function update(UpdateAdvisoryRequest $request, Advisory $advisory)
+    public function update(UpdateAdvisoryRequest $request, Advisory $advisory)
     {
         $validated = $request->validated();
 
@@ -97,33 +75,23 @@ class AdvisoryController extends Controller
             'headline'    => $validated['edit_headline'],
             'description' => $validated['edit_description'],
             'content'     => $validated['edit_content'],
+            'is_archive'  => $validated['is_archive'] ?? 0,
         ];
 
         if ($request->hasFile('edit_attachment')) {
-            // Optionally delete the old file
             if ($advisory->attachment) {
                 Storage::disk('public')->delete($advisory->attachment);
             }
-            // Store the new file and set its path
+
             $data['attachment'] = $request
                 ->file('edit_attachment')
                 ->store('advisory_attachments', 'public');
         }
 
-        // 4. Perform update
         $advisory->update($data);
 
-        // 5. Redirect with success
         return redirect()
             ->route('advisories.list')
             ->with('success', 'Advisory updated successfully.');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Advisory $advisory)
-    {
-        //
     }
 }

@@ -40,18 +40,6 @@
                 </flux:button.group>
             </div>
         </div>
-        <form method="GET" action="{{ route('all-user-list') }}" class="mb-4 flex flex-wrap items-center gap-4">
-            <flux:input
-                icon="magnifying-glass"
-                name="search"
-                placeholder="Search Billing Period..."
-                value="{{ request('search') }}"
-                class="w-full md:w-1/4" />
-
-            <flux:button type="submit" variant="primary" class="self-end">
-                Search
-            </flux:button>
-        </form>
         <!-- Tables -->
         <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-neutral-700">
             @if($activeTab === 'bills')

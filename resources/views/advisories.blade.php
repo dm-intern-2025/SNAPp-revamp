@@ -16,34 +16,29 @@
     }">
         <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
 
-            <!-- Left Card: Latest Advisory - Now with compact layout -->
-            <div class="col-span-1 md:col-span-3 bg-white rounded-2xl shadow p-6 flex flex-col justify-between"> <!-- Added justify-between -->
-                <div> <!-- Content wrapper -->
+            <!-- Left Card: Latest Advisory -->
+            <div class="col-span-1 md:col-span-3 bg-white rounded-2xl shadow p-6 flex flex-col justify-between min-h-[600px]">
+                <div>
                     <span class="text-sm font-medium text-[#1443e0]">Latest Advisory</span>
-
-                    <!-- Image with constrained height -->
                     <div class="mt-3 bg-gray-100 w-full h-80 flex items-center justify-center rounded-lg overflow-hidden">
                         @if ($latestAdvisory?->attachment)
                             <img src="{{ asset('storage/' . $latestAdvisory->attachment) }}" 
-                                class="h-full w-full object-cover" 
-                                alt="{{ $latestAdvisory->headline }}">
+                                 class="h-full w-full object-cover" 
+                                 alt="{{ $latestAdvisory->headline }}">
                         @else
                             <div class="text-gray-400 p-4">No Image Available</div>
                         @endif
                     </div>
 
-                    <!-- Headline -->
                     <h3 class="text-xl font-bold mt-3 text-[#1443e0]">
                         {{ $latestAdvisory?->headline ?? 'No advisory available' }}
                     </h3>
 
-                    <!-- Description -->
                     <p class="text-sm text-[#1443e0] mt-1 line-clamp-3">
                         {{ $latestAdvisory?->description }}
                     </p>
                 </div>
 
-                <!-- Read More button stays at bottom -->
                 <div class="mt-4 flex justify-end">
                     <button @click="activeAdvisory = {{ Js::from($latestAdvisory) }}; showModal = true"
                             class="bg-[#1443e0] text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-[#0d3ab9] transition flex items-center">
@@ -55,48 +50,54 @@
                 </div>
             </div>
 
-            <!-- Right Card: Recent Advisories with scroll chevron -->
-            <div class="col-span-1 md:col-span-2 bg-white rounded-2xl shadow p-6 flex flex-col">
-                <h2 class="text-lg font-bold text-[#1443e0]">Recent Advisories</h2>
-
-                <!-- Scrollable container with fixed height -->
-                <div class="mt-3 space-y-3 flex-grow overflow-y-auto max-h-[400px] pr-2" 
-                     id="advisories-list"
-                     x-ref="advisoryList">
-                    <template x-for="(advisory, index) in showAll ? moreAdvisories : moreAdvisories.slice(0, maxVisible)" 
-                              :key="advisory.id">
-                        <div @click="activeAdvisory = advisory; showModal = true" 
-                             class="cursor-pointer group hover:bg-blue-50 p-3 rounded-lg transition border border-gray-100 hover:border-blue-100">
-                            <h4 class="text-md font-semibold text-[#1443e0] group-hover:text-[#0d3ab9]" 
-                                x-text="advisory.headline"></h4>
-                            <p class="text-sm text-[#1443e0] mt-1 line-clamp-2" 
-                               x-text="advisory.description"></p>
-                            <div class="text-xs text-gray-500 mt-1" 
-                                 x-text="new Date(advisory.created_at).toLocaleDateString()"></div>
-                        </div>
-                    </template>
-
-                    <template x-if="moreAdvisories.length === 0">
-                        <p class="text-sm text-gray-500 p-3">No recent advisories available.</p>
-                    </template>
+            <!-- Right Side: Filter above, then Advisories Card -->
+            <div class="col-span-1 md:col-span-2 flex flex-col space-y-3">
+                <!-- Filter -->
+                <div class="flex justify-end items-center">
+                    <flux:select name="date" placeholder="Filter by" class="w-40 min-w-[150px] max-w-[180px]">
+                        <flux:select.option value="">Filter by</flux:select.option>
+                        <flux:select.option value="last_7_days" :selected="request('date') === 'last_7_days'">Last 7 Days</flux:select.option>
+                        <flux:select.option value="last_30_days" :selected="request('date') === 'last_30_days'">Last 30 Days</flux:select.option>
+                        <flux:select.option value="this_month" :selected="request('date') === 'this_month'">This Month</flux:select.option>
+                        <flux:select.option value="last_month" :selected="request('date') === 'last_month'">Last Month</flux:select.option>
+                    </flux:select>
                 </div>
 
-                <!-- Scroll Down/View All Button -->
-                <div class="mt-3 pt-2 border-t border-gray-100 text-center">
-                    <template x-if="!showAll && moreAdvisories.length > maxVisible">
-                        <button @click="showAll = true; scrollToBottom()" 
-                                class="text-[#1443e0] hover:text-[#0d3ab9] text-sm font-medium flex items-center justify-center w-full py-1">
-                            <span>View All</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </button>
-                    </template>
+                <!-- Recent Advisories Card -->
+                <div class="bg-white rounded-2xl shadow p-6 flex flex-col min-h-[550px]">
+                    <h2 class="text-lg font-bold text-[#1443e0]">Recent Advisories</h2>
+
+                    <div class="mt-3 space-y-3 flex-grow overflow-y-auto max-h-[400px] pr-2" id="advisories-list" x-ref="advisoryList">
+                        <template x-for="(advisory, index) in showAll ? moreAdvisories : moreAdvisories.slice(0, maxVisible)" :key="advisory.id">
+                            <div @click="activeAdvisory = advisory; showModal = true" 
+                                 class="cursor-pointer group hover:bg-blue-50 p-3 rounded-lg transition border border-gray-100 hover:border-blue-100">
+                                <h4 class="text-md font-semibold text-[#1443e0] group-hover:text-[#0d3ab9]" x-text="advisory.headline"></h4>
+                                <p class="text-sm text-[#1443e0] mt-1 line-clamp-2" x-text="advisory.description"></p>
+                                <div class="text-xs text-gray-500 mt-1" x-text="new Date(advisory.created_at).toLocaleDateString()"></div>
+                            </div>
+                        </template>
+
+                        <template x-if="moreAdvisories.length === 0">
+                            <p class="text-sm text-gray-500 p-3">No recent advisories available.</p>
+                        </template>
+                    </div>
+
+                    <div class="mt-3 pt-2 border-t border-gray-100 text-center">
+                        <template x-if="!showAll && moreAdvisories.length > maxVisible">
+                            <button @click="showAll = true; scrollToBottom()" 
+                                    class="text-[#1443e0] hover:text-[#0d3ab9] text-sm font-medium flex items-center justify-center w-full py-1">
+                                <span>View All</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                        </template>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Shared Modal Component -->
+        <!-- Modal -->
         <div x-show="showModal" 
              x-transition:enter="ease-out duration-300"
              x-transition:enter-start="opacity-0"
@@ -106,12 +107,10 @@
              x-transition:leave-end="opacity-0"
              class="fixed inset-0 z-50 overflow-y-auto">
             <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <!-- Background overlay -->
                 <div class="fixed inset-0 transition-opacity" @click="showModal = false">
                     <div class="absolute inset-0 bg-black opacity-50"></div>
                 </div>
 
-                <!-- Modal content -->
                 <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full"
                      x-show="showModal"
                      @click.away="showModal = false">
@@ -128,12 +127,10 @@
                                 </div>
                                 
                                 <div class="mt-4">
-                                    <!-- Improved Image Container -->
                                     <div x-show="activeAdvisory?.attachment" class="mb-4 bg-gray-100 rounded-lg overflow-hidden flex justify-center">
                                         <img :src="`/storage/${activeAdvisory.attachment}`" 
                                              class="max-h-[300px] w-auto object-contain"
-                                             :alt="activeAdvisory.headline"
-                                             style="max-width: 100%; height: auto;">
+                                             :alt="activeAdvisory.headline">
                                     </div>
                                     
                                     <div class="prose max-w-none" x-html="activeAdvisory?.description || activeAdvisory?.description"></div>
@@ -141,15 +138,17 @@
                                     <div class="prose max-w-none" x-html="activeAdvisory?.content || activeAdvisory?.content"></div>
 
                                     <div class="mt-4 text-sm text-gray-500">
-                                        Published on <span x-text="new Date(activeAdvisory?.created_at).toLocaleString('en-US', {month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'})"></span>
+                                        Published on 
+                                        <span x-text="new Date(activeAdvisory?.created_at).toLocaleString('en-US', {
+                                            month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                                        })"></span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                        <button type="button" 
-                                @click="showModal = false"
+                        <button type="button" @click="showModal = false"
                                 class="w-full sm:w-auto inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#1443e0] text-base font-medium text-white hover:bg-[#0d3ab9] sm:ml-3 sm:text-sm">
                             Close
                         </button>

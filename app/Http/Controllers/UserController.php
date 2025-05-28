@@ -202,11 +202,11 @@ class UserController extends Controller
         }
 
         // 4. Pagination with query string
-        $users = $query
+        $accountExecutives = $query
             ->paginate(10)
             ->appends($request->only(['active', 'search', 'sort']));
 
-        return view('admin.account-executive.account-executive-list', compact('users'));
+        return view('admin.account-executive.account-executive-list', compact('accountExecutives'));
     }
     public function storeAE(StoreAccountExecutive $request)
     {

@@ -1,104 +1,61 @@
 <x-layouts.app>
+    <div class="p-6 bg-white dark:bg-neutral-900 rounded-xl shadow-md">
 
-<!DOCTYPE html>
-<html>
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
+                Contracts
+            </h2>
+        </div>
 
-<head>
-    <title>Contracts</title>
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="./styles/style.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
-    <script src="https://unpkg.com/@kissflow/lowcode-client-sdk@latest/dist/kfsdk.umd.js"></script>
-    <script src="./scripts/functions.js"></script>
-</head>
+        <!-- Filters / Search -->
+        <form method="GET" action="" class="mb-4 flex flex-wrap justify-end items-center gap-4">
+            <flux:input
+                icon="magnifying-glass"
+                name="search"
+                placeholder="Search documents..."
+                value=""
+                class="w-full md:w-1/4" />
+        </form>
 
-<body>
-    <table id="bills-table">
 
-        <thead>
-            <tr>
-                <th>Contract Filename</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
+        <!-- Table -->
+        <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-neutral-700">
+            <table class="min-w-full text-left">
+                <thead>
+                    <tr>
+                        <th>Reference No.</th>
+                        <th>Description</th>
+                        <th>Contract Period</th>
+                        <th>Upload Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="hover:bg-gray-100 dark:hover:bg-neutral-800 transition cursor-pointer">
+                        <td>DOC-001</td>
+                        <td>Annual Service Agreement</td>
+                        <td>Jan 2024 – Dec 2024</td>
+                        <td>2024-01-10</td>
+                        <td>Active</td>
+                    </tr>
+                    <tr class="hover:bg-gray-100 dark:hover:bg-neutral-800 transition cursor-pointer">
+                        <td>DOC-002</td>
+                        <td>Lease Renewal</td>
+                        <td>Feb 2023 – Jan 2024</td>
+                        <td>2023-02-01</td>
+                        <td>Expired</td>
+                    </tr>
+                    <tr class="hover:bg-gray-100 dark:hover:bg-neutral-800 transition cursor-pointer">
+                        <td>DOC-003</td>
+                        <td>Consulting Contract</td>
+                        <td>Mar 2024 – Aug 2024</td>
+                        <td>2024-03-05</td>
+                        <td>Active</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-        </tbody>
-    </table>
-    <div id="dialog"></div>
-</body>
-
-</html>
-<script>
-$(document).ready(async function () {
-
-    kf = await window.kf.initialize();
-    const { Name, Email, _id } = kf.user;
-    console.log(kf.user)
-
-    const url = `${process.URL}/customers_snap?email=${Email}`
-    let resp = await kf.api(url)
-    console.log(resp)
-
-    // function to fetch data from API endpoint
-    $.ajax({
-        url: `${process.URL}/contracts_gcs/${resp.Customer_Short_Name}`,
-        type: 'GET',
-        dataType: 'json',
-        success: function (data) {
-            console.log(data);
-
-            // replace table content with response data
-            var rows = "";
-            for (var i = 0; i < data.length; i++) {
-                var fn = data[i].replace("snapp_contracts/", "")
-                rows += "<tr>";
-                rows += "<td data-label='Contract Name'>" + (fn || '') + "</td>";
-                rows += "<td data-label='Action'><button onclick='generateSignedURL(\"" + (data[i] || '') + "\")'>View</button></td>";
-                rows += "</tr>";
-            }
-            $("#bills-table tbody").html(rows);
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            // Handle the error
-            console.log(errorThrown);
-        }
-    });
-
-});
-function generateSignedURL(contractName) {
-    console.log(contractName)
-
-    const contract = encodeURIComponent(contractName)
-
-    $.ajax({
-        url: `${process.URL}/sign_url_contract/` + contract,
-        type: 'GET',
-        dataType: 'json',
-        success: function (data) {
-            // create an embed element for the PDF file
-            var $embed = $("<embed>").attr("src", data.url).attr("type", "application/pdf").css("width", "100%").css("height", "500px");
-
-            // display the PDF preview in a dialog
-            $("#dialog").html($embed).dialog({
-                title: "View Contract",
-                width: 850,
-                height: 600
-            });
-        },
-
-        error: function (jqXHR, textStatus, errorThrown) {
-            // Handle the error
-            console.log(errorThrown);
-            $("#dialog").html("<p>Sorry, there was an error generating the signed URL.</p>").dialog({
-                title: "Error",
-                width: 400,
-                height: 200
-            });
-        }
-    });
-}
-
-</script>
+    </div>
 </x-layouts.app>

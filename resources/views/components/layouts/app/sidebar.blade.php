@@ -208,7 +208,7 @@
     </div>
 
     <!-- Main content -->
-    <div class="flex-1 overflow-auto ml-20" :class="collapsed ? 'ml-20' : 'ml-64'">
+<div class="flex-1 ml-20" :class="collapsed ? 'ml-20' : 'ml-64'">
         {{ $slot }}
     </div>
 
