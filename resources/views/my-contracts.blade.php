@@ -1,19 +1,12 @@
 <x-layouts.app>
     <div class="p-6 bg-white dark:bg-neutral-900 rounded-xl shadow-md">
 
-        <!-- Header -->
-        <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
-                Contracts
-            </h2>
-        </div>
-
         <!-- Filters / Search -->
         <form method="GET" action="" class="mb-4 flex flex-wrap justify-end items-center gap-4">
             <flux:input
                 icon="magnifying-glass"
                 name="search"
-                placeholder="Search documents..."
+                placeholder="Search Contract Period..."
                 value=""
                 class="w-full md:w-1/4" />
         </form>

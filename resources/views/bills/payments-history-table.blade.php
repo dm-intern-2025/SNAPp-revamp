@@ -14,12 +14,12 @@
         <tbody class="bg-white dark:bg-neutral-900 divide-y divide-gray-200 dark:divide-neutral-700">
             @foreach($data as $item)
                 <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">{{ $item['Payment Reference'] }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">{{ $item['Payment Reference Date'] }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">{{ $item['Billing Period'] }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">₱ {{ $item['Amount'] }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">{{ $item['Power Bill No'] }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">{{ $item['Date Posted'] }}</td>
+                    <td>{{ $item['Payment Reference'] }}</td>
+                    <td>{{ $item['Payment Reference Date'] }}</td>
+                    <td>{{ $item['Billing Period'] }}</td>
+                    <td>₱ {{ $item['Amount'] }}</td>
+                    <td>{{ $item['Power Bill No'] }}</td>
+                    <td>{{ $item['Date Posted'] }}</td>
                 </tr>
             @endforeach
         </tbody>

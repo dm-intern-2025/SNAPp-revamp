@@ -1,45 +1,52 @@
 <x-layouts.app>
     <div class="p-6 bg-white dark:bg-neutral-900 rounded-xl shadow-md">
-        <!-- Top Bar: Heading + Export + Tabs -->
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-            <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
-                @if($activeTab === 'bills') My Bills @else Payment History @endif
-            </h2>
+       <!-- Top Bar: Search + Export + Tabs -->
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+  
+  <!-- Filters / Search -->
+  <form method="GET" action="" class="w-full sm:w-auto">
+    <flux:input
+      icon="magnifying-glass"
+      name="search"
+      placeholder="Search Contract Period..."
+      value="{{ request('search') }}"
+      class="w-full md:w-64" />
+  </form>
 
-            <div class="flex flex-col sm:flex-row sm:items-center gap-4">
-                <!-- Export Button -->
-                @if($activeTab === 'bills')
-                    <button
-                        onclick="downloadThenRedirect('{{ route('bills.export') }}', '{{ route('bills.show') }}')"
-                        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                        Export Bills
-                    </button>
-                @endif
+  <!-- Export + Tabs -->
+  <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+    @if($activeTab === 'bills')
+      <button
+        onclick="downloadThenRedirect('{{ route('bills.export') }}', '{{ route('bills.show') }}')"
+        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+        Export Bills
+      </button>
+    @endif
 
-                @if($activeTab === 'payments')
-                    <button
-                        onclick="downloadThenRedirect('{{ route('payments.export') }}', '{{ route('payments.history') }}')"
-                        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                        Export Payments
-                    </button>
-                @endif
+    @if($activeTab === 'payments')
+      <button
+        onclick="downloadThenRedirect('{{ route('payments.export') }}', '{{ route('payments.history') }}')"
+        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+        Export Payments
+      </button>
+    @endif
 
-                <!-- Tab Navigation -->
-                <flux:button.group>
-                    <flux:button 
-                        href="{{ route('bills.show') }}" 
-                        variant="{{ $activeTab === 'bills' ? 'primary' : 'outline' }}">
-                        Bills Summary
-                    </flux:button>
+    <flux:button.group>
+      <flux:button 
+        href="{{ route('bills.show') }}" 
+        variant="{{ $activeTab === 'bills' ? 'primary' : 'outline' }}">
+        Bills Summary
+      </flux:button>
 
-                    <flux:button 
-                        href="{{ route('payments.history') }}" 
-                        variant="{{ $activeTab === 'payments' ? 'primary' : 'outline' }}">
-                        Payment History
-                    </flux:button>
-                </flux:button.group>
-            </div>
-        </div>
+      <flux:button 
+        href="{{ route('payments.history') }}" 
+        variant="{{ $activeTab === 'payments' ? 'primary' : 'outline' }}">
+        Payment History
+      </flux:button>
+    </flux:button.group>
+  </div>
+</div>
+
         <!-- Tables -->
         <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-neutral-700">
             @if($activeTab === 'bills')

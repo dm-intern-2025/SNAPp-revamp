@@ -14,147 +14,163 @@
             });
         }
     }">
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
 
-            <!-- Left Card: Latest Advisory -->
-            <div class="col-span-1 md:col-span-3 bg-white rounded-2xl shadow p-6 flex flex-col justify-between min-h-[600px]">
-                <div>
-                    <span class="text-sm font-medium text-[#1443e0]">Latest Advisory</span>
-                    <div class="mt-3 bg-gray-100 w-full h-80 flex items-center justify-center rounded-lg overflow-hidden">
-                        @if ($latestAdvisory?->attachment)
-                            <img src="{{ asset('storage/' . $latestAdvisory->attachment) }}" 
-                                 class="h-full w-full object-cover" 
-                                 alt="{{ $latestAdvisory->headline }}">
-                        @else
-                            <div class="text-gray-400 p-4">No Image Available</div>
-                        @endif
+
+
+
+<!-- Two Cards Side by Side -->
+<div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+
+  <!-- Latest Advisory (left) -->
+  <div class="col-span-1 md:col-span-3 bg-white rounded-2xl shadow p-4 min-h-[480px] flex flex-col">
+    <span class="text-sm font-medium text-[#1443e0] mb-2">Latest Advisory</span>
+
+    <div class="mt-2 bg-gray-100 w-full h-80 flex items-center justify-center rounded-lg overflow-hidden">
+      @if ($latestAdvisory?->attachment)
+        <img src="{{ asset('storage/' . $latestAdvisory->attachment) }}"
+          class="h-full w-full object-cover"
+          alt="{{ $latestAdvisory->headline }}">
+      @else
+        <div class="text-gray-400 p-4">No Image Available</div>
+      @endif
+    </div>
+
+    <div class="flex items-center mt-4 space-x-4 flex-wrap">
+      <div class="flex-shrink max-w-[60%]">
+        <h3 class="text-lg font-bold text-[#1443e0] whitespace-normal">
+          {{ $latestAdvisory?->headline ?? 'No advisory available' }}
+        </h3>
+        <p class="text-sm text-[#1443e0] mt-1 line-clamp-3">
+          {{ $latestAdvisory?->description }}
+        </p>
+      </div>
+
+      <button @click="activeAdvisory = {{ Js::from($latestAdvisory) }}; showModal = true"
+        class="bg-[#1443e0] text-white rounded-md px-3 py-1.5 text-sm font-medium hover:bg-[#0d3ab9] transition flex items-center whitespace-nowrap">
+        <span>Read More</span>
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters + Recent Advisories (right) -->
+  <div class="col-span-1 md:col-span-2 flex flex-col min-h-[480px]">
+    <!-- Filters above recent -->
+    <div class="flex flex-wrap gap-4 mb-4">
+      <flux:select name="date" placeholder="Filter by" class="w-36 min-w-[140px] max-w-[160px]">
+        <flux:select.option value="">Filter by</flux:select.option>
+        <flux:select.option value="last_7_days" :selected="request('date') === 'last_7_days'">Last 7 Days</flux:select.option>
+        <flux:select.option value="last_30_days" :selected="request('date') === 'last_30_days'">Last 30 Days</flux:select.option>
+        <flux:select.option value="this_month" :selected="request('date') === 'this_month'">This Month</flux:select.option>
+        <flux:select.option value="last_month" :selected="request('date') === 'last_month'">Last Month</flux:select.option>
+      </flux:select>
+
+      <flux:select name="sort" placeholder="Sort by" class="w-36 min-w-[140px] max-w-[160px]">
+        <flux:select.option value="">Sort by</flux:select.option>
+        <flux:select.option value="date_desc">Date Descending</flux:select.option>
+        <flux:select.option value="date_asc">Date Ascending</flux:select.option>
+        <flux:select.option value="headline_asc">Headline A-Z</flux:select.option>
+        <flux:select.option value="headline_desc">Headline Z-A</flux:select.option>
+      </flux:select>
+    </div>
+
+    <!-- Card that fills remaining space -->
+    <div class="bg-white rounded-2xl shadow p-4 flex flex-col flex-1">
+      <h2 class="text-md font-bold text-[#1443e0] mb-4">Recent Advisories</h2>
+
+      <div class="space-y-2 flex-grow overflow-y-auto pr-1" id="advisories-list" x-ref="advisoryList" style="max-height: calc(100% - 80px);">
+        <template x-for="(advisory, index) in showAll ? moreAdvisories : moreAdvisories.slice(0, maxVisible)" :key="advisory.id">
+          <div @click="activeAdvisory = advisory; showModal = true"
+            class="cursor-pointer group hover:bg-blue-50 p-2 rounded-md transition border border-gray-100 hover:border-blue-100">
+            <h4 class="text-sm font-semibold text-[#1443e0] group-hover:text-[#0d3ab9]" x-text="advisory.headline"></h4>
+            <p class="text-xs text-[#1443e0] mt-1 line-clamp-2" x-text="advisory.description"></p>
+            <div class="text-xs text-gray-500 mt-1" x-text="new Date(advisory.created_at).toLocaleDateString()"></div>
+          </div>
+        </template>
+
+        <template x-if="moreAdvisories.length === 0">
+          <p class="text-sm text-gray-500 p-2">No recent advisories available.</p>
+        </template>
+      </div>
+
+      <div class="mt-2 pt-2 border-t border-gray-100 text-center">
+        <template x-if="!showAll && moreAdvisories.length > maxVisible">
+          <button @click="showAll = true; scrollToBottom()"
+            class="text-[#1443e0] hover:text-[#0d3ab9] text-sm font-medium flex items-center justify-center w-full py-1">
+            <span>View All</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+        </template>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+            <!-- Modal -->
+            <div x-show="showModal"
+                x-transition:enter="ease-out duration-300"
+                x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100"
+                x-transition:leave="ease-in duration-200"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="fixed inset-0 z-50 overflow-y-auto">
+                <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                    <div class="fixed inset-0 transition-opacity" @click="showModal = false">
+                        <div class="absolute inset-0 bg-black opacity-50"></div>
                     </div>
 
-                    <h3 class="text-xl font-bold mt-3 text-[#1443e0]">
-                        {{ $latestAdvisory?->headline ?? 'No advisory available' }}
-                    </h3>
-
-                    <p class="text-sm text-[#1443e0] mt-1 line-clamp-3">
-                        {{ $latestAdvisory?->description }}
-                    </p>
-                </div>
-
-                <div class="mt-4 flex justify-end">
-                    <button @click="activeAdvisory = {{ Js::from($latestAdvisory) }}; showModal = true"
-                            class="bg-[#1443e0] text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-[#0d3ab9] transition flex items-center">
-                        <span>Read More</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Right Side: Filter above, then Advisories Card -->
-            <div class="col-span-1 md:col-span-2 flex flex-col space-y-3">
-                <!-- Filter -->
-                <div class="flex justify-end items-center">
-                    <flux:select name="date" placeholder="Filter by" class="w-40 min-w-[150px] max-w-[180px]">
-                        <flux:select.option value="">Filter by</flux:select.option>
-                        <flux:select.option value="last_7_days" :selected="request('date') === 'last_7_days'">Last 7 Days</flux:select.option>
-                        <flux:select.option value="last_30_days" :selected="request('date') === 'last_30_days'">Last 30 Days</flux:select.option>
-                        <flux:select.option value="this_month" :selected="request('date') === 'this_month'">This Month</flux:select.option>
-                        <flux:select.option value="last_month" :selected="request('date') === 'last_month'">Last Month</flux:select.option>
-                    </flux:select>
-                </div>
-
-                <!-- Recent Advisories Card -->
-                <div class="bg-white rounded-2xl shadow p-6 flex flex-col min-h-[550px]">
-                    <h2 class="text-lg font-bold text-[#1443e0]">Recent Advisories</h2>
-
-                    <div class="mt-3 space-y-3 flex-grow overflow-y-auto max-h-[400px] pr-2" id="advisories-list" x-ref="advisoryList">
-                        <template x-for="(advisory, index) in showAll ? moreAdvisories : moreAdvisories.slice(0, maxVisible)" :key="advisory.id">
-                            <div @click="activeAdvisory = advisory; showModal = true" 
-                                 class="cursor-pointer group hover:bg-blue-50 p-3 rounded-lg transition border border-gray-100 hover:border-blue-100">
-                                <h4 class="text-md font-semibold text-[#1443e0] group-hover:text-[#0d3ab9]" x-text="advisory.headline"></h4>
-                                <p class="text-sm text-[#1443e0] mt-1 line-clamp-2" x-text="advisory.description"></p>
-                                <div class="text-xs text-gray-500 mt-1" x-text="new Date(advisory.created_at).toLocaleDateString()"></div>
-                            </div>
-                        </template>
-
-                        <template x-if="moreAdvisories.length === 0">
-                            <p class="text-sm text-gray-500 p-3">No recent advisories available.</p>
-                        </template>
-                    </div>
-
-                    <div class="mt-3 pt-2 border-t border-gray-100 text-center">
-                        <template x-if="!showAll && moreAdvisories.length > maxVisible">
-                            <button @click="showAll = true; scrollToBottom()" 
-                                    class="text-[#1443e0] hover:text-[#0d3ab9] text-sm font-medium flex items-center justify-center w-full py-1">
-                                <span>View All</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-                        </template>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal -->
-        <div x-show="showModal" 
-             x-transition:enter="ease-out duration-300"
-             x-transition:enter-start="opacity-0"
-             x-transition:enter-end="opacity-100"
-             x-transition:leave="ease-in duration-200"
-             x-transition:leave-start="opacity-100"
-             x-transition:leave-end="opacity-0"
-             class="fixed inset-0 z-50 overflow-y-auto">
-            <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 transition-opacity" @click="showModal = false">
-                    <div class="absolute inset-0 bg-black opacity-50"></div>
-                </div>
-
-                <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full"
-                     x-show="showModal"
-                     @click.away="showModal = false">
-                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                        <div class="sm:flex sm:items-start">
-                            <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
-                                <div class="flex justify-between items-center">
-                                    <h3 class="text-xl font-bold text-[#1443e0]" x-text="activeAdvisory?.headline"></h3>
-                                    <button @click="showModal = false" class="text-gray-500 hover:text-gray-700">
-                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
-                                </div>
-                                
-                                <div class="mt-4">
-                                    <div x-show="activeAdvisory?.attachment" class="mb-4 bg-gray-100 rounded-lg overflow-hidden flex justify-center">
-                                        <img :src="`/storage/${activeAdvisory.attachment}`" 
-                                             class="max-h-[300px] w-auto object-contain"
-                                             :alt="activeAdvisory.headline">
+                    <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full"
+                        x-show="showModal"
+                        @click.away="showModal = false">
+                        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                            <div class="sm:flex sm:items-start">
+                                <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
+                                    <div class="flex justify-between items-center">
+                                        <h3 class="text-xl font-bold text-[#1443e0]" x-text="activeAdvisory?.headline"></h3>
+                                        <button @click="showModal = false" class="text-gray-500 hover:text-gray-700">
+                                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
                                     </div>
-                                    
-                                    <div class="prose max-w-none" x-html="activeAdvisory?.description || activeAdvisory?.description"></div>
-                                    <br>
-                                    <div class="prose max-w-none" x-html="activeAdvisory?.content || activeAdvisory?.content"></div>
 
-                                    <div class="mt-4 text-sm text-gray-500">
-                                        Published on 
-                                        <span x-text="new Date(activeAdvisory?.created_at).toLocaleString('en-US', {
+                                    <div class="mt-4">
+                                        <div x-show="activeAdvisory?.attachment" class="mb-4 bg-gray-100 rounded-lg overflow-hidden flex justify-center">
+                                            <img :src="`/storage/${activeAdvisory.attachment}`"
+                                                class="max-h-[300px] w-auto object-contain"
+                                                :alt="activeAdvisory.headline">
+                                        </div>
+
+                                        <div class="prose max-w-none" x-html="activeAdvisory?.description || activeAdvisory?.description"></div>
+                                        <br>
+                                        <div class="prose max-w-none" x-html="activeAdvisory?.content || activeAdvisory?.content"></div>
+
+                                        <div class="mt-4 text-sm text-gray-500">
+                                            Published on
+                                            <span x-text="new Date(activeAdvisory?.created_at).toLocaleString('en-US', {
                                             month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'
                                         })"></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                        <button type="button" @click="showModal = false"
+                        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                            <button type="button" @click="showModal = false"
                                 class="w-full sm:w-auto inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#1443e0] text-base font-medium text-white hover:bg-[#0d3ab9] sm:ml-3 sm:text-sm">
-                            Close
-                        </button>
+                                Close
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 </x-layouts.app>
