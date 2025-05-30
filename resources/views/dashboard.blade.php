@@ -93,7 +93,7 @@
             <!-- Contract Expiration Card (smaller) -->
             <div class="col-span-1 md:col-span-2 bg-white rounded-2xl shadow p-6 flex flex-col justify-center items-center">
                 <span class="text-xs font-medium text-[#1443e0]">Contract Expiration</span>
-                <div class="text-2xl font-bold text-[#1443e0] mt-2">What data to place?</div>
+                <div class="text-2xl font-bold text-[#1443e0] mt-2">12/26/2030</div>
             </div>
         </div>
 

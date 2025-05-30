@@ -152,13 +152,13 @@
                         <span x-show="!collapsed" class="text-white">{{ __('Manage Advisories') }}</span>
                     </a>
 
-                    <a
+                    <!-- <a
                         href="{{ route('dashboard') }}"
                         class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
                         :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
                         <flux:icon name="circle-help" class="w-6 h-6 text-white" />
                         <span x-show="!collapsed" class="text-white">{{ __('Helpdesk') }}</span>
-                    </a>
+                    </a> -->
                 </nav>
             </div>
             @endrole

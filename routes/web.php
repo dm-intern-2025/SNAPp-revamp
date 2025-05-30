@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\AccountExecutiveController;
 use App\Http\Controllers\AdvisoryController;
 use App\Http\Controllers\BillController;
 use App\Http\Controllers\DashboardController;
@@ -37,9 +36,6 @@ Route::middleware(['role:admin|customer'])->group(function () {
     Route::get('/payments/export', [BillController::class, 'exportPayments'])->name('payments.export');
     Route::get('/energy-consumption', [GhgController::class, 'calculateEmissions'])->name('energy-consumption');
 });
-
-
-
 
     Route::redirect('settings', 'settings/profile');
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
