@@ -20,56 +20,64 @@ class BillController extends Controller
         $this->oracleInvoiceService = $oracleInvoiceService;
     }
 
-    public function showBillsPage(Request $request)
-    {
-        $user       = Auth::user();
-        $customerId = $user->customer_id;
-        $perPage    = 5;
-        $currentPage = $request->input('page', 1);
+public function showBillsPage(Request $request)
+{
+    $user         = Auth::user();
+    $customerId   = $user->customer_id;
+    $perPage      = 5;
+    $currentPage  = $request->input('page', 1);
+    $search       = $request->input('search');
 
-        // 1) Fetch from service
-        $items = $this->oracleInvoiceService->fetchInvoiceData($customerId);
+    // 1) Fetch from service
+    $items = $this->oracleInvoiceService->fetchInvoiceData($customerId);
 
-        if (empty($items)) {
-            return back()->with('error', 'Failed to fetch bills.');
-        }
-
-        $latestInvoice = collect($items)->first(); // optional if used elsewhere
-
-        // 2) Map into the shape you need
-        $allBills = collect($items)->map(function ($item) {
-            return [
-                'Billing Period'     => $item['Comments'] ?? 'N/A',
-                'Power Bill Number'  => $item['DocumentNumber'] ?? '',
-                'Bill Date'          => isset($item['TransactionDate']) ? Carbon::parse($item['TransactionDate'])->format('m/d/Y') : '',
-                'Terms'              => $item['PaymentTerms'] ?? '',
-                'Due Date'           => isset($item['DueDate']) ? Carbon::parse($item['DueDate'])->format('m/d/Y') : '',
-                'Total Amount'       => number_format($item['EnteredAmount'] ?? 0, 2),
-                'Status'             => ($item['InvoiceBalanceAmount'] ?? 0) == 0 ? 'PAID' : 'UNPAID',
-            ];
-        });
-
-        // 3) Paginate
-        $totalItems       = $allBills->count();
-        $currentPageItems = $allBills
-            ->forPage($currentPage, $perPage)
-            ->values(); // reset indexes
-
-        $paginator = new LengthAwarePaginator(
-            $currentPageItems,
-            $totalItems,
-            $perPage,
-            $currentPage,
-            ['path' => route('bills.show')]
-        );
-
-        // 4) Return view
-        return view('my-bills', [
-            'bills'     => $paginator,
-            'payments'  => null,
-            'activeTab' => 'bills',
-        ]);
+    if (empty($items)) {
+        return back()->with('error', 'Failed to fetch bills.');
     }
+
+    // 2) Map into the shape you need
+    $allBills = collect($items)->map(function ($item) {
+        return [
+            'Billing Period'     => $item['Comments'] ?? 'N/A',
+            'Power Bill Number'  => $item['DocumentNumber'] ?? '',
+            'Bill Date'          => isset($item['TransactionDate']) ? Carbon::parse($item['TransactionDate'])->format('m/d/Y') : '',
+            'Terms'              => $item['PaymentTerms'] ?? '',
+            'Due Date'           => isset($item['DueDate']) ? Carbon::parse($item['DueDate'])->format('m/d/Y') : '',
+            'Total Amount'       => number_format($item['EnteredAmount'] ?? 0, 2),
+            'Status'             => ($item['InvoiceBalanceAmount'] ?? 0) == 0 ? 'PAID' : 'UNPAID',
+        ];
+    });
+
+    // 3) Filter if search query exists
+    if (!empty($search)) {
+        $search = strtolower($search);
+        $allBills = $allBills->filter(function ($bill) use ($search) {
+            return str_contains(strtolower($bill['Billing Period']), $search);
+        });
+    }
+
+    // 4) Paginate
+    $totalItems       = $allBills->count();
+    $currentPageItems = $allBills
+        ->forPage($currentPage, $perPage)
+        ->values(); // reset indexes
+
+    $paginator = new LengthAwarePaginator(
+        $currentPageItems,
+        $totalItems,
+        $perPage,
+        $currentPage,
+        ['path' => route('bills.show')]
+    );
+
+    // 5) Return view
+    return view('my-bills', [
+        'bills'     => $paginator,
+        'payments'  => null,
+        'activeTab' => 'bills',
+    ]);
+}
+
 
     public function showPaymentHistory(Request $request)
     {
