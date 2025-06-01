@@ -25,9 +25,8 @@ class RoleController extends Controller
      */
     public function create()
     {
-        return view('admin.role-permission.form-role');
+        return view('role-permissions.form-create-role');
     }
-
     /**
      * Store a newly created resource in storage.
      *
@@ -38,14 +37,13 @@ class RoleController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|unique:roles,name', // Adjust if 'title' is a separate column
-            'status' => 'required|boolean',
         ]);
     
         Role::create([
             'name' => $validated['title'], // Use 'title' as 'name' if no separate title column
             'guard_name' => 'web',
         ]);
-    
+        session()->flash('message', 'Post successfully updated.');
         return redirect()->route('role.permission.list')->with('success', 'Role created successfully.');
     }
 
@@ -114,9 +112,9 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
-        $role = Role::findOrFail($id);
-        $role->delete();
-        return redirect()->route('role.permission.list')->with('success', 'Role deleted successfully.');
+        // $role = Role::findOrFail($id);
+        // $role->delete();
+        // return redirect()->route('role.permission.list')->with('success', 'Role deleted successfully.');
     }
     
 }

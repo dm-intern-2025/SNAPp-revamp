@@ -1,48 +1,83 @@
 <x-layouts.app>
     <div class="p-6 bg-white dark:bg-neutral-900 rounded-xl shadow-md">
-        
-    <!-- Header with Add Buttons -->
+
+        <!-- Header with Add Button -->
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Roles & Permissions</h2>
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-white">User Accounts</h2>
             <div class="flex gap-2">
-
-       <!-- Flux Button to Trigger the Modal -->
                 <flux:modal.trigger name="customer-modal">
-                    <flux:button class="flux-btn flux-btn-primary flux-btn-sm">
+                    <flux:button variant="primary">
                         Add Customer
-                    </flux:button>
-                </flux:modal.trigger>
-
-                <!-- Add Permission Trigger -->
-                <flux:modal.trigger name="permission-modal">
-                    <flux:button class="flux-btn flux-btn-primary flux-btn-sm">
-                        Add Admin
                     </flux:button>
                 </flux:modal.trigger>
             </div>
         </div>
+        <form method="GET" action="{{ route('users.index') }}" class="mb-4 flex flex-wrap items-center gap-4">
+            <flux:input
+                icon="magnifying-glass"
+                name="search"
+                placeholder="Search users..."
+                value="{{ request('search') }}"
+                class="w-full md:w-1/4" />
 
-        <!-- Table -->
-        <table class="table-auto min-w-full border border-gray-300 dark:border-neutral-700 text-sm">
-            <thead class="bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-gray-200">
-                <tr>
-                    <th class="p-3 border border-gray-300 dark:border-neutral-700">Name</th>
-                    <th class="p-3 border border-gray-300 dark:border-neutral-700">Email</th>
-                    <th class="p-3 border border-gray-300 dark:border-neutral-700">Customer ID</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white dark:bg-neutral-900 text-gray-800 dark:text-gray-100">
-                @foreach ($users as $user)
+            <flux:select name="active" placeholder="Status" class="w-full md:w-1/6 min-w-[150px] max-w-[180px]">
+                <flux:select.option value="">All Status</flux:select.option>
+                <flux:select.option value="1" :selected="request('active') === '1'">Active</flux:select.option>
+                <flux:select.option value="0" :selected="request('active') === '0'">Inactive</flux:select.option>
+            </flux:select>
+
+            <flux:select name="sort" placeholder="Sort by" class="w-full md:w-1/6 min-w-[150px] max-w-[180px]">
+                <flux:select.option value="">Default</flux:select.option>
+                <flux:select.option value="name_asc" :selected="request('sort') === 'name_asc'">Name A–Z</flux:select.option>
+                <flux:select.option value="name_desc" :selected="request('sort') === 'name_desc'">Name Z–A</flux:select.option>
+                <flux:select.option value="created_at_desc" :selected="request('sort') === 'created_at_desc'">Newest</flux:select.option>
+                <flux:select.option value="created_at_asc" :selected="request('sort') === 'created_at_asc'">Oldest</flux:select.option>
+            </flux:select>
+
+            <flux:button type="submit" variant="primary" class="self-end">
+                Apply Filters
+            </flux:button>
+        </form>
+        
+        <!-- Clickable Table -->
+        <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-neutral-700">
+            <table class="min-w-full text-left">
+                <thead>
                     <tr>
-                        <td class="p-3 border border-gray-300 dark:border-neutral-700">{{ $user->name }}</td>
-                        <td class="p-3 border border-gray-300 dark:border-neutral-700">{{ $user->email }}</td>
-                        <td class="p-3 border border-gray-300 dark:border-neutral-700">{{ $user->customer_id }}</td>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Customer ID</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach ($users as $user)
+                    <tr
+                    class="cursor-pointer hover:bg-gray-100 dark:hover:bg-neutral-800 transition flux-btn-info
+                                   {{ $user->active ? 'hover:bg-gray-100 dark:hover:bg-neutral-800' : 'bg-red-50 text-gray-400' }}"
+                    data-id="{{ $user->id }}"
+                        data-name="{{ $user->name }}"
+                        data-email="{{ $user->email }}"
+                        data-customer-id="{{ $user->customer_id }}"
+                        onclick="document.getElementById('open-edit-modal').click()"
+                    >
+                        <td>{{ $user->name }}</td>
+                        <td>{{ $user->email }}</td>
+                        <td>{{ $user->customer_id }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
 
-        <livewire:customer-modal />
+        <!-- Hidden Modal Trigger for Edit -->
+        <flux:modal.trigger name="edit-customer-modal">
+            <button id="open-edit-modal" class="hidden"></button>
+        </flux:modal.trigger>
 
     </div>
+
+    <!-- Modals -->
+    @include('admin.customer-account.form-edit-customer')
+    @include('admin.customer-account.form-create-customer')
+
 </x-layouts.app>

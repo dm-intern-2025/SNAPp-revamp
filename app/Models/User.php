@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Models\Scopes\HasActiveScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -24,6 +26,7 @@ class User extends Authenticatable
         'email',
         'password',
         'customer_id',
+        'active'
     ];
 
     /**
@@ -46,6 +49,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'active'            => 'boolean',
         ];
     }
 
@@ -58,5 +62,11 @@ class User extends Authenticatable
             ->explode(' ')
             ->map(fn (string $name) => Str::of($name)->substr(0, 1))
             ->implode('');
+    }
+
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new HasActiveScope);
     }
 }

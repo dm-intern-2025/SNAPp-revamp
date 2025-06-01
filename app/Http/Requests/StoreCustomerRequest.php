@@ -2,7 +2,11 @@
 
 namespace App\Http\Requests;
 
+use App\Models\User;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
 
 class StoreCustomerRequest extends FormRequest
 {
@@ -24,19 +28,30 @@ class StoreCustomerRequest extends FormRequest
         return [
             'name' => [
                 'required',
-                'string', 
+                'string',
 
             ],
             'email' => [
                 'required',
-                'email', 
-                
+                'email',
+                Rule::unique(User::class)
             ],
+
             'customer_id' => [
                 'required',
-                'string', 
+                'numeric',
             ],
 
         ];
+    }
+    protected function failedValidation(Validator $validator)
+    {
+        session()->flash('show_modal', 'customer-modal'); 
+        throw new HttpResponseException(
+            redirect()
+                ->back()
+                ->withErrors($validator)
+                ->withInput()
+        );
     }
 }

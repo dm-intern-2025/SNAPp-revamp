@@ -29,7 +29,7 @@ class CustomerPasswordMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Customer Password Mail',
+            subject: 'Your Customer Password Mail',
         );
     }
 
@@ -39,7 +39,7 @@ class CustomerPasswordMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'emails.password'
         );
     }
 

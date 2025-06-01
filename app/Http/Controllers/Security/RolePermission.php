@@ -1,64 +1,74 @@
 <?php
 
-namespace App\Livewire\Security;
+namespace App\Http\Controllers\Security;
 
-use Livewire\Component;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
-class PermissionForm extends Component
+class RolePermission extends Controller
 {
-    public $showModal = false; // Initialize the property
-    public $title;
-    public $permissionId;
-
-    protected $rules = [
-        'title' => 'required|string|unique:permissions,name',
-    ];
-
-    public function openModal($id = null)
+    public function index(Request $request)
     {
-        $this->resetForm();
-        
-        if ($id) {
-            $permission = Permission::findOrFail($id);
-            $this->title = $permission->name;
-            $this->permissionId = $id;
-        }
-        
-        $this->showModal = true;
+        $roles = Role::get();
+        $permissions = Permission::get();
+        return view('role-permissions.role-permissions', compact('roles', 'permissions'));
     }
 
-    public function save()
+    public function store(Request $request)
     {
-        $this->validate();
+        $permissionsByRole = [];
 
-        if ($this->permissionId) {
-            $permission = Permission::findOrFail($this->permissionId);
-            $permission->update(['name' => $this->title]);
-        } else {
-            Permission::create([
-                'name' => $this->title,
-                'guard_name' => 'web'
-            ]);
+        // Gather selected permissions for each role
+        foreach ($request->input('permission', []) as $roleId => $permissionIds) {
+            foreach ($permissionIds as $permissionId) {
+                // Get the Permission instance by ID
+                $permission = Permission::find($permissionId); // Use the actual Permission model here
+                if ($permission) {
+                    $permissionsByRole[$roleId][] = $permission; // Store the Permission model
+                }
+            }
         }
 
-        $this->resetForm();
-        $this->dispatch('refresh-matrix');
-        session()->flash('message', 'Permission saved successfully');
+        // Update permissions for each role
+        foreach ($permissionsByRole as $roleId => $permissions) {
+            $role = Role::find($roleId);
+            $role->syncPermissions($permissions); // Pass the Permission models instead of IDs
+        }
+
+        // Clear permissions for roles with no checkboxes
+        $allRoles = Role::all();
+        foreach ($allRoles as $role) {
+            if (!isset($permissionsByRole[$role->id])) {
+                $role->syncPermissions([]); // Clear permissions for this role
+            }
+        }
+
+        // Return to the view with success message and updated roles & permissions
+        $roles = Role::all();
+        $permissions = Permission::all();
+        return view('role-permissions.role-permissions', compact('roles', 'permissions'))
+            ->with('success', 'Permissions updated successfully.');
     }
 
-    public function closeModal()
+
+    public function destroyRole($id)
     {
-        $this->resetForm();
+        $role = Role::findOrFail($id);
+        $role->delete();
+
+        return response()->json(['success' => true]);
     }
 
-    private function resetForm()
+    /**
+     * Delete a specific permission.
+     */
+    public function destroyPermission($id)
     {
-        $this->reset(['title', 'permissionId', 'showModal']);
-    }
+        $permission = Permission::findOrFail($id);
+        $permission->delete();
 
-    public function render()
-    {
-        return view('livewire.security.permission-form');
+        return response()->json(['success' => true]);
     }
 }
