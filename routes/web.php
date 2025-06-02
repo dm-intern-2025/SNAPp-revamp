@@ -12,6 +12,11 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 
+Route::get('/migrate', function () {
+    Illuminate\Support\Facades\Artisan::call('migrate');
+    return 'Migration completed successfully.';
+})->name('migrate');
+
 Route::get('account/deactivated', function () {
     return view('auth.deactivated');
 })->name('account.deactivated');
