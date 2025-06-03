@@ -112,17 +112,6 @@ class PermissionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
-        // Find the permission or throw a 404 error if not found
-        $permission = Permission::findOrFail($id);
-    
-        // Delete the permission from the database
-        $permission->delete();
-    
-        // Redirect back to the permission list (adjust the route name if needed) with a success message
-        return redirect()->route('role.permission.list')
-                         ->with('success', 'Permission deleted successfully.');
-    }
+
     
 }

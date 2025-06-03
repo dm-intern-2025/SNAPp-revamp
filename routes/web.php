@@ -55,10 +55,10 @@ Route::middleware(['role:admin|customer'])->group(function () {
         Route::get('/all-user-list', [UserController::class, 'showAllUsers'])->name('all-user-list');
         Route::get('/role-permission', [RolePermission::class, 'index'])->name('role.permission.list');
         Route::post('/role-permission', [RolePermission::class, 'store'])->name('role.permission.store');
-        Route::resource('permission', PermissionController::class);
+        Route::resource('permission', PermissionController::class)->except(['destroy']);
         Route::resource('role', RoleController::class);
         Route::delete('roles/{id}', [RolePermission::class, 'destroyRole'])->name('roles.destroy');
-        Route::delete('permissions/{id}', [RolePermission::class, 'destroyPermission'])->name('permission.destroy');
+        // Route::delete('permissions/{id}', [RolePermission::class, 'destroyPermission'])->name('permission.destroy');
 
         Route::get('/admin/advisories', [AdvisoryController::class, 'adminList'])->name('advisories.list');
         Route::post('/advisories', [AdvisoryController::class, 'store'])->name('advisories.store');
