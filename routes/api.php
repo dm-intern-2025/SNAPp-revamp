@@ -10,7 +10,7 @@ Route::get('/user', function (Request $request) {
 Route::get('/migrate', function () {
     Illuminate\Support\Facades\Artisan::call('config:clear');
     Illuminate\Support\Facades\Artisan::call('cache:clear');
-    Illuminate\Support\Facades\Artisan::call('migrate --force');
+    Illuminate\Support\Facades\Artisan::call('migrate --seed');
     shell_exec('npm run build');
     return 'Migration completed successfully.';
 })->name('migrate');
