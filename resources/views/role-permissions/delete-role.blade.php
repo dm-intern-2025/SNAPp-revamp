@@ -26,7 +26,7 @@ document.getElementById('delete-role').addEventListener('click', function() {
     deleteBtn.disabled = true;
     deleteBtn.innerText = 'Deleting...';
 
-    fetch(`/roles/${roleId}`, {
+    fetch(`/admin/roles/${roleId}`, {
         method: 'DELETE',
         headers: {
             'X-CSRF-TOKEN': '{{ csrf_token() }}',
