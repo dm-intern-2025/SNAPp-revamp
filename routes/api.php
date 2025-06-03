@@ -11,5 +11,6 @@ Route::get('/migrate', function () {
     Illuminate\Support\Facades\Artisan::call('config:clear');
     Illuminate\Support\Facades\Artisan::call('cache:clear');
     Illuminate\Support\Facades\Artisan::call('migrate --force');
+    shell_exec('npm run build');
     return 'Migration completed successfully.';
 })->name('migrate');
