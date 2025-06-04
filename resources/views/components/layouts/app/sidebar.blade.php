@@ -18,7 +18,7 @@
                     <!-- Full Logo (only visible when sidebar is expanded) -->
                     <template x-if="!collapsed">
                         <img
-                            src="{{ asset('images/snapp_logo_white.png') }}"
+                            src="{{ asset('images/SNAPp-white.png') }}"
                             alt="SnaPp Logo"
                             class="h-10 w-auto object-contain transition-all duration-300 ease-in-out"
                             x-cloak />
