@@ -19,7 +19,7 @@
     );
 
     $strokeWidth = match ($variant) {
-        'outline' => 1.5,
+        'outline' => 2,
         'mini' => 2.25,
         'micro' => 2.5,
     };
@@ -38,4 +38,5 @@
     aria-hidden="true"
     data-slot="icon"
 >
-<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 15 21.84"/><path d="M21 5V8"/><path d="M21 12L18 17H22L19 22"/><path d="M3 12A9 3 0 0 0 14.59 14.87"/></svg>
+<path d="M12 17V3"/><path d="m6 11 6 6 6-6"/><path d="M19 21H5"/></svg>
+</svg>

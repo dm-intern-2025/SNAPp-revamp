@@ -21,14 +21,15 @@
 
             <!-- Main Grid Content -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full">
-                <!-- Revenue Section -->
+
+                <!-- Chart Section -->
                 <div class="lg:col-span-8 flex flex-col bg-white rounded-2xl shadow p-6">
                     <div class="flex justify-between items-center">
                         <h2 class="text-lg font-bold">At A Glance</h2>
                     </div>
 
-                    <div class="mt-4 flex-grow flex items-center justify-center text-gray-400 text-sm italic">
-                        Chart will be added here
+                    <div class="mt-4 flex-grow min-h-[250px] md:min-h-[300px] relative">
+                        <canvas id="energyChart" class="absolute inset-0 w-full h-full"></canvas>
                     </div>
                 </div>
 
@@ -106,21 +107,23 @@
 
 <style>
     /* Core scrollbar prevention */
-    html, body {
+    html,
+    body {
         height: 100%;
         margin: 0;
         padding: 0;
-        overflow: hidden;
+        /* overflow: hidden; */
     }
-    
+
     /* Responsive adjustments */
     @media (max-width: 768px) {
+
         .lg\:col-span-8,
         .lg\:col-span-4,
         .col-span-6 {
             grid-column: span 12;
         }
-        
+
         /* Allow vertical scrolling on mobile if needed */
 
     }

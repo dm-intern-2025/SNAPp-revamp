@@ -48,9 +48,9 @@ Route::middleware(['role:admin|customer'])->group(function () {
         Route::resource('users', UserController::class);
         Route::put('/all-user-list/{user}', [UserController::class, 'editAllUsers'])->name('all-user-list.update');
         Route::get('/admin-list', [UserController::class, 'showAdmins'])->name('admin-list');
-        Route::post('/admin/users/store-admin', [UserController::class, 'storeAdmins'])->name('admin.users.store-admin');
-        Route::put('/admin/users/{user}/update-admin', [UserController::class, 'updateAdmins'])->name('admin.users.update-admin');
-        Route::post('/admin/users/store-account-executive', [UserController::class, 'storeAE'])->name('admin.users.store-account-executive');
+        Route::post('/users/store-admin', [UserController::class, 'storeAdmins'])->name('admin.users.store-admin');
+        Route::put('/users/{user}/update-admin', [UserController::class, 'updateAdmins'])->name('admin.users.update-admin');
+        Route::post('/users/store-account-executive', [UserController::class, 'storeAE'])->name('admin.users.store-account-executive');
         Route::get('/account-executive-list', [UserController::class, 'showAE'])->name('account-executive-list');
         Route::get('/all-user-list', [UserController::class, 'showAllUsers'])->name('all-user-list');
         Route::get('/role-permission', [RolePermission::class, 'index'])->name('role.permission.list');
@@ -60,7 +60,7 @@ Route::middleware(['role:admin|customer'])->group(function () {
         Route::delete('roles/{id}', [RolePermission::class, 'destroyRole'])->name('roles.destroy');
         Route::delete('permissions/{id}', [RolePermission::class, 'destroyPermission'])->name('permission.destroy');
 
-        Route::get('/admin/advisories', [AdvisoryController::class, 'adminList'])->name('advisories.list');
+        Route::get('/advisories', [AdvisoryController::class, 'adminList'])->name('advisories.list');
         Route::post('/advisories', [AdvisoryController::class, 'store'])->name('advisories.store');
         Route::put('/advisories/{advisory}', [AdvisoryController::class, 'update'])->name('advisories.update');
     });
