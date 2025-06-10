@@ -14,7 +14,11 @@
 @source '../../vendor/livewire/flux/stubs/**/*.blade.php';
 
 /* REMOVED: All dark mode specific rules are gone to enforce a permanent light theme. */
-
+@layer base {
+    html {
+        font-family: 'Manrope', sans-serif;
+    }
+}
 @layer base {
     * {
         html, body {
@@ -62,14 +66,15 @@
         background-color: #1443e0; /* Use custom blue background */
     }
 
-    th {
-        @apply px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap;
-    }
+th {
+    @apply px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap;
+}
 
-    td {
-        @apply px-6 py-4 whitespace-nowrap text-sm;
-        color: #1443e0; /* Custom blue text - UNTOUCHED. This will be preserved. */
-    }
+td {
+    @apply px-6 py-4 whitespace-nowrap text-sm text-center font-bold;
+    color: #1443e0; /* Custom blue text - UNTOUCHED. This will be preserved. */
+}
+
 
     tbody {
         /* THE MAIN FIX: Only light mode classes are present. */

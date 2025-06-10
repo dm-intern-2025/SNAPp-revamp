@@ -2,22 +2,22 @@
     {{-- Main container for the dashboard --}}
     <div class="w-full px-4 py-6 space-y-6"
          x-data="{
-            activeAdvisory: null,
-            showModal: false,
-            moreAdvisories: {{ Js::from($moreAdvisories) }},
-            loading: false,
-            loadMoreUrl: '{{ route('dashboard.load-more') }}',
-            async loadMore() {
-                this.loading = true;
-                try {
-                    const response = await fetch(`${this.loadMoreUrl}?skip=${this.moreAdvisories.length}`);
-                    const data = await response.json();
-                    this.moreAdvisories = [...this.moreAdvisories, ...data];
-                } catch (error) {
-                    console.error('Error loading more advisories:', error);
-                }
-                this.loading = false;
-            }
+             activeAdvisory: null,
+             showModal: false,
+             moreAdvisories: {{ Js::from($moreAdvisories) }},
+             loading: false,
+             loadMoreUrl: '{{ route('dashboard.load-more') }}',
+             async loadMore() {
+                 this.loading = true;
+                 try {
+                     const response = await fetch(`${this.loadMoreUrl}?skip=${this.moreAdvisories.length}`);
+                     const data = await response.json();
+                     this.moreAdvisories = [...this.moreAdvisories, ...data];
+                 } catch (error) {
+                     console.error('Error loading more advisories:', error);
+                 }
+                 this.loading = false;
+             }
          }">
 
         <!-- Top Section: Chart and Advisories -->
@@ -92,7 +92,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Contract Expiration Card (smaller) -->
             <div class="col-span-1 md:col-span-2 bg-white rounded-2xl shadow p-6 flex flex-col justify-center items-center">
                 <span class="text-xs font-medium text-[#1443e0]">Contract Expiration</span>
@@ -102,41 +102,51 @@
 
         <!-- Advisory Modal -->
         <div x-show="showModal"
+             style="display: none;"
              x-transition:enter="ease-out duration-300"
              x-transition:leave="ease-in duration-200"
-             class="fixed inset-0 z-50 overflow-y-auto"
-             style="display: none;"> {{-- Added style to prevent flash on load --}}
-            <div class="flex items-center justify-center min-h-screen p-4">
-                {{-- Background overlay --}}
-                <div class="fixed inset-0 bg-black/50" @click="showModal = false"></div>
-
-                <div class="relative bg-white rounded-xl max-w-2xl w-full max-h-[90vh] flex flex-col">
-                    {{-- Modal Header --}}
-                    <div class="p-4 border-b flex justify-between items-center">
-                        <h3 class="text-xl font-bold text-[#1443e0]" x-text="activeAdvisory?.headline"></h3>
-                        <button @click="showModal = false" class="text-gray-500 hover:text-gray-700">
-                            ✕
-                        </button>
-                    </div>
-
-                    {{-- Modal Body --}}
-                    <div class="overflow-y-auto p-4">
-                        <div x-show="activeAdvisory?.attachment" class="mb-4 bg-gray-100 rounded-lg overflow-hidden">
-                            <img :src="`/storage/${activeAdvisory.attachment}`"
-                                 class="w-full h-auto max-h-[50vh] object-contain"
-                                 :alt="activeAdvisory.headline"
-                                 onerror="this.style.display='none'"> {{-- Added error handling for image --}}
-                        </div>
-
-                        <div class="prose max-w-none text-[#1443e0]">
-                            <div x-html="activeAdvisory?.description || ''"></div>
-                            <br>
-                            <div x-html="activeAdvisory?.content || ''"></div>
-
-                            <div class="text-sm text-gray-500 mt-4">
-                                Published on <span x-text="new Date(activeAdvisory?.created_at).toLocaleDateString('en-US', {dateStyle: 'long'})"></span>
+             class="fixed inset-0 z-50 overflow-y-auto">
+            <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 transition-opacity" @click="showModal = false">
+                    <div class="absolute inset-0 bg-black opacity-50"></div>
+                </div>
+                <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full"
+                     @click.away="showModal = false">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start">
+                            <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
+                                <div class="flex justify-between items-center">
+                                    <h3 class="text-xl font-bold text-[#1443e0]" x-text="activeAdvisory?.headline"></h3>
+                                    <button @click="showModal = false" class="text-gray-500 hover:text-gray-700">
+                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="mt-4">
+                                    <div x-show="activeAdvisory?.attachment" class="mb-4 bg-gray-100 rounded-lg overflow-hidden flex justify-center">
+                                        <img :src="activeAdvisory?.attachment ? `/storage/${activeAdvisory.attachment}` : ''"
+                                             class="max-h-[300px] w-auto object-contain"
+                                             :alt="activeAdvisory?.headline">
+                                    </div>
+                                    <div class="prose max-w-none" x-html="activeAdvisory?.description"></div>
+                                    <br>
+                                    <div class="prose max-w-none" x-html="activeAdvisory?.content"></div>
+                                    <div class="mt-4 text-sm text-gray-500">
+                                        Published on
+                                        <span x-text="activeAdvisory ? new Date(activeAdvisory.created_at).toLocaleString('en-US', {
+                                            month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                                        }) : ''"></span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                        <button type="button" @click="showModal = false"
+                                class="w-full sm:w-auto inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#1443e0] text-base font-medium text-white hover:bg-[#0d3ab9] sm:ml-3 sm:text-sm">
+                            Close
+                        </button>
                     </div>
                 </div>
             </div>

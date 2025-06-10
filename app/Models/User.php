@@ -60,7 +60,7 @@ class User extends Authenticatable
     {
         return Str::of($this->name)
             ->explode(' ')
-            ->map(fn (string $name) => Str::of($name)->substr(0, 1))
+            ->map(fn(string $name) => Str::of($name)->substr(0, 1))
             ->implode('');
     }
 
@@ -68,5 +68,10 @@ class User extends Authenticatable
     protected static function booted(): void
     {
         static::addGlobalScope(new HasActiveScope);
+    }
+
+    public function customerProfile()
+    {
+        return Profile::where('customer_id', $this->customer_id)->first();
     }
 }

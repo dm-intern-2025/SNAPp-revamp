@@ -1,82 +1,37 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Services\BillingService;
 use App\Services\OracleInvoiceService;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
-// use Illuminate\Support\Collection;
+use App\Models\Profile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection as SupportCollection;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class BillController extends Controller
 {
-    protected $oracleInvoiceService;
+   public function __construct(
+        protected BillingService $billingService,
+        protected OracleInvoiceService $oracleInvoiceService
+    ) {
+    }
 
-    public function __construct(OracleInvoiceService $oracleInvoiceService)
+       public function showBillsPage(Request $request)
     {
-        $this->oracleInvoiceService = $oracleInvoiceService;
+        // The controller's only job is to call the service...
+        $billsPaginator = $this->billingService->getPaginatedBillsForUser(Auth::user(), $request);
+
+        // ...and return the view with the prepared data.
+        return view('my-bills', [
+            'bills'     => $billsPaginator,
+            'payments'  => null,
+            'activeTab' => 'bills',
+        ]);
     }
-
-public function showBillsPage(Request $request)
-{
-    $user         = Auth::user();
-    $customerId   = $user->customer_id;
-    $perPage      = 5;
-    $currentPage  = $request->input('page', 1);
-    $search       = $request->input('search');
-
-    // 1) Fetch from service
-    $items = $this->oracleInvoiceService->fetchInvoiceData($customerId);
-
-    if (empty($items)) {
-        return back()->with('error', 'Failed to fetch bills.');
-    }
-
-    // 2) Map into the shape you need
-    $allBills = collect($items)->map(function ($item) {
-        return [
-            'Billing Period'     => $item['Comments'] ?? 'N/A',
-            'Power Bill Number'  => $item['DocumentNumber'] ?? '',
-            'Bill Date'          => isset($item['TransactionDate']) ? Carbon::parse($item['TransactionDate'])->format('m/d/Y') : '',
-            'Terms'              => $item['PaymentTerms'] ?? '',
-            'Due Date'           => isset($item['DueDate']) ? Carbon::parse($item['DueDate'])->format('m/d/Y') : '',
-            'Total Amount'       => number_format($item['EnteredAmount'] ?? 0, 2),
-            'Status'             => ($item['InvoiceBalanceAmount'] ?? 0) == 0 ? 'PAID' : 'UNPAID',
-        ];
-    });
-
-    // 3) Filter if search query exists
-    if (!empty($search)) {
-        $search = strtolower($search);
-        $allBills = $allBills->filter(function ($bill) use ($search) {
-            return str_contains(strtolower($bill['Billing Period']), $search);
-        });
-    }
-
-    // 4) Paginate
-    $totalItems       = $allBills->count();
-    $currentPageItems = $allBills
-        ->forPage($currentPage, $perPage)
-        ->values(); // reset indexes
-
-    $paginator = new LengthAwarePaginator(
-        $currentPageItems,
-        $totalItems,
-        $perPage,
-        $currentPage,
-        ['path' => route('bills.show')]
-    );
-
-    // 5) Return view
-    return view('my-bills', [
-        'bills'     => $paginator,
-        'payments'  => null,
-        'activeTab' => 'bills',
-    ]);
-}
 
 
     public function showPaymentHistory(Request $request)
@@ -136,9 +91,7 @@ public function showBillsPage(Request $request)
             return [
                 'Billing Period'     => $item['Comments'] ?? 'N/A',
                 'Power Bill Number'  => $item['DocumentNumber'] ?? '',
-                'Bill Date'          => isset($item['TransactionDate']) ? Carbon::parse($item['TransactionDate'])->format('m/d/Y') : '',
-                'Terms'              => $item['PaymentTerms'] ?? '',
-                'Due Date'           => isset($item['DueDate']) ? Carbon::parse($item['DueDate'])->format('m/d/Y') : '',
+                'Posting Date'          => isset($item['TransactionDate']) ? Carbon::parse($item['TransactionDate'])->format('m/d/Y') : '',
                 'Total Amount'       => number_format($item['EnteredAmount'] ?? 0, 2),
                 'Status'             => ($item['InvoiceBalanceAmount'] ?? 0) == 0 ? 'PAID' : 'UNPAID',
             ];
@@ -191,4 +144,3 @@ public function showBillsPage(Request $request)
         }, 200, $headers);
     }
 }
-
