@@ -113,4 +113,27 @@ class BillingService
             return $oracleComments;
         }
     }
+
+    // In app/Services/BillingService.php
+
+    public function getPaginatedPaymentHistoryForUser($user, Request $request): LengthAwarePaginator
+    {
+        // 1. Fetch raw data from the Oracle Service
+        $rawOracleItems = $this->oracleService->fetchInvoiceData($user->customer_id);
+
+        // 2. Map the raw data into the "Payment History" format
+        $allPayments = collect($rawOracleItems)->map(function ($item) {
+            return [
+                'Payment Reference'      => $item['DocumentNumber'] ?? '',
+                'Payment Reference Date' => isset($item['AccountingDate']) ? \Carbon\Carbon::parse($item['AccountingDate'])->format('m/d/Y') : '',
+                'Billing Period'         => $item['Comments'] ?? 'N/A',
+                'Amount'                 => number_format($item['EnteredAmount'] ?? 0, 2),
+                'Power Bill No'          => $item['DocumentNumber'] ?? '',
+                'Date Posted'            => isset($item['AccountingDate']) ? \Carbon\Carbon::parse($item['AccountingDate'])->format('m/d/Y') : '',
+            ];
+        });
+
+        // 3. Paginate the final collection using our reusable helper method
+        return $this->paginate($allPayments, 5, $request, 'payments.history');
+    }
 }

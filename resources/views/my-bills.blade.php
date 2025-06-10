@@ -15,7 +15,7 @@
 
   <!-- Export + Tabs -->
   <div class="flex flex-col sm:flex-row sm:items-center gap-4">
-    @if($activeTab === 'bills')
+    <!-- @if($activeTab === 'bills')
       <button
         onclick="downloadThenRedirect('{{ route('bills.export') }}', '{{ route('bills.show') }}')"
         class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
@@ -29,7 +29,7 @@
         class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
         Export Payments
       </button>
-    @endif
+    @endif -->
 
     <flux:button.group>
       <flux:button 
