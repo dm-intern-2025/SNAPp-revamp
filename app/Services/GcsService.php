@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use Google\Cloud\Storage\StorageClient;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Log; // Log is still here for the catch block, but dd is primary
 
 class GcsService
 {
@@ -15,13 +15,11 @@ class GcsService
         $config = config('services.google_cloud');
         
         if (empty($config['project_id']) || empty($config['key_file']) || empty($config['bucket'])) {
-            Log::error('GCS Service Error: Configuration is missing in config/services.php or .env file.');
-            return;
+            dd('GCS Service Error: Configuration is missing in config/services.php or .env file.');
         }
 
         if (!file_exists($config['key_file'])) {
-            Log::error('GCS Service Error: Key file not found at path: ' . $config['key_file']);
-            return;
+            dd('GCS Service Error: Key file not found at path: ' . $config['key_file']);
         }
 
         try {
@@ -31,15 +29,14 @@ class GcsService
             ]);
             $this->bucketName = $config['bucket'];
         } catch (\Exception $e) {
-            Log::error('GCS Service Error: Failed to instantiate Storage client: ' . $e->getMessage());
+            dd('GCS Service Error: Failed to instantiate Storage client.', $e);
         }
     }
 
     public function generateSignedUrl(string $objectPath): ?string
     {
         if (!$this->storageClient) {
-            Log::error("GCS Service Error: Cannot generate URL. Storage client not initialized.");
-            return null;
+            dd("GCS Service Error: Cannot generate URL. Storage client was not initialized. Check your configuration.");
         }
 
         try {
@@ -47,14 +44,12 @@ class GcsService
             $object = $bucket->object($objectPath);
 
             if (!$object->exists()) {
-                Log::info("GCS Service Info: Object not found: gs://{$this->bucketName}/{$objectPath}");
-                return null;
+                dd("GCS Service Info: Object not found. The connection worked, but this file does not exist in the bucket:", "gs://{$this->bucketName}/{$objectPath}");
             }
 
             return $object->signedUrl(new \DateTime('15 min'), ['version' => 'v4']);
         } catch (\Exception $e) {
-            Log::error("GCS Service Error: Could not generate signed URL for gs://{$this->bucketName}/{$objectPath}", ['exception' => $e]);
-            return null;
+            dd("GCS Service Error: Could not generate signed URL. This is likely a PERMISSION ERROR.", $e);
         }
     }
 }

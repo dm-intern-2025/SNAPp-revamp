@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Services;
-
+use App\Models\Profile;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
@@ -13,60 +13,74 @@ class BillingService
     public function __construct(
         protected OracleInvoiceService $oracleService,
         protected GcsService $gcsService
-    ) {
-    }
+    ) {}
 
     public function getPaginatedBillsForUser($user, Request $request): LengthAwarePaginator
     {
-        $customerShortname = $user->profile->short_name ?? null;
+        $profile = Profile::where('customer_id', $user->customer_id)->first();
+        $customerShortname = $profile ? $profile->short_name : null;
         if (empty($customerShortname)) {
             session()->flash('info_message', 'Please complete your customer profile to enable viewing of bill PDFs.');
         }
-        
+
         $rawOracleItems = $this->oracleService->fetchInvoiceData($user->customer_id);
         $allBills = $this->prepareBillData(collect($rawOracleItems), $customerShortname);
 
         $search = $request->input('search');
         if (!empty($search)) {
             $search = strtolower($search);
-            $allBills = $allBills->filter(fn ($bill) => 
+            $allBills = $allBills->filter(
+                fn($bill) =>
                 str_contains(strtolower($bill['Billing Period']), $search) ||
-                str_contains(strtolower($bill['Power Bill Number']), $search)
+                    str_contains(strtolower($bill['Power Bill Number']), $search)
             );
         }
-
         return $this->paginate($allBills, 5, $request, 'bills.show');
     }
 
-    protected function prepareBillData(Collection $items, ?string $customerShortname): Collection
-    {
-        return $items->map(function ($item) use ($customerShortname) {
+    // In app/Services/BillingService.php
+
+protected function prepareBillData(Collection $items, ?string $customerShortname): Collection
+{
+    return $items->map(function ($item) use ($customerShortname) {
+        
+        $billingPeriodForFile = null;
+        // --- THIS IS THE CORRECTED LOGIC ---
+        if (isset($item['Comments'])) {
+            // Split the string by " to "
+            $parts = explode(' to ', $item['Comments']);
             
-            // This logic is for the GCS Filename
-            $billingPeriodForFile = isset($item['Comments']) ? strtoupper($item['Comments']) : null;
-            $documentNumber = $item['DocumentNumber'] ?? ($item['TransactionNumber'] ?? null);
-            $gcsPdfUrl = null;
-
-            if ($customerShortname && $billingPeriodForFile && $documentNumber) {
-                $objectPath = "snapp_bills/{$customerShortname}_{$billingPeriodForFile}_{$documentNumber}.pdf";
-                $gcsPdfUrl = $this->gcsService->generateSignedUrl($objectPath);
+            // Check if we have two parts, as expected
+            if (count($parts) === 2) {
+                // Uppercase each part individually and join them back with a lowercase " to "
+                $billingPeriodForFile = strtoupper(trim($parts[0])) . ' to ' . strtoupper(trim($parts[1]));
+            } else {
+                // Fallback for any unexpected format
+                $billingPeriodForFile = strtoupper($item['Comments']);
             }
+        }
+        // --- END OF CORRECTION ---
 
-            // This is the final data array for the view
-            return [
-                // --- THIS LINE IS NOW CHANGED TO USE THE NEW FORMATTING METHOD ---
-                'Billing Period'    => $this->formatBillingRangeForDisplay($item['Comments'] ?? null),
-                
-                'Power Bill Number' => $item['DocumentNumber'] ?? '',
-                'Posting Date'         => isset($item['TransactionDate']) ? Carbon::parse($item['TransactionDate'])->format('m/d/Y') : '',
-                'Terms'             => $item['PaymentTerms'] ?? '',
-                'Due Date'          => isset($item['DueDate']) ? Carbon::parse($item['DueDate'])->format('m/d/Y') : '',
-                'Total Amount'      => number_format($item['EnteredAmount'] ?? 0, 2),
-                'Status'            => ($item['InvoiceBalanceAmount'] ?? 0) == 0 ? 'PAID' : 'UNPAID',
-                'gcsPdfUrl'         => $gcsPdfUrl,
-            ];
-        });
-    }
+        $documentNumber = $item['DocumentNumber'] ?? ($item['TransactionNumber'] ?? null);
+        $gcsPdfUrl = null;
+
+        if ($customerShortname && $billingPeriodForFile && $documentNumber) {
+            $objectPath = "snapp_bills/{$customerShortname}_{$billingPeriodForFile}_{$documentNumber}.pdf";
+            $gcsPdfUrl = $this->gcsService->generateSignedUrl($objectPath);
+        }
+
+        return [
+            'Billing Period'    => $this->formatBillingRangeForDisplay($item['Comments'] ?? null),
+            'Power Bill Number' => $item['DocumentNumber'] ?? '',
+            'Posting Date'      => isset($item['TransactionDate']) ? \Carbon\Carbon::parse($item['TransactionDate'])->format('m/d/Y') : '',
+            'Terms'             => $item['PaymentTerms'] ?? '',
+            'Due Date'          => isset($item['DueDate']) ? \Carbon\Carbon::parse($item['DueDate'])->format('m/d/Y') : '',
+            'Total Amount'      => number_format($item['EnteredAmount'] ?? 0, 2),
+            'Status'            => ($item['InvoiceBalanceAmount'] ?? 0) == 0 ? 'PAID' : 'UNPAID',
+            'gcsPdfUrl'         => $gcsPdfUrl,
+        ];
+    });
+}
 
     private function paginate(Collection $collection, int $perPage, Request $request, string $routeName): LengthAwarePaginator
     {
@@ -106,7 +120,6 @@ class BillingService
             //    $startDate->format('m/d/Y') produces "10/26/2022" (mm/dd/yyyy)
             //    $endDate->format('m/d/y')   produces "11/25/22" (mm/dd/yy)
             return $startDate->format('m/d/Y') . '-' . $endDate->format('m/d/y');
-
         } catch (\Exception $e) {
             // If parsing fails for any reason, log it and return the original string
             Log::warning("Could not format billing period display string: '{$oracleComments}'");
