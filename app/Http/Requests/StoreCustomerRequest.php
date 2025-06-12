@@ -42,6 +42,43 @@ class StoreCustomerRequest extends FormRequest
                 'numeric',
             ],
 
+            // === Optional Profile Fields ===
+            'account_name' => [
+                'nullable', 
+                'string', 
+                'max:100'
+            ],
+
+            'short_name' => [
+                'nullable', 
+                'string', 
+                'max:100'
+            ],
+
+            'customer_category' => [
+                'nullable', 
+                'string', 
+                'max:255'
+            ],
+
+            'contract_price' => [
+                'nullable', 
+                'numeric'
+            ],
+
+            'contracted_demand' => [
+                'nullable', 
+                'numeric'
+            ],
+            'cooperation_period_start_date' => [
+                'nullable', 
+                'date'
+            ],
+            'cooperation_period_end_date' => [
+                'nullable', 
+                'date'
+            ],
+
         ];
     }
     protected function failedValidation(Validator $validator)

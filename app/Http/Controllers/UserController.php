@@ -11,80 +11,161 @@ use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateAdminRequest;
 use App\Http\Requests\UpdateAERequest;
 use App\Mail\CustomerPasswordMail;
+use App\Models\Profile;
 use App\Models\Scopes\HasActiveScope;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    /** CUSTOMER USERS */
-    public function index(Request $request)
-    {
-        $query = User::query()
-            ->role('customer'); // Scope to 'customer' role
+   public function index(Request $request)
+{
+    // Start the query and scope it
+    $query = User::query()
+        ->role('customer');
 
-        // 1. Active/inactive filter (only if non-empty)
-        if ($request->filled('active')) {
-            $query->where('active', $request->active);
-        }
+    // **THE FIX: Eager-load the profile data right away.**
+    $query->with('profile');
 
-        // 2. Search by name or email
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%");
-            });
-        }
+    // --- The rest of your function remains exactly the same ---
 
-        // 3. Sorting
-        $sort = $request->input('sort', 'created_at_desc');
-        switch ($sort) {
-            case 'name_asc':
-                $query->orderBy('name', 'asc');
-                break;
-            case 'name_desc':
-                $query->orderBy('name', 'desc');
-                break;
-            case 'created_at_asc':
-                $query->orderBy('created_at', 'asc');
-                break;
-            case 'created_at_desc':
-            default:
-                $query->orderBy('created_at', 'desc');
-                break;
-        }
-
-        // 4. Pagination with query string
-        $users = $query
-            ->paginate(10)
-            ->appends($request->only(['active', 'search', 'sort']));
-
-        return view('admin.customer-account.customer-list', compact('users'));
+    // 1. Active/inactive filter
+    if ($request->filled('active')) {
+        $query->where('active', $request->active);
     }
+
+    // 2. Search by name or email
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where(function ($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%");
+        });
+    }
+
+    // 3. Sorting
+    $sort = $request->input('sort', 'created_at_desc');
+    switch ($sort) {
+        case 'name_asc':
+            $query->orderBy('name', 'asc');
+            break;
+        case 'name_desc':
+            $query->orderBy('name', 'desc');
+            break;
+        case 'created_at_asc':
+            $query->orderBy('created_at', 'asc');
+            break;
+        case 'created_at_desc':
+        default:
+            $query->orderBy('created_at', 'desc');
+            break;
+    }
+
+    // 4. Pagination
+    $users = $query
+        ->paginate(10)
+        ->appends($request->only(['active', 'search', 'sort']));
+
+    return view('admin.customer-account.customer-list', compact('users'));
+}
 
 
     public function store(StoreCustomerRequest $request)
     {
+        $validated = $request->validated();
         $password = Str::random(8);
 
-        $validatedRequest = $request->validated();
+        DB::beginTransaction();
+        try {
+            // 1. Create the User (from your original code)
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'customer_id' => $validated['customer_id'],
+                'password' => bcrypt($password),
+            ]);
+            $user->assignRole('customer');
 
-        $validatedRequest['password'] = bcrypt($password);
+            // 2. Check if any optional profile data was submitted
+            $profileData = $request->only([
+                'account_name',
+                'short_name',
+                'customer_category',
+                'contract_price',
+                'contracted_demand',
+                'cooperation_period_start_date',
+                'cooperation_period_end_date'
+            ]);
 
-        $user = User::create($validatedRequest);
+            // Only proceed if at least one profile field was filled
+            if (count(array_filter($profileData)) > 0) {
+                // 3. Use the firstOrNew logic from your ProfileController
+                $profile = Profile::firstOrNew(['customer_id' => $user->customer_id]);
+                $profile->fill($profileData);
+                $profile->save();
+            }
 
-        $user->assignRole('customer');
+            Mail::to($user->email)->send(new CustomerPasswordMail($password));
+            DB::commit();
 
-        Mail::to($user->email)->send(new CustomerPasswordMail($password));
-
-        return redirect()->back()->with('success', 'Customer account created successfully.');
+            return redirect()->back()->with('success', 'Customer account created successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Customer Creation Failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to create customer account.');
+        }
     }
+
+    /**
+     * Corrected update method.
+     */
+    public function update(EditCustomerRequest $request, User $user)
+    {
+        $validated = $request->validated();
+
+        DB::beginTransaction();
+        try {
+            // 1. Update the User (from your original code)
+            $user->update([
+                'name' => $validated['edit_name'],
+                'email' => $validated['edit_email'],
+                'customer_id' => $validated['edit_customer_id'],
+            ]);
+
+            // 2. Manually map the 'edit_' prefixed fields to the profile model
+            $profileData = [
+                'account_name' => $validated['edit_account_name'] ?? null,
+                'short_name' => $validated['edit_short_name'] ?? null,
+                'customer_category' => $validated['edit_customer_category'] ?? null,
+                'contract_price' => $validated['edit_contract_price'] ?? null,
+                'contracted_demand' => $validated['edit_contracted_demand'] ?? null,
+                'cooperation_period_start_date' => $validated['edit_cooperation_period_start_date'] ?? null,
+                'cooperation_period_end_date' => $validated['edit_cooperation_period_end_date'] ?? null,
+            ];
+
+            // 3. Filter out empty fields so we don't overwrite existing data with nulls
+            $filteredProfileData = array_filter($profileData, fn($value) => !is_null($value));
+
+            // 4. If there's data to update, use the firstOrNew logic
+            if (count($filteredProfileData) > 0) {
+                $profile = Profile::firstOrNew(['customer_id' => $user->customer_id]);
+                $profile->fill($filteredProfileData);
+                $profile->save();
+            }
+
+            DB::commit();
+            return redirect()->route('users.index')->with('success', 'Customer updated successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Customer Update Failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to update customer.');
+        }
+    }
+
 
     public function edit($id)
     {
@@ -95,27 +176,6 @@ class UserController extends Controller
         return view('admin.customer-account.form-edit-customer', compact('user'));
     }
 
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(EditCustomerRequest $request, User $user)
-    {
-        $validated = $request->validated();
-
-        $user->update([
-            'name' => $validated['edit_name'],
-            'email' => $validated['edit_email'],
-            'customer_id' => $validated['edit_customer_id']
-        ]);
-
-        return redirect()->route('users.index')->with('success', 'Customer updated.');
-    }
-
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(User $user)
     {
         $user->delete();
@@ -168,7 +228,7 @@ class UserController extends Controller
         $query = User::query()
             ->role('account executive');
 
-        
+
         // 1. Active/inactive filter (only if non-empty)
         if ($request->filled('active')) {
             $query->where('active', $request->active);

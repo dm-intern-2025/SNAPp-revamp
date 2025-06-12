@@ -5,12 +5,9 @@ namespace App\Http\Controllers;
 use App\Services\BillingService;
 use App\Services\OracleInvoiceService;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
-use App\Models\Profile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection as SupportCollection;
-use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class BillController extends Controller
@@ -22,6 +19,7 @@ class BillController extends Controller
 
     public function showBillsPage(Request $request)
     {
+        
         // The controller's only job is to call the service...
         $billsPaginator = $this->billingService->getPaginatedBillsForUser(Auth::user(), $request);
 

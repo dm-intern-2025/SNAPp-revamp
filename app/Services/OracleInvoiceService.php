@@ -22,22 +22,24 @@ class OracleInvoiceService
         ];
     }
 
-    public function fetchInvoiceData($customerId)
-    {
-        $url = 'https://fa-evjn-dev1-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/receivablesInvoices';
+// In app/Services/OracleInvoiceService.php
 
-        $response = Http::withBasicAuth(...$this->apiAuth)
-            ->withHeaders($this->apiHeaders)
-            ->get($url, [
-                'finder' => "invoiceSearch;
-                    TransactionSource=SNAP AUTOINVOICE,
-                    TransactionType=TRADE-RES,
-                    BusinessUnit=SNAPR BU,
-                    BillToCustomerNumber={$customerId}"
-            ]);
+public function fetchInvoiceData($customerId)
+{
+    $url = 'https://fa-evjn-dev1-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/receivablesInvoices';
 
-        return $response->successful() ? $response->json()['items'] ?? [] : [];
-    }
+    // We need to ask the API for the total count of results
+    $queryParams = [
+        'finder' => "invoiceSearch;TransactionSource=SNAP AUTOINVOICE,TransactionType=TRADE-RES,BusinessUnit=SNAPR BU,BillToCustomerNumber={$customerId}",
+        'totalResults' => 'true' // Ask Oracle to tell us the total
+    ];
+
+    $response = Http::withBasicAuth(...$this->apiAuth)
+        ->withHeaders($this->apiHeaders)
+        ->get($url, $queryParams);
+
+    return $response->successful() ? $response->json()['items'] ?? [] : [];
+}
 
     public function fetchConsumption($transactionId)
     {

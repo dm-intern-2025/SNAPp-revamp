@@ -38,7 +38,7 @@
                 Apply Filters
             </flux:button>
         </form>
-        
+
         <!-- Clickable Table -->
         <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-neutral-700">
             <table class="min-w-full text-left">
@@ -52,14 +52,22 @@
                 <tbody>
                     @foreach ($users as $user)
                     <tr
-                    class="cursor-pointer hover:bg-gray-100 dark:hover:bg-neutral-800 transition flux-btn-info
+                        class="cursor-pointer hover:bg-gray-100 dark:hover:bg-neutral-800 transition flux-btn-info
                                    {{ $user->active ? 'hover:bg-gray-100 dark:hover:bg-neutral-800' : 'bg-red-50 text-gray-400' }}"
-                    data-id="{{ $user->id }}"
+                        data-id="{{ $user->id }}"
                         data-name="{{ $user->name }}"
                         data-email="{{ $user->email }}"
                         data-customer-id="{{ $user->customer_id }}"
-                        onclick="document.getElementById('open-edit-modal').click()"
-                    >
+
+                        data-account-name="{{ $user->profile?->account_name }}"
+                        data-short-name="{{ $user->profile?->short_name }}"
+                        data-customer-category="{{ $user->profile?->customer_category }}"
+                        data-contract-price="{{ $user->profile?->contract_price }}"
+                        data-contracted-demand="{{ $user->profile?->contracted_demand }}"
+                        data-start-date="{{ $user->profile?->cooperation_period_start_date }}"
+                        data-end-date="{{ $user->profile?->cooperation_period_end_date }}"
+                        onclick="document.getElementById('open-edit-modal').click()">
+                        
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->customer_id }}</td>

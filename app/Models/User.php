@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Models\Scopes\HasActiveScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -70,8 +71,11 @@ class User extends Authenticatable
         static::addGlobalScope(new HasActiveScope);
     }
 
-    public function customerProfile()
+    public function profile(): BelongsTo
     {
-        return Profile::where('customer_id', $this->customer_id)->first();
+        // This tells Eloquent: 
+        // "Match the `customer_id` on this User model with the 
+        // `customer_id` on the Profile model."
+        return $this->belongsTo(Profile::class, 'customer_id', 'customer_id');
     }
 }

@@ -47,8 +47,42 @@ class EditCustomerRequest extends FormRequest
                 Rule::unique('users', 'email')->ignore($user->id),
             ], 
             
-            // For future
-            // 'password' => ['nullable', 'string', 'min:8'], // For future
+// === Optional Profile Fields ===
+            'edit_account_name' => [
+                'nullable', 
+                'string', 
+                'max:100'
+            ],
+
+            'edit_short_name' => [
+                'nullable', 
+                'string', 
+                'max:100'
+            ],
+
+            'edit_customer_category' => [
+                'nullable', 
+                'string', 
+                'max:255'
+            ],
+
+            'edit_contract_price' => [
+                'nullable', 
+                'numeric'
+            ],
+
+            'edit_contracted_demand' => [
+                'nullable', 
+                'numeric'
+            ],
+            'edit_cooperation_period_start_date' => [
+                'nullable', 
+                'date'
+            ],
+            'edit_cooperation_period_end_date' => [
+                'nullable', 
+                'date'
+            ],
         ];
     }
     protected function failedValidation(Validator $validator)

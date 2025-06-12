@@ -24,6 +24,7 @@ class BillingService
         }
 
         $rawOracleItems = $this->oracleService->fetchInvoiceData($user->customer_id);
+
         $allBills = $this->prepareBillData(collect($rawOracleItems), $customerShortname);
 
         $search = $request->input('search');
@@ -38,21 +39,21 @@ class BillingService
         return $this->paginate($allBills, 5, $request, 'bills.show');
     }
 
-    // In app/Services/BillingService.php
+// In app/Services/BillingService.php
 
 protected function prepareBillData(Collection $items, ?string $customerShortname): Collection
 {
     return $items->map(function ($item) use ($customerShortname) {
         
         $billingPeriodForFile = null;
-        // --- THIS IS THE CORRECTED LOGIC ---
+        // --- THIS IS THE CORRECTED LOGIC FOR THE FILENAME ---
         if (isset($item['Comments'])) {
             // Split the string by " to "
             $parts = explode(' to ', $item['Comments']);
             
             // Check if we have two parts, as expected
             if (count($parts) === 2) {
-                // Uppercase each part individually and join them back with a lowercase " to "
+                // Uppercase each date part individually and join them back with a lowercase " to "
                 $billingPeriodForFile = strtoupper(trim($parts[0])) . ' to ' . strtoupper(trim($parts[1]));
             } else {
                 // Fallback for any unexpected format
@@ -73,10 +74,8 @@ protected function prepareBillData(Collection $items, ?string $customerShortname
             'Billing Period'    => $this->formatBillingRangeForDisplay($item['Comments'] ?? null),
             'Power Bill Number' => $item['DocumentNumber'] ?? '',
             'Posting Date'      => isset($item['TransactionDate']) ? \Carbon\Carbon::parse($item['TransactionDate'])->format('m/d/Y') : '',
-            'Terms'             => $item['PaymentTerms'] ?? '',
-            'Due Date'          => isset($item['DueDate']) ? \Carbon\Carbon::parse($item['DueDate'])->format('m/d/Y') : '',
-            'Total Amount'      => number_format($item['EnteredAmount'] ?? 0, 2),
             'Status'            => ($item['InvoiceBalanceAmount'] ?? 0) == 0 ? 'PAID' : 'UNPAID',
+            'Total Amount'      => number_format($item['EnteredAmount'] ?? 0, 2),
             'gcsPdfUrl'         => $gcsPdfUrl,
         ];
     });
