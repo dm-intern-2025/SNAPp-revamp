@@ -1,19 +1,15 @@
-{{-- This single Alpine.js component controls everything on this page --}}
 <div x-data="{
     showPdfModal: false,
     pdfUrl: '',
     selectedBill: {},
     openPdfViewer(element) {
-        // This function gets all the data from the clicked row
         this.selectedBill = element.dataset;
-        // It specifically gets the PDF url
         this.pdfUrl = element.dataset.gcsPdfUrl;
-        // It then sets the 'showPdfModal' variable to true, which opens the modal
         this.showPdfModal = true;
     }
 }" @keydown.escape.window="showPdfModal = false">
 
-    {{-- Your Table --}}
+    {{-- This is your table --}}
     <div class="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
         <table>
             <thead>
@@ -23,7 +19,7 @@
                     <th>Posting Date</th>
                     <th>Status</th>
                     <th>Total Amount</th>
-                    <th></th> {{-- Your action column header --}}
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -31,12 +27,11 @@
                     <tr 
                         @if($item['gcsPdfUrl']) 
                             class="cursor-pointer hover:bg-gray-100 dark:hover:bg-neutral-800 transition" 
-                            {{-- This makes the entire row clickable --}}
                             @click="openPdfViewer($el)"
                         @else
                             class="hover:bg-gray-100 dark:hover:bg-neutral-800 transition"
                         @endif
-                        {{-- All data attributes are on the row, so the openPdfViewer function can access them --}}
+                        {{-- Data attributes are on the row, so the openPdfViewer function can access them --}}
                         data-bill-number="{{ $item['Power Bill Number'] }}"
                         data-billing-period="{{ $item['Billing Period'] }}"
                         data-posting-date="{{ $item['Posting Date'] }}"
@@ -54,10 +49,17 @@
                         </td>
                         <td>₱{{ $item['Total Amount'] }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-center">
-                            {{-- YOUR UNTOUCHED BUTTON --}}
-                            <button type="button" @click.stop="" title="Download" class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-[#1443e0] text-white hover:bg-[#0d3ab9] transition-colors">
-                                <flux:icon name="download" class="h-4 w-4" />
-                            </button>
+                            {{-- YOUR original button, now functional for a direct view/download --}}
+                            @if($item['gcsPdfUrl'])
+                                <button
+                                    type="button"
+                                    @click.stop="window.open('{{ $item['gcsPdfUrl'] }}', '_blank')"
+                                    title="View/Download Bill"
+                                    class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-[#1443e0] text-white hover:bg-[#0d3ab9] transition-colors">
+                                    
+                                    <flux:icon name="download" class="h-4 w-4" />
+                                </button>
+                            @endif
                         </td>
                     </tr>
                 @empty
@@ -74,12 +76,14 @@
     </div>
     @endif
 
-    <!-- The Corrected Two-Panel Modal -->
+    <!-- The Final "Print Layout" Modal -->
     <div
         x-show="showPdfModal"
         x-transition
         class="fixed inset-0 z-50 bg-black bg-opacity-75 flex items-center justify-center p-2 sm:p-4"
         style="display: none;"
+        role="dialog"
+        aria-modal="true"
     >
         <div @click.outside="showPdfModal = false" class="bg-white dark:bg-neutral-900 rounded-xl shadow-xl w-full max-w-[95vw] h-[95vh] flex flex-col md:flex-row">
             
@@ -118,10 +122,6 @@
                             <dt class="font-medium text-gray-500">Posting Date</dt>
                             <dd class="mt-1 text-gray-900 dark:text-white" x-text="selectedBill.postingDate"></dd>
                         </div>
-                        <div>
-                            <dt class="font-medium text-gray-500">Posting Date</dt>
-                            <dd class="mt-1 text-gray-900 dark:text-white" x-text="selectedBill.postingDate"></dd>
-                        </div>
                          <div>
                             <dt class="font-medium text-gray-500">Status</dt>
                             <dd class="mt-1"><span class="px-2 py-1 rounded-full text-xs" :class="{ 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200': selectedBill.status === 'PAID', 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200': selectedBill.status !== 'PAID' }" x-text="selectedBill.status"></span></dd>
@@ -131,6 +131,12 @@
                             <dd class="mt-1 text-xl font-semibold text-gray-900 dark:text-white">₱<span x-text="Number(selectedBill.totalAmount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})"></span></dd>
                         </div>
                     </dl>
+                </div>
+
+                <div class="mt-auto pt-4 flex-shrink-0">
+                    <a x-show="pdfUrl" :href="pdfUrl" download class="w-full">
+                        <flux:button class="w-full">Download PDF</flux:button>
+                    </a>
                 </div>
             </div>
         </div>
