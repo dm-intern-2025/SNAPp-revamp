@@ -7,53 +7,83 @@ use Illuminate\Support\Facades\Log;
 
 class GcsService
 {
-    public ?StorageClient $storageClient = null;
-    public ?string $bucketName = null;
+    private ?StorageClient $storageClient = null;
+    private array $config;
+    private bool $isInitialized = false;
 
+    /**
+     * The constructor now ONLY stores the config. 
+     * It does NOT try to connect to Google, which fixes the startup crash.
+     */
     public function __construct()
     {
-        $config = config('services.google_cloud');
-        
-        if (empty($config['project_id']) || empty($config['key_file']) || empty($config['bucket'])) {
-            Log::error('GCS Service Error: Configuration is missing in config/services.php or .env file.');
-            return;
+        $this->config = config('services.google_cloud');
+    }
+
+    /**
+     * This private method initializes the GCS client ONCE, the first time it's needed.
+     * This is the "lazy loading" part.
+     */
+    private function initializeClient(): bool
+    {
+        // If we have already tried to connect, don't try again.
+        if ($this->isInitialized) {
+            return !is_null($this->storageClient);
         }
 
-        if (!file_exists($config['key_file'])) {
-            Log::error('GCS Service Error: Key file not found at path: ' . $config['key_file']);
-            return;
+        // Mark that we are now attempting to initialize.
+        $this->isInitialized = true;
+
+        if (empty($this->config['project_id']) || empty($this->config['key_file']) || empty($this->config['bucket'])) {
+            Log::critical('GCS FATAL ERROR: Configuration keys are missing in config/services.php or .env file.');
+            return false;
         }
 
         try {
+            // The actual connection to Google happens HERE.
+            // If the key file path is invalid, this will throw a clear exception.
             $this->storageClient = new StorageClient([
-                'projectId' => $config['project_id'],
-                'keyFilePath' => $config['key_file'],
+                'projectId' => $this->config['project_id'],
+                'keyFilePath' => $this->config['key_file'],
             ]);
-            $this->bucketName = $config['bucket'];
+            
+            return true;
         } catch (\Exception $e) {
-            Log::error('GCS Service Error: Failed to instantiate Storage client: ' . $e->getMessage());
+            Log::critical('GCS FATAL ERROR: Failed to instantiate Storage client. Check key file path and permissions.', [
+                'key_file_path' => $this->config['key_file'],
+                'exception_message' => $e->getMessage()
+            ]);
+            $this->storageClient = null;
+            return false;
         }
     }
 
+    /**
+     * Generates a temporary signed URL for a given GCS object path.
+     */
     public function generateSignedUrl(string $objectPath): ?string
     {
-        if (!$this->storageClient) {
-            Log::error("GCS Service Error: Cannot generate URL. Storage client not initialized.");
+        // First, ensure the client is ready by calling our new helper method.
+        if (!$this->initializeClient()) {
+            Log::error("GCS Error: Cannot generate URL because client failed to initialize.");
             return null;
         }
 
         try {
-            $bucket = $this->storageClient->bucket($this->bucketName);
+            $bucket = $this->storageClient->bucket($this->config['bucket']);
             $object = $bucket->object($objectPath);
 
             if (!$object->exists()) {
-                Log::info("GCS Service Info: Object not found: gs://{$this->bucketName}/{$objectPath}");
+                Log::info("GCS Info: Object not found: gs://{$this->config['bucket']}/{$objectPath}");
                 return null;
             }
 
             return $object->signedUrl(new \DateTime('15 min'), ['version' => 'v4']);
         } catch (\Exception $e) {
-            Log::error("GCS Service Error: Could not generate signed URL for gs://{$this->bucketName}/{$objectPath}", ['exception' => $e]);
+            Log::error("GCS Error: Could not generate signed URL. This is likely a PERMISSION ERROR (missing Service Account Token Creator role).", [
+                'object_path' => "gs://{$this->config['bucket']}/{$objectPath}",
+                'exception' => $e->getMessage()
+            ]);
             return null;
         }
     }
