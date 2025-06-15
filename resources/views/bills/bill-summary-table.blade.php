@@ -76,7 +76,7 @@
     </div>
     @endif
 
-    <!-- The Final "Print Layout" Modal -->
+
     <div
         x-show="showPdfModal"
         x-transition
