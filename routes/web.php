@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdvisoryController;
 use App\Http\Controllers\BillController;
+use App\Http\Controllers\ContractController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GhgController;
 use App\Http\Controllers\ProfileController;
@@ -24,7 +25,7 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['role:admin|account executive|customer'])->group(function () {
     Route::resource('profiles', ProfileController::class);
     Route::get('/dashboard/load-more', [DashboardController::class, 'loadMore'])->name('dashboard.load-more');
-    Route::view('my-contracts', 'my-contracts')->name('my-contracts');
+    Route::get('my-contracts', [ContractController::class, 'showContractsPage'])->name('my-contracts');
     Route::get('/dashboard', [DashboardController::class, 'showDashboardFields'])->name('dashboard');
     Route::get('/advisories', [AdvisoryController::class, 'index'])->name('advisories.index');
     Route::get('/advisories/load-more', [AdvisoryController::class, 'loadMore'])->name('advisories.load-more');
