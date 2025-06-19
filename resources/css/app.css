@@ -13,7 +13,7 @@
 @source '../../vendor/livewire/flux-pro/stubs/**/*.blade.php';
 @source '../../vendor/livewire/flux/stubs/**/*.blade.php';
 
-/* REMOVED: All dark mode specific rules are gone to enforce a permanent light theme. */
+@custom-variant dark (&:where(.dark,.dark *)); 
 @layer base {
     html {
         font-family: 'Manrope', sans-serif;
@@ -66,8 +66,9 @@
         background-color: #1443e0; /* Use custom blue background */
     }
 
+/* This is the corrected rule */
 th {
-    @apply px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap;
+    @apply px-6 py-3 text-xs font-medium text-white uppercase tracking-wider whitespace-nowrap;
 }
 
 td {

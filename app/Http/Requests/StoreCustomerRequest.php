@@ -50,7 +50,7 @@ class StoreCustomerRequest extends FormRequest
             ],
 
             'short_name' => [
-                'nullable', 
+                'required', 
                 'string', 
                 'max:100'
             ],

@@ -1,9 +1,9 @@
 <x-layouts.app>
-    <div class="p-6 bg-white dark:bg-neutral-900 rounded-xl shadow-md">
+    <div class="p-6 bg-white rounded-xl shadow-md">
 
         <!-- Header with Add Buttons -->
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-semibold text-gray-800 dark:text-white">All Users List</h2>
+            <h2 class="text-xl font-semibold text-gray-800">All Users List</h2>
             <div class="flex gap-2">
                 <!-- (Add New User button could go here) -->
             </div>
@@ -51,7 +51,7 @@
 
 
         <!-- Table -->
-        <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-neutral-700">
+        <div class="overflow-x-auto rounded-lg border border-gray-200">
             <table class="min-w-full text-left">
                 <thead>
                     <tr>
@@ -66,7 +66,7 @@
                     @foreach($allUsers as $user)
                     <tr
                         class="cursor-pointer transition flux-btn-info 
-               {{ $user->active ? 'hover:bg-gray-100 dark:hover:bg-neutral-800' : 'bg-red-50 text-gray-400' }}"
+                        {{ $user->active ? 'hover:bg-gray-100' : 'bg-red-50 text-gray-400' }}"
                         data-id="{{ $user->id }}"
                         data-name="{{ $user->name }}"
                         data-email="{{ $user->email }}"

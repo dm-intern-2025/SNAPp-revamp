@@ -21,23 +21,22 @@ Route::get('account/deactivated', function () {
 Route::redirect('/', '/login');
 
 Route::middleware(['auth'])->group(function () {
-//ALL ACCESS
-Route::middleware(['role:admin|account executive|customer'])->group(function () {
-    Route::resource('profiles', ProfileController::class);
-    Route::get('/dashboard/load-more', [DashboardController::class, 'loadMore'])->name('dashboard.load-more');
-    Route::get('my-contracts', [ContractController::class, 'showContractsPage'])->name('my-contracts');
-    Route::get('/dashboard', [DashboardController::class, 'showDashboardFields'])->name('dashboard');
-    Route::get('/advisories', [AdvisoryController::class, 'index'])->name('advisories.index');
-    Route::get('/advisories/load-more', [AdvisoryController::class, 'loadMore'])->name('advisories.load-more');
-
-});
-Route::middleware(['role:admin|customer'])->group(function () {
-    Route::get('/my-bills', [BillController::class, 'showBillsPage'])->name('bills.show');
-    Route::get('/payment-history', [BillController::class, 'showPaymentHistory'])->name('payments.history');
-    Route::get('/bills/export', [BillController::class, 'exportBills'])->name('bills.export');
-    Route::get('/payments/export', [BillController::class, 'exportPayments'])->name('payments.export');
-    Route::get('/energy-consumption', [GhgController::class, 'calculateEmissions'])->name('energy-consumption');
-});
+    //ALL ACCESS
+    Route::middleware(['role:admin|account executive|customer'])->group(function () {
+        Route::resource('profiles', ProfileController::class);
+        Route::get('/dashboard/load-more', [DashboardController::class, 'loadMore'])->name('dashboard.load-more');
+        Route::get('my-contracts', [ContractController::class, 'showContractsPage'])->name('my-contracts');
+        Route::get('/dashboard', [DashboardController::class, 'showDashboardFields'])->name('dashboard');
+        Route::get('/advisories', [AdvisoryController::class, 'index'])->name('advisories.index');
+        Route::get('/advisories/load-more', [AdvisoryController::class, 'loadMore'])->name('advisories.load-more');
+    });
+    Route::middleware(['role:admin|customer'])->group(function () {
+        Route::get('/my-bills', [BillController::class, 'showBillsPage'])->name('bills.show');
+        Route::get('/payment-history', [BillController::class, 'showPaymentHistory'])->name('payments.history');
+        Route::get('/bills/export', [BillController::class, 'exportBills'])->name('bills.export');
+        Route::get('/payments/export', [BillController::class, 'exportPayments'])->name('payments.export');
+        Route::get('/energy-consumption', [GhgController::class, 'calculateEmissions'])->name('energy-consumption');
+    });
 
     Route::redirect('settings', 'settings/profile');
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
@@ -54,6 +53,9 @@ Route::middleware(['role:admin|customer'])->group(function () {
         Route::post('/users/store-account-executive', [UserController::class, 'storeAE'])->name('admin.users.store-account-executive');
         Route::get('/account-executive-list', [UserController::class, 'showAE'])->name('account-executive-list');
         Route::get('/all-user-list', [UserController::class, 'showAllUsers'])->name('all-user-list');
+        // Add this with your other user-related routes
+        Route::post('/users/{user}/reset-password', [App\Http\Controllers\UserController::class, 'resetPassword'])->name('users.reset-password');
+
         Route::get('/role-permission', [RolePermission::class, 'index'])->name('role.permission.list');
         Route::post('/role-permission', [RolePermission::class, 'store'])->name('role.permission.store');
         Route::resource('permission', PermissionController::class)->except(['destroy']);

@@ -45,7 +45,7 @@
                     </flux:field>
 
                     <flux:field>
-                        <flux:label>Short Name (Optional)</flux:label>
+                        <flux:label badge="Required">Short Name</flux:label>
                         <flux:input name="short_name" value="{{ old('short_name') }}" placeholder="Enter Short Name" />
                         @error('short_name')<p class="mt-2 text-xs text-red-500">{{ $message }}</p>@enderror
                     </flux:field>

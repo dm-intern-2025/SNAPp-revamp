@@ -1,5 +1,5 @@
 <x-layouts.app>
-    <div class="p-6 bg-white dark:bg-neutral-900 rounded-xl shadow-md">
+    <div class="p-6 bg-white rounded-xl shadow-md">
        <!-- Top Bar: Search + Export + Tabs -->
 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
   
@@ -32,7 +32,7 @@
 </div>
 
         <!-- Tables -->
-        <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-neutral-700">
+        <div class="overflow-x-auto rounded-lg border border-gray-200">
             @if($activeTab === 'bills')
                 @include('bills.bill-summary-table', ['data' => $bills])
             @endif

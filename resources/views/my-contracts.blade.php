@@ -1,27 +1,36 @@
 <x-layouts.app>
     {{-- This Alpine.js component controls the modal on this page --}}
     <div x-data="{
-        showPdfModal: false,
-        pdfUrl: '',
-        selectedContract: {},
-        openContractViewer(element) {
-            this.selectedContract = element.dataset;
-            this.pdfUrl = element.dataset.gcsPdfUrl;
-            if (this.pdfUrl) {
-                this.showPdfModal = true;
+            showPdfModal: false,
+            pdfUrl: '',
+            selectedContract: {},
+            openContractViewer(element) {
+                this.selectedContract = element.dataset;
+                this.pdfUrl = element.dataset.gcsPdfUrl;
+                if (this.pdfUrl) {
+                    this.showPdfModal = true;
+                }
             }
-        }
-    }" @keydown.escape.window="showPdfModal = false">
+        }" @keydown.escape.window="showPdfModal = false">
 
-        <div class="py-6 sm:py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="p-4 sm:p-6 bg-white dark:bg-neutral-900 rounded-xl shadow-md">
-                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">My Contract</h2>
-
-                    <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-neutral-700">
-                        @include('contracts.contract-list-table', ['contracts' => $contracts])
-                    </div>
+        <div class="p-4 sm:p-6 bg-white rounded-xl shadow-md">
+            
+            {{-- Card Header: Title on the left, Upload Button on the right --}}
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                <div>
+                    {{-- This now uses href="#" as a placeholder to add the button without needing a route. --}}
+                    <flux:button
+                        href="#"
+                        variant="primary"
+                        icon="arrow-up-tray">
+                        Upload Contract
+                    </flux:button>
                 </div>
+            </div>
+
+            {{-- Contracts Table --}}
+            <div class="overflow-x-auto rounded-lg border border-gray-200">
+                @include('contracts.contract-list-table', ['contracts' => $contracts])
             </div>
         </div>
 

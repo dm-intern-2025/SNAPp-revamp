@@ -1,7 +1,7 @@
 <x-layouts.app>
-    <div class="p-6 bg-white dark:bg-neutral-900 rounded-xl shadow-md">
+    <div class="p-6 bg-white rounded-xl shadow-md">
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Advisories</h2>
+            <h2 class="text-xl font-semibold text-gray-800">Advisories</h2>
 
             <!-- Create Advisory button (unchanged) -->
             <flux:modal.trigger name="create-advisory">
@@ -11,7 +11,7 @@
             </flux:modal.trigger>
         </div>
 
-        <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-neutral-700">
+        <div class="overflow-x-auto rounded-lg border border-gray-200">
             <table class="min-w-full text-left">
                 <thead>
                     <tr>
@@ -24,7 +24,7 @@
                 <tbody>
                     @foreach($advisories as $advisory)
                     <tr
-                        class="cursor-pointer hover:bg-gray-100 dark:hover:bg-neutral-800 transition flux-btn-info {{ $advisory->is_archive ? 'bg-red-100 dark:bg-red-900' : '' }}"
+                        class="cursor-pointer hover:bg-gray-100 transition flux-btn-info {{ $advisory->is_archive ? 'bg-red-100' : '' }}"
                         data-id="{{ $advisory->id }}"
                         data-headline="{{ $advisory->headline }}"
                         data-description="{{ $advisory->description }}"

@@ -5,17 +5,10 @@
             <div class="flex gap-4 mb-6 flex-wrap">
                 <flux:select name="date" placeholder="Select Date" class="w-40 min-w-[150px] max-w-[180px]">
                     <flux:select.option value="">All Dates</flux:select.option>
-                    <flux:select.option value="last_7_days" :selected="request('date') === 'last_7_days'">Last 7 Days</flux:select.option>
-                    <flux:select.option value="last_30_days" :selected="request('date') === 'last_30_days'">Last 30 Days</flux:select.option>
+                    <flux:select.option value="last_7_days" :selected="request('date') === 'last_7_days'">Last 3 Months</flux:select.option>
+                    <flux:select.option value="last_30_days" :selected="request('date') === 'last_30_days'">Last 6 Months</flux:select.option>
                     <flux:select.option value="this_month" :selected="request('date') === 'this_month'">This Month</flux:select.option>
                     <flux:select.option value="last_month" :selected="request('date') === 'last_month'">Last Month</flux:select.option>
-                </flux:select>
-
-                <flux:select name="resource" placeholder="Select Resource" class="w-40 min-w-[150px] max-w-[180px]">
-                    <flux:select.option value="">All Resources</flux:select.option>
-                    <flux:select.option value="electricity" :selected="request('resource') === 'electricity'">Electricity</flux:select.option>
-                    <flux:select.option value="water" :selected="request('resource') === 'water'">Water</flux:select.option>
-                    <flux:select.option value="gas" :selected="request('resource') === 'gas'">Gas</flux:select.option>
                 </flux:select>
             </div>
 
@@ -25,7 +18,7 @@
                 <!-- Chart Section -->
                 <div class="lg:col-span-8 flex flex-col bg-white rounded-2xl shadow p-6">
                     <div class="flex justify-between items-center">
-                        <h2 class="text-lg font-bold">At A Glance</h2>
+                        <h2 class="text-lg font-bold">Energy Consumption</h2>
                     </div>
 
                     <div class="mt-4 flex-grow min-h-[250px] md:min-h-[300px] relative">
@@ -65,7 +58,7 @@
                 </div>
 
                 <!-- Bottom Stat Cards -->
-                <div class="col-span-6 lg:col-span-3">
+                <!-- <div class="col-span-6 lg:col-span-3">
                     <div class="bg-white rounded-2xl shadow border-b-4 border-primary p-4">
                         <div class="flex justify-between items-center">
                             <span class="text-sm font-medium text-[color:var(--color-accent)]">Data 1</span>
@@ -99,7 +92,7 @@
                             <span class="text-2xl md:text-3xl font-semibold text-black">101</span>
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>

@@ -1,4 +1,4 @@
-<div class="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
+<div class="min-w-full divide-y divide-gray-200">
     <table>
     <thead>
     <tr>
@@ -11,7 +11,7 @@
     </tr>
 
         </thead>
-        <tbody class="bg-white dark:bg-neutral-900 divide-y divide-gray-200 dark:divide-neutral-700">
+        <tbody class="bg-white divide-y divide-gray-200">
             @foreach($data as $item)
                 <tr>
                     <td>{{ $item['Payment Reference'] }}</td>
@@ -27,7 +27,7 @@
 </div>
 
 @if($data->hasPages())
-<div class="px-4 py-3 bg-white dark:bg-neutral-900 border-t border-gray-200 dark:border-neutral-700">
+<div class="px-4 py-3 bg-white border-t border-gray-200">
     {{ $data->links() }}
 </div>
 @endif

@@ -8,6 +8,7 @@ class OracleInvoiceService
 {
     private $apiHeaders;
     private $apiAuth;
+    private $baseUrl;
 
     public function __construct()
     {
@@ -16,49 +17,52 @@ class OracleInvoiceService
             'Accept' => 'application/json',
         ];
 
+        // BEST PRACTICE: Use the config() helper, not env()
         $this->apiAuth = [
-            env('API_USERNAME'),
-            env('API_PASSWORD'),
+            config('services.oracle.username'),
+            config('services.oracle.password'),
         ];
+        
+        $this->baseUrl = config('services.oracle.url');
+
+        // You can add a check to fail early if credentials are not set
+        if (empty($this->apiAuth[0]) || empty($this->apiAuth[1])) {
+            // In a real app, you'd throw a specific exception here.
+            throw new \Exception('Oracle API credentials are not configured.');
+        }
     }
 
-// In app/Services/OracleInvoiceService.php
+    public function fetchInvoiceData($customerId)
+    {
+        // Use the base URL from the config
+        $url = $this->baseUrl . 'receivablesInvoices';
 
-public function fetchInvoiceData($customerId)
-{
-    $url = 'https://fa-evjn-dev1-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/receivablesInvoices';
+        $queryParams = [
+            'finder' => "invoiceSearch;TransactionSource=SNAP AUTOINVOICE,TransactionType=TRADE-RES,BusinessUnit=SNAPR BU,BillToCustomerNumber={$customerId}",
+            'totalResults' => 'true'
+        ];
 
-    // We need to ask the API for the total count of results
-    $queryParams = [
-        'finder' => "invoiceSearch;TransactionSource=SNAP AUTOINVOICE,TransactionType=TRADE-RES,BusinessUnit=SNAPR BU,BillToCustomerNumber={$customerId}",
-        'totalResults' => 'true' // Ask Oracle to tell us the total
-    ];
+        $response = Http::withBasicAuth(...$this->apiAuth)
+            ->withHeaders($this->apiHeaders)
+            ->get($url, $queryParams);
 
-    $response = Http::withBasicAuth(...$this->apiAuth)
-        ->withHeaders($this->apiHeaders)
-        ->get($url, $queryParams);
-
-    return $response->successful() ? $response->json()['items'] ?? [] : [];
-}
+        return $response->successful() ? $response->json()['items'] ?? [] : [];
+    }
 
     public function fetchConsumption($transactionId)
     {
-        $url = "https://fa-evjn-dev1-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/receivablesInvoices/{$transactionId}/child/receivablesInvoiceLines";
+        // Use the base URL from the config
+        $url = "{$this->baseUrl}receivablesInvoices/{$transactionId}/child/receivablesInvoiceLines";
     
-        // Make the API call
         $response = Http::withBasicAuth(...$this->apiAuth)
             ->withHeaders($this->apiHeaders)
             ->get($url);
     
-        // If the response is successful and contains items, return the first item quantity or 0
         if ($response->successful()) {
             $items = $response->json()['items'] ?? [];
-    
-            // Return the Quantity of the first item, or 0 if no item is found
-            return isset($items[0]['Quantity']) ? $items[0]['Quantity'] : 0;
+            return $items[0]['Quantity'] ?? 0;
         }
     
-        return 0; // Return 0 if the response is not successful or no items are found
+        return 0;
     }
-}    
-
+}

@@ -1,0 +1,11 @@
+id = "laravel-app"
+name = "Laravel App"
+version = "1.0.0"
+
+[[build.env]]
+name = "BP_PHP_SERVER"
+value = "apache"
+
+[[build.env]]
+name = "BP_PHP_WEB_DIR"
+value = "public"

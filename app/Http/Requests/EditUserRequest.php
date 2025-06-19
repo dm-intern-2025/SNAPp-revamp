@@ -49,7 +49,11 @@ class EditUserRequest extends FormRequest
             'active' => [
                 'sometimes',
                 'boolean' // Accepts true/false, 1/0
-            ] 
+            ], 
+            'resend_welcome_email' => [
+                'sometimes',
+                'boolean'
+            ]
         ];
     }
 }

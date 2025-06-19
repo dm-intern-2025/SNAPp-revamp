@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
         data: {
             labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],  // example months
             datasets: [{
-                label: 'Chart Sample (kWh)',
+                label: 'Energy Consumption (kWh)',
                 data: [120, 135, 115, 160, 145, 155, 170],  // sample energy data
                 fill: true,  // fill area under the line
                 backgroundColor: 'rgba(20, 67, 224, 0.2)',  // translucent blue fill

@@ -1,4 +1,4 @@
-<div class="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
+<div class="min-w-full divide-y divide-gray-200">
     <table>
         <thead>
             <tr>
@@ -11,14 +11,14 @@
             @forelse($contracts as $item)
                 <tr 
                     @if($item['gcsPdfUrl']) 
-                        class="cursor-pointer hover:bg-gray-100 dark:hover:bg-neutral-800 transition" 
+                        class="cursor-pointer hover:bg-gray-100 transition" 
                         @click="openContractViewer($el)"
                     @endif
                     data-contract-name="{{ $item['contract_name'] }}"
                     data-gcs-pdf-url="{{ $item['gcsPdfUrl'] ?? '' }}">
 
                     <td>{{ $item['contract_name'] }}</td>
-                    <td><span class="px-2 py-1 rounded-full text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">{{ $item['status'] }}</span></td>
+                    <td><span class="px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">{{ $item['status'] }}</span></td>
                     <td class="px-6 py-4 whitespace-nowrap text-center">
                         @if($item['gcsPdfUrl'])
                             <div class="inline-flex items-center justify-center h-8 w-8 text-blue-600" title="View Contract">

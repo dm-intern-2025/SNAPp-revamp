@@ -1,7 +1,7 @@
 <x-layouts.app>
-    <div class="p-6 bg-white dark:bg-neutral-900 rounded-xl shadow-md">
+    <div class="p-6 bg-white rounded-xl shadow-md">
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-semibold text-gray-800 dark:text-white">Roles & Permissions</h2>
+            <h2 class="text-xl font-semibold text-gray-800">Roles & Permissions</h2>
 
             <div class="flex gap-2">
                 <!-- Role Modal Trigger -->
@@ -52,10 +52,10 @@
                             @endforeach
                         </tr>
                     </thead>
-                    <tbody class="bg-white dark:bg-neutral-900 text-gray-800 dark:text-gray-100">
+                    <tbody class="bg-white text-gray-800">
                         @foreach ($permissions as $permission)
                             <tr>
-                                <td class="p-3 border border-gray-300 dark:border-neutral-700">
+                                <td class="p-3 border border-gray-300">
                                     <div class="flex justify-between items-center">
                                         <span>{{ $permission->name }}</span>
                                         <div class="flex gap-1">
@@ -78,7 +78,7 @@
                                     </div>
                                 </td>
                                 @foreach ($roles as $role)
-                                    <td class="text-center p-3 border border-gray-300 dark:border-neutral-700">
+                                    <td class="text-center p-3 border border-gray-300">
                                         <input
                                             type="checkbox"
                                             name="permission[{{ $role->id }}][]"
@@ -93,7 +93,7 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td class="p-4 border-t border-gray-300 dark:border-neutral-700 text-center">
+                            <td class="p-4 border-t border-gray-300 text-center">
                                 <flux:button
                                 type="submit"
                                     variant="primary"
@@ -102,7 +102,7 @@
                                 </flux:button>
                             </td>
                             @foreach ($roles as $role)
-                                <td class="border-t border-gray-300 dark:border-neutral-700"></td>
+                                <td class="border-t border-gray-300"></td>
                             @endforeach
                         </tr>
                     </tfoot>
