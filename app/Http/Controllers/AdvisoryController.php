@@ -40,7 +40,7 @@ class AdvisoryController extends Controller
 
     public function adminList()
     {
-        $advisories = Advisory::orderBy('created_at', 'desc')->paginate(10); // Changed
+        $advisories = Advisory::orderBy('created_at', 'desc')->paginate(10);
         return view('admin.advisory-management.advisory-list', compact('advisories'));
     }
 
@@ -51,9 +51,10 @@ class AdvisoryController extends Controller
     {
         $validatedRequest = $request->validated();
 
-        // Handle file upload if it exists
         if ($request->hasFile('attachment')) {
-            $filePath = $request->file('attachment')->store('advisory_attachments', 'public');
+            // This will use the *default disk* (public locally)
+            // and save to 'snapp-advisory-attachments' folder.
+            $filePath = $request->file('attachment')->store('snapp-advisory-attachments');
             $validatedRequest['attachment'] = $filePath;
         }
 
@@ -79,13 +80,12 @@ class AdvisoryController extends Controller
         ];
 
         if ($request->hasFile('edit_attachment')) {
-            if ($advisory->attachment) {
-                Storage::disk('public')->delete($advisory->attachment);
-            }
-
+            // As per your clarification, no file deletion from storage (archive only)
+            // This will use the *default disk* (gcs in prod, public locally)
+            // and save to 'snapp-advisory-attachments' folder.
             $data['attachment'] = $request
                 ->file('edit_attachment')
-                ->store('advisory_attachments', 'public');
+                ->store('snapp-advisory-attachments');
         }
 
         $advisory->update($data);

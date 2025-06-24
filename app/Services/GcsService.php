@@ -87,4 +87,60 @@ class GcsService
             return null;
         }
     }
+ public function uploadLaravelFile(UploadedFile $uploadedFile, string $destinationObjectName, array $options = []): ?string
+    {
+        // Ensure the GCS client is initialized before attempting to upload.
+        if (!$this->initializeClient()) {
+            Log::error("GCS Error: Cannot upload file because client failed to initialize.");
+            return null;
+        }
+
+        try {
+            // Get the bucket object.
+            $bucket = $this->storageClient->bucket($this->config['bucket']);
+
+            // Open a read stream to the temporary file Laravel stores for uploaded files.
+            $fileStream = fopen($uploadedFile->getPathname(), 'r');
+            if (!$fileStream) {
+                Log::error("GCS Error: Could not open uploaded file stream for: " . $uploadedFile->getPathname());
+                return null;
+            }
+
+            // Prepare upload options.
+            // 'name' is the destination path in GCS.
+            // 'contentType' is crucial for browsers to correctly interpret the file.
+            $uploadOptions = [
+                'name' => $destinationObjectName,
+                'contentType' => $uploadedFile->getMimeType(),
+            ];
+
+            // Merge any additional options provided (e.g., 'predefinedAcl', 'metadata').
+            if (!empty($options)) {
+                $uploadOptions = array_merge($uploadOptions, $options);
+            }
+
+            // Perform the file upload to GCS.
+            $object = $bucket->upload($fileStream, $uploadOptions);
+
+            // Close the file stream after the upload is complete.
+            fclose($fileStream);
+
+            Log::info("GCS Info: File uploaded successfully to: gs://{$this->config['bucket']}/{$destinationObjectName}");
+
+            // The mediaLink is a direct URL to the object. Its public accessibility
+            // depends on bucket/object ACLs (e.g., if 'predefinedAcl' => 'publicRead' was set).
+            // For private files, you would still use generateSignedUrl to provide temporary access.
+            return $object->info()['mediaLink'] ?? null;
+
+        } catch (\Exception $e) {
+            // Log detailed error if upload fails, indicating possible permission issues or file problems.
+            Log::error("GCS Error: Failed to upload file '{$destinationObjectName}'. Check permissions (e.g., 'Storage Object Creator' role) and file integrity.", [
+                'destination_object' => "gs://{$this->config['bucket']}/{$destinationObjectName}",
+                'exception_message' => $e->getMessage(),
+                'exception_trace' => $e->getTraceAsString()
+            ]);
+            return null;
+        }
+    }
+
 }
