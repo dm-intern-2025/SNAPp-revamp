@@ -177,7 +177,7 @@
                 form.querySelector('textarea[name="edit_description"]').value = this.dataset.description;
                 form.querySelector('textarea[name="edit_content"]').value = this.dataset.content;
                 Alpine.$data(document.getElementById('advisory-modal-root'))
-                    .setExistingPreview(this.dataset.attachment || null);
+                    .setExistingPreview(this.dataset.attachmentUrl || null);
 
                 // Show it
                 $flux.modal('advisory-show-modal').show();

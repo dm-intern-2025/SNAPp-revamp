@@ -29,9 +29,7 @@
                         data-headline="{{ $advisory->headline }}"
                         data-description="{{ $advisory->description }}"
                         data-content="{{ $advisory->content }}"
-                        data-attachment="{{ $advisory->attachment
-                                ? asset('storage/' . $advisory->attachment)
-                                : '' }}"
+                        data-attachment-url="{{ $advisory->attachment_url ?? '' }}"
                         data-date="{{ $advisory->created_at->format('M d, Y') }}"
                         data-created-by="{{ $advisory->user->name }}"
                         data-is-archive="{{ $advisory->is_archive ? '1' : '0' }}"
@@ -60,50 +58,50 @@
     @include('admin.advisory-management.form-create-advisory')
 
 
-<script>
-    document.querySelectorAll('tr.flux-btn-info').forEach(row => {
-        row.addEventListener('click', function() {
-            const advisoryId   = this.getAttribute('data-id');
-            const headline     = this.getAttribute('data-headline');
-            const description  = this.getAttribute('data-description');
-            const content      = this.getAttribute('data-content');
-            const attachmentUrl = this.getAttribute('data-attachment');
-            const isArchive    = this.getAttribute('data-is-archive') === '1';
+    <script>
+        document.querySelectorAll('tr.flux-btn-info').forEach(row => {
+            row.addEventListener('click', function() {
+                const advisoryId = this.getAttribute('data-id');
+                const headline = this.getAttribute('data-headline');
+                const description = this.getAttribute('data-description');
+                const content = this.getAttribute('data-content');
+                const attachmentUrl = this.getAttribute('data-attachment');
+                const isArchive = this.getAttribute('data-is-archive') === '1';
 
-            // 1) Grab the Alpine component wrapping the “Edit Advisory” modal
-            const alpineComponent = document.getElementById('advisory-modal-root');
-            if (!alpineComponent) {
-                console.warn('Cannot find #advisory-modal-root');
-                return;
-            }
-            const alpineData = Alpine.$data(alpineComponent);
+                // 1) Grab the Alpine component wrapping the “Edit Advisory” modal
+                const alpineComponent = document.getElementById('advisory-modal-root');
+                if (!alpineComponent) {
+                    console.warn('Cannot find #advisory-modal-root');
+                    return;
+                }
+                const alpineData = Alpine.$data(alpineComponent);
 
-            // 2) Update Alpine’s preview with the existing image URL (if any)
-            alpineData.setExistingPreview(attachmentUrl);
+                // 2) Update Alpine’s preview with the existing image URL (if any)
+                alpineData.setExistingPreview(attachmentUrl);
 
-            // 3) Populate the form’s action + hidden advisory_id + text fields
-            const form       = document.getElementById('edit-advisory-form');
-            const baseAction = form.getAttribute('data-base-action');
-            form.action = baseAction.replace(':advisory_id', advisoryId);
+                // 3) Populate the form’s action + hidden advisory_id + text fields
+                const form = document.getElementById('edit-advisory-form');
+                const baseAction = form.getAttribute('data-base-action');
+                form.action = baseAction.replace(':advisory_id', advisoryId);
 
-            // Hidden ID field
-            form.querySelector('input[name="advisory_id"]').value = advisoryId;
+                // Hidden ID field
+                form.querySelector('input[name="advisory_id"]').value = advisoryId;
 
-            // Headline / Description / Content inputs
-            form.querySelector('input[name="edit_headline"]').value      = headline;
-            form.querySelector('textarea[name="edit_description"]').value = description;
-            form.querySelector('textarea[name="edit_content"]').value     = content;
+                // Headline / Description / Content inputs
+                form.querySelector('input[name="edit_headline"]').value = headline;
+                form.querySelector('textarea[name="edit_description"]').value = description;
+                form.querySelector('textarea[name="edit_content"]').value = content;
 
-            // 4) Set archive checkbox
-            const archiveCheckbox = form.querySelector('input[name="is_archive"]');
-            if (archiveCheckbox) {
-                archiveCheckbox.checked = isArchive;
-            }
+                // 4) Set archive checkbox
+                const archiveCheckbox = form.querySelector('input[name="is_archive"]');
+                if (archiveCheckbox) {
+                    archiveCheckbox.checked = isArchive;
+                }
 
-            // 5) Finally, show the modal
-            $flux.modal('advisory-show-modal').show();
+                // 5) Finally, show the modal
+                $flux.modal('advisory-show-modal').show();
+            });
         });
-    });
-</script>
+    </script>
 
 </x-layouts.app>
