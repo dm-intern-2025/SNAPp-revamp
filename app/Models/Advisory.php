@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use App\Services\GcsService;
 
 class Advisory extends Model
 {
@@ -20,11 +21,27 @@ class Advisory extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
-    
+
     protected $appends = ['attachment_url'];
 
     public function getAttachmentUrlAttribute()
     {
-        return $this->attachment ? Storage::url($this->attachment) : null;
+        if (!$this->attachment) {
+            return null;
+        }
+
+        // Get the currently active default disk from config
+        $defaultDisk = config('filesystems.default');
+
+        if ($defaultDisk === 'gcs') {
+            // If the active disk is GCS, use your custom GcsService to generate a signed URL
+            // Lazily resolve GcsService from the container
+            $gcsService = app(GcsService::class);
+            return $gcsService->generateSignedUrl($this->attachment);
+
+        } else {
+            // For local or public disks, return the standard public URL
+            return Storage::url($this->attachment);
+        }
     }
 }
