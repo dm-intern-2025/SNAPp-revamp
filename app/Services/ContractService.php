@@ -49,17 +49,34 @@ class ContractService
 
         // 2) Legacy single‐file contract
         $legacyPath = "snapp_contracts/CONTRACT_{$short}.pdf";
-        // here we assume it’s in public storage as well
-        if (file_exists(storage_path('app/public/' . $legacyPath))) {
+
+        // Try generating a signed URL from GCS
+        $url = $this->gcsService->generateSignedUrl($legacyPath);
+
+        if ($url) {
             $contracts[] = [
                 'reference_number' => null,
                 'contract_name'    => "Legacy Contract for {$short}",
                 'contract_period'  => null,
+                'contract_end'     => null,
+                'upload_date'      => null,
+                'status'           => 'Available',
+                'gcsPdfUrl'        => $url,
+            ];
+        }
+        // Fallback to local storage if GCS file not found
+        elseif (file_exists(storage_path('app/public/' . $legacyPath))) {
+            $contracts[] = [
+                'reference_number' => null,
+                'contract_name'    => "Legacy Contract for {$short}",
+                'contract_period'  => null,
+                'contract_end'     => null,
                 'upload_date'      => Carbon::now()->format('d-M-Y'),
                 'status'           => 'Available',
                 'gcsPdfUrl'        => asset('storage/' . $legacyPath),
             ];
         }
+
 
         return $contracts;
     }
