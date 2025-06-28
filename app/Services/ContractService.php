@@ -8,6 +8,7 @@ use App\Models\Contract;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use App\Services\GcsService;
+use Illuminate\Support\Facades\Storage;
 
 class ContractService
 {
@@ -43,7 +44,7 @@ class ContractService
                 'contract_end'     => $c->contract_end,
                 'upload_date'      => $c->created_at->format('d-M-Y'),
                 'status'           => $status,
-                'gcsPdfUrl'        => asset('storage/' . $c->document),
+                'gcsPdfUrl' => Storage::disk(config('filesystems.default'))->url($c->document),
             ];
         }
 
@@ -76,8 +77,6 @@ class ContractService
                 'gcsPdfUrl'        => asset('storage/' . $legacyPath),
             ];
         }
-
-
         return $contracts;
     }
 }
