@@ -25,7 +25,8 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['role:admin|account executive|customer'])->group(function () {
         Route::resource('profiles', ProfileController::class);
         Route::get('/dashboard/load-more', [DashboardController::class, 'loadMore'])->name('dashboard.load-more');
-        Route::get('my-contracts', [ContractController::class, 'showContractsPage'])->name('my-contracts');
+        Route::post('contracts/store', [ContractController::class, 'store'])->name('contracts.store');
+        Route::get('contracts', [ContractController::class, 'showContractsPage'])->name('my-contracts');
         Route::get('/dashboard', [DashboardController::class, 'showDashboardFields'])->name('dashboard');
         Route::get('/advisories', [AdvisoryController::class, 'index'])->name('advisories.index');
         Route::get('/advisories/load-more', [AdvisoryController::class, 'loadMore'])->name('advisories.load-more');

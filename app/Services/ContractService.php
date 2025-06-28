@@ -1,39 +1,66 @@
 <?php
 
+// app/Services/ContractService.php
+
 namespace App\Services;
 
+use App\Models\Contract;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use App\Services\GcsService;
 
 class ContractService
 {
-    public function __construct(protected GcsService $gcsService) {}
+    protected GcsService $gcsService;
 
-    /**
-     * Finds a single contract for a user based on their shortname.
-     */
-    public function getContractForUser($user): ?array
+    public function __construct(GcsService $gcsService)
+    {
+        $this->gcsService = $gcsService;
+    }
+
+    public function getContractForUser($user): array
     {
         $short = $user->profile->short_name ?? null;
         if (!$short) {
             Log::warning("User {$user->id} has no short_name.");
-            return null;
+            return [];
         }
 
-        $objectPath = "snapp_contracts/CONTRACT_{$short}.pdf";
+        $contracts = [];
 
-
-
-        $url = $this->gcsService->generateSignedUrl($objectPath);
-
-        if ($url) {
-            return [
-                'contract_name' => "Service Contract for {$short}",
-                'filename'      => $objectPath,
-                'gcsPdfUrl'     => $url,
-                'status'        => 'Available',
+        // 1) New DB contracts
+        $dbContracts = Contract::where('shortname', $short)->get();
+        foreach ($dbContracts as $c) {
+            $status = 'unknown';
+            if ($c->contract_end) {
+                $endDate = \Carbon\Carbon::parse($c->contract_end);
+                $status = $endDate->isPast() ? 'Expired' : 'Active';
+            }
+            $contracts[] = [
+                'reference_number' => $c->reference_number,
+                'contract_name'    => $c->description,
+                'contract_period'  => $c->contract_period,
+                'contract_end'     => $c->contract_end,
+                'upload_date'      => $c->created_at->format('d-M-Y'),
+                'status'           => $status,
+                'gcsPdfUrl'        => asset('storage/' . $c->document),
             ];
         }
 
-        return null;
+        // 2) Legacy single‐file contract
+        $legacyPath = "snapp_contracts/CONTRACT_{$short}.pdf";
+        // here we assume it’s in public storage as well
+        if (file_exists(storage_path('app/public/' . $legacyPath))) {
+            $contracts[] = [
+                'reference_number' => null,
+                'contract_name'    => "Legacy Contract for {$short}",
+                'contract_period'  => null,
+                'upload_date'      => Carbon::now()->format('d-M-Y'),
+                'status'           => 'Available',
+                'gcsPdfUrl'        => asset('storage/' . $legacyPath),
+            ];
+        }
+
+        return $contracts;
     }
 }

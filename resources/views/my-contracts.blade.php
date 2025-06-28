@@ -15,16 +15,16 @@
 
         <div class="p-4 sm:p-6 bg-white rounded-xl shadow-md">
             
-            {{-- Card Header: Title on the left, Upload Button on the right --}}
             <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
                 <div>
-                    {{-- This now uses href="#" as a placeholder to add the button without needing a route. --}}
+                <flux:modal.trigger name="upload-contract">
                     <flux:button
-                        href="#"
                         variant="primary"
                         icon="arrow-up-tray">
                         Upload Contract
                     </flux:button>
+                </flux:modal.trigger>
+
                 </div>
             </div>
 
@@ -33,7 +33,6 @@
                 @include('contracts.contract-list-table', ['contracts' => $contracts])
             </div>
         </div>
-
-        @include('contracts.view-contract-modal')
     </div>
+        @include('contracts.form-upload-contract')
 </x-layouts.app>
