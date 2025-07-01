@@ -44,6 +44,11 @@ class StoreAdvisoryRequest extends FormRequest
                 'mimes:jpg,jpeg,png',
                 'max:2048'
             ],
+            'link' => [
+                'nullable',
+                'url'
+            ],
+
         ];
     }
 }

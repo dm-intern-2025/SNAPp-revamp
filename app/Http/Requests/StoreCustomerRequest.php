@@ -37,47 +37,14 @@ class StoreCustomerRequest extends FormRequest
                 Rule::unique(User::class)
             ],
 
-            'customer_id' => [
-                'required',
-                'numeric',
-            ],
+        'customer_id' => [
+            'required',
+            'integer',
+            'exists:profiles,customer_id'
+        ],
 
-            // === Optional Profile Fields ===
-            'account_name' => [
-                'nullable', 
-                'string', 
-                'max:100'
-            ],
 
-            'short_name' => [
-                'required', 
-                'string', 
-                'max:100'
-            ],
-
-            'customer_category' => [
-                'nullable', 
-                'string', 
-                'max:255'
-            ],
-
-            'contract_price' => [
-                'nullable', 
-                'numeric'
-            ],
-
-            'contracted_demand' => [
-                'nullable', 
-                'numeric'
-            ],
-            'cooperation_period_start_date' => [
-                'nullable', 
-                'date'
-            ],
-            'cooperation_period_end_date' => [
-                'nullable', 
-                'date'
-            ],
+           
 
         ];
     }

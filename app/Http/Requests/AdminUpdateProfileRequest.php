@@ -7,7 +7,7 @@ use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\Rule;
 
-class StoreProfileRequest extends FormRequest
+class AdminUpdateProfileRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,137 +25,138 @@ class StoreProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'customer_id' => [
+            'edit_customer_id' => [
                 'required',
                 'integer',
-                Rule::unique('profiles', 'customer_id'),
+                Rule::unique('profiles', 'customer_id')->ignore($this->route('profile')),
             ],
-            
-            'short_name' => [
+
+            'edit_short_name' => [
                 'required',
                 'string',
-                'max:100',
-                Rule::unique('profiles', 'short_name'),
+                'max:100'
             ],
 
-
-            'account_name' => [
+            'edit_account_name' => [
                 'nullable',
                 'string',
                 'max:100'
             ],
 
-            'business_address' => [
+            'edit_business_address' => [
                 'nullable',
                 'string',
                 'max:255'
             ],
 
-            'facility_address' => [
+            'edit_facility_address' => [
                 'nullable',
                 'string',
                 'max:255'
             ],
 
-            'customer_category' => [
+            'edit_customer_category' => [
                 'nullable',
                 'string',
                 'max:255'
             ],
 
-            'cooperation_period_start_date' => [
+            'edit_cooperation_period_start_date' => [
                 'nullable',
                 'date'
             ],
 
-            'cooperation_period_end_date' => [
+            'edit_cooperation_period_end_date' => [
                 'nullable',
                 'date'
             ],
 
-            'contract_price' => [
+            'edit_contract_price' => [
                 'nullable',
                 'string',
                 'max:100'
             ],
 
-            'contracted_demand' => [
+            'edit_contracted_demand' => [
                 'nullable',
                 'string',
                 'max:100'
             ],
 
-            'certificate_of_contestability_number' => [
+            'edit_certificate_of_contestability_number' => [
                 'nullable',
                 'string',
                 'max:100'
             ],
 
-            'other_information' => [
+            'edit_other_information' => [
                 'nullable',
                 'string',
                 'max:255'
             ],
 
-            'contact_name' => [
+            'edit_contact_name' => [
                 'nullable',
                 'string',
                 'max:255'
             ],
 
-            'designation' => [
+            'edit_designation' => [
                 'nullable',
                 'string',
                 'max:255'
             ],
 
-            'mobile_number' => [
+            'edit_mobile_number' => [
                 'nullable',
                 'string',
                 'max:20'
             ],
 
-            'email' => [
+            'edit_email' => [
                 'nullable',
                 'email',
                 'max:100'
             ],
 
-            // Secondary contact fields
-            'contact_name_1' => [
+            'edit_contact_name_1' => [
                 'nullable',
                 'string',
                 'max:255'
             ],
 
-            'designation_1' => [
+            'edit_designation_1' => [
                 'nullable',
                 'string',
                 'max:255'
             ],
 
-            'mobile_number_1' => [
+            'edit_mobile_number_1' => [
                 'nullable',
                 'string',
                 'max:20'
             ],
 
-            'email_1' => [
+            'edit_email_1' => [
                 'nullable',
                 'email',
                 'max:100'
             ],
 
-            'account_executive' => [
+            'edit_account_executive' => [
                 'nullable',
                 'string',
                 'max:100'
             ],
         ];
     }
+
+    /**
+     * Handle a failed validation attempt.
+     */
     protected function failedValidation(Validator $validator)
     {
-        session()->flash('show_modal', 'customer-profile-modal');
+        session()->flash('show_modal', 'edit-customer-profile-modal'); 
         throw new HttpResponseException(
             redirect()
                 ->back()

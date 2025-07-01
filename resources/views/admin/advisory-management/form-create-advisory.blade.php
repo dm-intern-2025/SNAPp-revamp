@@ -106,6 +106,18 @@
                     <p class="mt-1 text-red-500 text-xs">{{ $message }}</p>
                     @enderror
                 </flux:field>
+                <flux:field>
+                    <flux:label>Link (optional)</flux:label>
+                    <flux:input
+                        type="url"
+                        name="link"
+                        value="{{ old('link') }}"
+                        placeholder="https://example.com/…"
+                        class="w-full" />
+                    @error('link')
+                    <p class="mt-1 text-red-500 text-xs">{{ $message }}</p>
+                    @enderror
+                </flux:field>
 
                 <div class="flex justify-end pt-2">
                     <flux:button

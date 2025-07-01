@@ -57,11 +57,11 @@ class UpdateProfileRequest extends FormRequest
             ],
             'contract_price' => [
                 'nullable', 
-                'numeric'
+                'string'
             ],
             'contract_demand' => [
                 'nullable', 
-                'numeric'
+                'string'
             ],
             'other_information' => [
                 'nullable', 

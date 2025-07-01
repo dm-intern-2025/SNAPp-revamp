@@ -23,7 +23,15 @@ Route::redirect('/', '/login');
 Route::middleware(['auth'])->group(function () {
     //ALL ACCESS
     Route::middleware(['role:admin|account executive|customer'])->group(function () {
-        Route::resource('profiles', ProfileController::class);
+        Route::get('/help', function () {
+            return view('help');
+        })->name('help');
+        Route::resource('profiles', ProfileController::class)->only([
+            'index',
+            'edit',
+            'update'
+        ]);
+        // Route::resource('profiles', ProfileController::class);
         Route::get('/dashboard/load-more', [DashboardController::class, 'loadMore'])->name('dashboard.load-more');
         Route::post('contracts/store', [ContractController::class, 'store'])->name('contracts.store');
         Route::get('contracts', [ContractController::class, 'showContractsPage'])->name('my-contracts');
@@ -67,6 +75,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/advisories', [AdvisoryController::class, 'adminList'])->name('advisories.list');
         Route::post('/advisories', [AdvisoryController::class, 'store'])->name('advisories.store');
         Route::put('/advisories/{advisory}', [AdvisoryController::class, 'update'])->name('advisories.update');
+
+        Route::get('profiles', [ProfileController::class, 'profileList'])->name('admin.profiles.list');
+        Route::post('profiles', [ProfileController::class, 'createProfile'])->name('admin.profiles.store');
+        Route::put('profiles/{profile}', [ProfileController::class, 'updateProfile'])->name('admin.profiles.update');
     });
 });
 

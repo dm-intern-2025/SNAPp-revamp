@@ -3,11 +3,11 @@
 
         <!-- Header with Add Button -->
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-semibold text-gray-800">User Accounts</h2>
+            <h2 class="text-xl font-semibold text-gray-800">Customer Accounts</h2>
             <div class="flex gap-2">
                 <flux:modal.trigger name="customer-modal">
                     <flux:button variant="primary">
-                        Add Customer
+                        Add Customer Account
                     </flux:button>
                 </flux:modal.trigger>
             </div>

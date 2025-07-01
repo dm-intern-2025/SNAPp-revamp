@@ -6,7 +6,9 @@
 
     <!-- MODIFICATION: Added styles for x-cloak to prevent the "flash" of un-styled content. -->
     <style>
-        [x-cloak] { display: none !important; }
+        [x-cloak] {
+            display: none !important;
+        }
     </style>
 </head>
 
@@ -18,7 +20,7 @@
         x-cloak
         :class="collapsed ? 'w-20' : 'w-64'"
         class="transition-all duration-300 border-r border-zinc-200 bg-[#1443e0] dark:border-zinc-700 dark:bg-[#1443e0] flex flex-col fixed h-full">
-        
+
         <!-- Branding & Toggles -->
         <div class="flex items-center justify-between p-4 flex-shrink-0">
             <a href="{{ route('dashboard') }}" wire:navigate>
@@ -57,9 +59,9 @@
 
         <!-- Scrollable Navigation Container -->
         <div class="flex-1 overflow-y-auto">
-             <!-- The even vertical spacing is preserved as requested. -->
-             <nav class="h-full flex flex-col justify-evenly px-2">
-                
+            <!-- The even vertical spacing is preserved as requested. -->
+            <nav class="h-full flex flex-col justify-evenly px-2">
+
                 <!-- Main Navigation Links -->
                 <a
                     href="{{ route('dashboard') }}"
@@ -114,48 +116,67 @@
                 </a>
                 @endcan
 
+
+                @can('can view profile')
+                <a
+                    href="{{ route('help') }}"
+                    class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
+                    :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
+                    <flux:icon name="message-circle" class="w-6 h-6 text-white" />
+                    <span x-show="!collapsed" class="text-white">{{ __('Help') }}</span>
+                </a>
+                @endcan
+
                 <!-- Admin Section Links (Now part of the same container) -->
                 @role('admin')
-                    <flux:dropdown position="right-start" class="w-full">
-                        <button class="group flex items-center w-full p-2 rounded-md hover:bg-blue-500 transition-colors"
-                            :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
-                            <flux:icon name="squares-plus" class="w-6 h-6 text-white" />
-                            <span x-show="!collapsed" class="text-white">{{ __('Accounts') }}</span>
-                        </button>
-                        <flux:menu class="w-48">
-                           <flux:menu.item
-                                href="{{ route('all-user-list') }}"
-                                icon="user-group">{{ __('All User List') }}
-                            </flux:menu.item>
-                            <flux:menu.item
-                                href="{{ route('users.index') }}"
-                                icon="user-group">{{ __('Customer List') }}
-                            </flux:menu.item>
-                            <flux:menu.item
-                                href="{{ route('admin-list') }}"
-                                icon="user-group">{{ __('Admin List') }}
-                            </flux:menu.item>
-                            <flux:menu.item
-                                href="{{ route('account-executive-list') }}"
-                                icon="briefcase">{{ __('Account Executives') }}
-                            </flux:menu.item>
-                        </flux:menu>
-                    </flux:dropdown>
+                <flux:dropdown position="right-start" class="w-full">
+                    <button class="group flex items-center w-full p-2 rounded-md hover:bg-blue-500 transition-colors"
+                        :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
+                        <flux:icon name="squares-plus" class="w-6 h-6 text-white" />
+                        <span x-show="!collapsed" class="text-white">{{ __('Accounts') }}</span>
+                    </button>
+                    <flux:menu class="w-48">
+                        <flux:menu.item
+                            href="{{ route('all-user-list') }}"
+                            icon="user-group">{{ __('All User Accounts') }}
+                        </flux:menu.item>
+                        <flux:menu.item
+                            href="{{ route('users.index') }}"
+                            icon="user-group">{{ __('Customer Accounts') }}
+                        </flux:menu.item>
+                        <flux:menu.item
+                            href="{{ route('admin-list') }}"
+                            icon="user-group">{{ __('Admin Accounts') }}
+                        </flux:menu.item>
+                        <flux:menu.item
+                            href="{{ route('account-executive-list') }}"
+                            icon="briefcase">{{ __('Account Executive Accounts') }}
+                        </flux:menu.item>
+                    </flux:menu>
+                </flux:dropdown>
+                <a
+                    href="{{ route('admin.profiles.list') }}"
+                    class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
+                    :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
+                    <flux:icon name="book-user" class="w-6 h-6 text-white" />
+                    <span x-show="!collapsed" class="text-white">{{ __('Customers') }}</span>
+                </a>
+                <a
+                    href="{{ route('role.permission.list') }}"
+                    class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
+                    :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
+                    <flux:icon name="shield-user" class="w-6 h-6 text-white" />
+                    <span x-show="!collapsed" class="text-white">{{ __('Roles & Permissions') }}</span>
+                </a>
+                <a
+                    href="{{ route('advisories.list') }}"
+                    class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
+                    :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
+                    <flux:icon name="megaphone" class="w-6 h-6 text-white" />
+                    <span x-show="!collapsed" class="text-white">{{ __('Manage Advisories') }}</span>
+                </a>
 
-                    <a
-                        href="{{ route('role.permission.list') }}"
-                        class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
-                        :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
-                        <flux:icon name="shield-user" class="w-6 h-6 text-white" />
-                        <span x-show="!collapsed" class="text-white">{{ __('Roles & Permissions') }}</span>
-                    </a>
-                    <a
-                        href="{{ route('advisories.list') }}"
-                        class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
-                        :class="{'justify-center': collapsed, 'space-x-2': !collapsed}">
-                        <flux:icon name="megaphone" class="w-6 h-6 text-white" />
-                        <span x-show="!collapsed" class="text-white">{{ __('Manage Advisories') }}</span>
-                    </a>
+
                 @endrole
             </nav>
         </div>
@@ -164,7 +185,7 @@
         <div class="px-2 py-4 border-t border-blue-600 flex-shrink-0">
             <flux:dropdown position="bottom" align="start">
                 <button class="w-full rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-blue-800 focus:ring-white transition-colors duration-150"
-                        :class="collapsed ? 'p-1 flex justify-center' : 'p-1.5'">
+                    :class="collapsed ? 'p-1 flex justify-center' : 'p-1.5'">
                     <!-- Expanded View -->
                     <div x-show="!collapsed" x-cloak class="flex items-center w-full">
                         <span class="inline-flex items-center justify-center h-8 w-8 rounded-md bg-blue-600 flex-shrink-0">
@@ -178,7 +199,7 @@
 
                     <!-- Collapsed View -->
                     <div x-show="collapsed" x-cloak>
-                         <span class="inline-flex items-center justify-center h-8 w-8 rounded-md bg-blue-600">
+                        <span class="inline-flex items-center justify-center h-8 w-8 rounded-md bg-blue-600">
                             <span class="text-sm font-medium leading-none text-white">{{ auth()->user()->initials() }}</span>
                         </span>
                     </div>

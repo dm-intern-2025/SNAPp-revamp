@@ -47,19 +47,24 @@
                     </div>
                     <flux:field>
                         <!-- Start Date -->
-                        <flux:input label="Cooperation Period Start Date" placeholder="Enter Start Date" type="date" value="{{ $profiles->start_date ?? 'N/A' }}" readonly variant="filled" />
+                        <flux:input label="Cooperation Period Start Date" placeholder="Enter Start Date" type="date" value="{{ $profiles->cooperation_period_start_date ?? 'N/A' }}" readonly variant="filled" />
 
                         <!-- End Date -->
-                        <flux:input label="Cooperation Period End Date" placeholder="Enter End Date" type="date" value="{{ $profiles->end_date ?? 'N/A' }}" readonly variant="filled" />
+                        <flux:input label="Cooperation Period End Date" placeholder="Enter End Date" type="date" value="{{ $profiles->cooperation_period_end_date ?? 'N/A' }}" readonly variant="filled" />
 
                         <!-- Contract Price -->
                         <flux:input label="Contract Price" placeholder="Enter Contract Price" value="{{ $profiles->contract_price ?? 'N/A' }}" readonly variant="filled" />
 
                         <!-- Contract Demand -->
-                        <flux:input label="Contract Demand" placeholder="Enter Contract Demand" value="{{ $profiles->contract_demand ?? 'N/A' }}" readonly variant="filled" />
-
+                        <flux:input label="Contract Demand" placeholder="Enter Contract Demand" value="{{ $profiles->contracted_demand ?? 'N/A' }}" readonly variant="filled" />
+                        
+                        <!-- Certificate of Contestability Number -->
+                        <flux:input label="Certificate of Contestability No." placeholder="Enter Certificate No." value="{{ $profiles->certificate_of_contestability_number ?? 'N/A' }}" readonly variant="filled" />
+                       
                         <!-- Other Info -->
                         <flux:input badge="customer" label="Other Information" placeholder="Enter Additional Info" value="{{ $profiles->other_information ?? 'N/A' }}" readonly variant="filled" />
+
+
                     </flux:field>
                 </div>
 
@@ -86,6 +91,31 @@
 
                         <!-- Mobile -->
                         <flux:input badge="customer" label="Mobile Number" placeholder="Enter Mobile Number" type="tel" value="{{ $profiles->mobile_number ?? 'N/A' }}" readonly variant="filled" />
+                    </flux:field>
+                </div>
+
+                <!-- Fourth Card - Secondary Contact -->
+                <div class="flex flex-col bg-white rounded-2xl shadow p-6 relative">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-lg font-bold">Secondary Contact</h2>
+                        <a
+                            href="{{ route('profiles.edit', $profile->id ?? 0) }}"
+                            class="absolute top-4 right-4 inline-flex items-center p-2 bg-white rounded-full hover:bg-gray-100 transition-colors">
+                            <flux:icon name="edit" class="w-6 h-6 text-black fill-current" />
+                        </a>
+                    </div>
+                    <flux:field>
+                        <!-- Contact Name 1 -->
+                        <flux:input badge="secondary" label="Contact Name" placeholder="Enter Contact Name" value="{{ $profiles->contact_name_1 ?? 'N/A' }}" readonly variant="filled" />
+
+                        <!-- Designation 1 -->
+                        <flux:input badge="secondary" label="Designation" placeholder="Enter Designation" value="{{ $profiles->designation_1 ?? 'N/A' }}" readonly variant="filled" />
+
+                        <!-- Email 1 -->
+                        <flux:input badge="secondary" label="Email" placeholder="Enter Email" type="email" value="{{ $profiles->email_1 ?? 'N/A' }}" readonly variant="filled" />
+
+                        <!-- Mobile Number 1 -->
+                        <flux:input badge="secondary" label="Mobile Number" placeholder="Enter Mobile Number" type="tel" value="{{ $profiles->mobile_number_1 ?? 'N/A' }}" readonly variant="filled" />
                     </flux:field>
                 </div>
 

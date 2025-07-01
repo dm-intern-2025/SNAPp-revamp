@@ -1,10 +1,14 @@
-<div x-data="{}" x-init="
+<div
+    x-data="{}"
+    x-init="
     @if (session('show_modal') === 'edit-customer-modal')
         $nextTick(() => $flux.modal('edit-customer-modal').show())
     @endif
 ">
-    {{-- Expanded the modal width --}}
-    <flux:modal name="edit-customer-modal" class="md:max-w-3xl">
+    <flux:modal 
+        name="edit-customer-modal" 
+        class="md:w-96"
+    >
         <form
             data-base-action="{{ route('users.update', ['user' => ':user_id']) }}"
             method="POST"
@@ -15,118 +19,99 @@
             @method('PUT')
 
             <div>
-                <flux:heading size="lg">Edit Customer Account</flux:heading>
-                <flux:text class="mt-2">Update user details and the shared profile information.</flux:text>
+                <flux:heading size="lg">
+                    Edit Customer Account
+                </flux:heading>
+                <flux:text class="mt-2">
+                    Update the basic details below.
+                </flux:text>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
-                
-                {{-- Column 1: User Info --}}
-                <div class="space-y-4">
-                    <flux:field>
-                        <flux:label badge="Required">Name</flux:label>
-                        <flux:input name="edit_name" placeholder="Enter customer name" />
-                    </flux:field>
-                    
-                    <flux:field>
-                        <flux:label badge="Required">Email</flux:label>
-                        <flux:input name="edit_email" type="email" placeholder="Enter customer email" />
-                    </flux:field>
-                    
-                    <flux:field>
-                        <flux:label badge="Required">Customer ID</flux:label>
-                        <flux:input name="edit_customer_id" placeholder="Enter customer ID" />
-                    </flux:field>
-                </div>
+            <flux:field>
+                <flux:label badge="Required">Name</flux:label>
+                <flux:input 
+                    name="edit_name" 
+                    placeholder="Enter customer name" 
+                />
+                @error('edit_name')
+                    <p class="mt-2 text-red-500 text-xs">{{ $message }}</p>
+                @enderror
+            </flux:field>
 
-                {{-- Column 2: Profile Info --}}
-                <div class="space-y-4">
-                    <flux:field>
-                        <flux:label>Account Name</flux:label>
-                        <flux:input name="edit_account_name" placeholder="Enter Account Name" />
-                    </flux:field>
+            <flux:field>
+                <flux:label badge="Required">Email</flux:label>
+                <flux:input 
+                    name="edit_email" 
+                    type="email" 
+                    placeholder="Enter customer email" 
+                />
+                @error('edit_email')
+                    <p class="mt-2 text-red-500 text-xs">{{ $message }}</p>
+                @enderror
+            </flux:field>
 
-                    <flux:field>
-                        <flux:label>Short Name</flux:label>
-                        <flux:input name="edit_short_name" placeholder="Enter Short Name" />
-                    </flux:field>
-                    
-                    <flux:field>
-                        <flux:label>Customer Category</flux:label>
-                        <flux:input name="edit_customer_category" placeholder="Enter Customer Category" />
-                    </flux:field>
-                </div>
+<flux:field>
+    <div class="mb-4">
+        <label for="edit_customer_id" class="block text-sm font-medium text-gray-700 mb-1">
+            Assign Profile <span class="text-red-500">*</span>
+        </label>
+        <select
+            name="edit_customer_id"
+            id="edit_customer_id"
+            class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+            <option value="">— Select account —</option>
+            @foreach ($profiles as $profile)
+            <option value="{{ $profile->customer_id }}"
+                {{ old('edit_customer_id') == $profile->customer_id ? 'selected' : '' }}>
+                {{ $profile->account_name }} ({{ $profile->short_name }})
+            </option>
+            @endforeach
+        </select>
+        @error('edit_customer_id')
+        <p class="mt-2 text-sm text-red-500 text-xs">{{ $message }}</p>
+        @enderror
+    </div>
+</flux:field>
 
-                {{-- Full-width fields at the bottom --}}
-                <div class="md:col-span-2 pt-4">
-                    <hr class="mb-4">
-                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <flux:field>
-                            <flux:label>Contract Price</flux:label>
-                            <flux:input name="edit_contract_price" type="number" step="0.01" />
-                        </flux:field>
-                        <flux:field>
-                            <flux:label>Contracted Demand</flux:label>
-                            <flux:input name="edit_contracted_demand" type="number" />
-                        </flux:field>
-                        <flux:field>
-                            <flux:label>Cooperation Start</flux:label>
-                            <flux:input name="edit_cooperation_period_start_date" type="date" />
-                        </flux:field>
-                        <flux:field>
-                            <flux:label>Cooperation End</flux:label>
-                            <flux:input name="edit_cooperation_period_end_date" type="date" />
-                        </flux:field>
-                    </div>
-                </div>
-            </div>
 
-            <div class="flex pt-4">
+            <div class="flex">
                 <flux:spacer />
-                <flux:button type="submit" variant="primary">Save Changes</flux:button>
+                <flux:button 
+                    type="submit" 
+                    variant="primary" 
+                    id="save-button"
+                >
+                    Save Changes
+                </flux:button>
             </div>
         </form>
     </flux:modal>
+
+    <script>
+        document.addEventListener('click', function(event) {
+            const button = event.target.closest('.flux-btn-info');
+            if (!button) return;
+
+            const form = document.getElementById('edit-customer-form');
+            const ds   = button.dataset;
+            form.action = form.dataset.baseAction.replace(':user_id', ds.id);
+
+            const set = (name, val) => {
+                const el = form.querySelector(`[name="${name}"]`);
+                if (el) el.value = val || '';
+            };
+
+            set('edit_name',        ds.name);
+            set('edit_email',       ds.email);
+            set('edit_customer_id', ds.customerId);
+        });
+
+        document.getElementById('save-button').addEventListener('click', function (e) {
+            e.preventDefault(); // prevent native form submission
+            this.disabled = true;
+            this.innerText = 'Saving…';
+
+            document.getElementById('edit-customer-form').submit();
+        });
+    </script>
 </div>
-
-{{-- This script now lives with the modal it controls --}}
-<script>
-    // This script only needs to run once when the page loads.
-    document.addEventListener('click', function (event) {
-        // We check if the clicked element (or its parent) is a table row with the 'flux-btn-info' class
-        const button = event.target.closest('.flux-btn-info');
-        if (!button) {
-            return; // If not, do nothing.
-        }
-        
-        const form = document.getElementById('edit-customer-form');
-        const dataset = button.dataset; // The data-* attributes of the clicked row
-
-        // Update form action
-        const baseAction = form.dataset.baseAction;
-        form.action = baseAction.replace(':user_id', dataset.id);
-
-        // Helper to populate fields
-        const setInputValue = (name, value) => {
-            const input = form.querySelector(`[name="${name}"]`);
-            if (input) {
-                // Use value || '' to prevent "null" or "undefined" from appearing in fields
-                input.value = value || '';
-            }
-        };
-
-        // Populate all fields using the 'edit_' prefix, reading from the dataset
-        setInputValue('edit_name', dataset.name);
-        setInputValue('edit_email', dataset.email);
-        setInputValue('edit_customer_id', dataset.customerId);
-        
-        // THE FIX: Populate the profile fields
-        setInputValue('edit_account_name', dataset.accountName);
-        setInputValue('edit_short_name', dataset.shortName);
-        setInputValue('edit_customer_category', dataset.customerCategory);
-        setInputValue('edit_contract_price', dataset.contractPrice);
-        setInputValue('edit_contracted_demand', dataset.contractedDemand);
-        setInputValue('edit_cooperation_period_start_date', dataset.startDate);
-        setInputValue('edit_cooperation_period_end_date', dataset.endDate);
-    });
-</script>

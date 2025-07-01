@@ -15,7 +15,8 @@ class Advisory extends Model
         'attachment',
         'is_latest',
         'is_archive',
-        'created_by'
+        'created_by',
+        'link'
     ];
     public function user()
     {

@@ -78,4 +78,5 @@ class User extends Authenticatable
         // `customer_id` on the Profile model."
         return $this->belongsTo(Profile::class, 'customer_id', 'customer_id');
     }
+
 }

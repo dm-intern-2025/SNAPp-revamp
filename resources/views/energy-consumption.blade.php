@@ -21,9 +21,18 @@
                         <h2 class="text-lg font-bold">Energy Consumption</h2>
                     </div>
 
-                    <div class="mt-4 flex-grow min-h-[250px] md:min-h-[300px] relative">
-                        <canvas id="energyChart" class="absolute inset-0 w-full h-full"></canvas>
+                    <!-- Looker Embed -->
+                    <div class="mt-6 flex-1 bg-white rounded-2xl shadow overflow-hidden">
+                        <iframe
+                            src="{{ $lookerUrl }}"
+                            width="100%"
+                            height="600"
+                            frameborder="0"
+                            allowfullscreen
+                            class="w-full h-[600px]">
+                        </iframe>
                     </div>
+
                 </div>
 
                 <!-- Metrics Section -->

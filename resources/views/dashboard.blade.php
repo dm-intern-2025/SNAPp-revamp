@@ -95,7 +95,7 @@
             <!-- Contract Expiration Card (smaller) -->
             <div class="col-span-1 md:col-span-2 bg-white rounded-2xl shadow p-6 flex flex-col justify-center items-center">
                 <span class="text-xs font-medium text-[#1443e0]">Contract Expiration</span>
-                <div class="text-2xl font-bold text-[#1443e0] mt-2">12/26/2030</div>
+                <div class="text-2xl font-bold text-[#1443e0] mt-2"></div>
             </div>
         </div>
 
@@ -131,6 +131,18 @@
                                     <div class="prose max-w-none" x-html="activeAdvisory?.description"></div>
                                     <br>
                                     <div class="prose max-w-none" x-html="activeAdvisory?.content"></div>
+                                    <template x-if="activeAdvisory?.link">
+                                        <div class="mt-6">
+                                            <a
+                                                :href="activeAdvisory.link"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                class="inline-block px-4 py-2 bg-[#1443e0] text-white rounded hover:bg-[#0d3ab9] transition">
+                                                Visit Link
+                                            </a>
+                                        </div>
+                                    </template>
+
                                     <div class="mt-4 text-sm text-gray-500">
                                         Published on
                                         <span x-text="activeAdvisory ? new Date(activeAdvisory.created_at).toLocaleString('en-US', {

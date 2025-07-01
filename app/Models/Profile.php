@@ -26,9 +26,18 @@ class Profile extends Model
         'customer_id',
         'email',
         'mobile_number',
+
+                // New secondary contact fields
+        'contact_name_1',
+        'designation_1',
+        'mobile_number_1',
+        'email_1',
+        'account_executive',
+        'certificate_of_contestability_number'
     ];
-    public function user(): BelongsTo
+
+        public function users()
     {
-        return $this->belongsTo(User::class, 'customer_id');
+        return $this->hasMany(User::class, 'customer_id', 'customer_id');
     }
 }

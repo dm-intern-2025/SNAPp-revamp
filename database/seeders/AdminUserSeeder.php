@@ -17,7 +17,7 @@ class AdminUserSeeder extends Seeder
             ['email' => 'admin@example.com'],
             [
                 'name' => 'Admin User',
-                'password' => Hash::make('password'), // Use env var or more secure password in production
+                'password' => Hash::make('snapp-2025'), // Use env var or more secure password in production
             ]
         );
 

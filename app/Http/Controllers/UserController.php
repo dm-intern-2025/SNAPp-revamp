@@ -33,16 +33,21 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
+        // 1) load the customers grid
         $query = User::query()->role('customer')->with('profile');
-
         $users = $this->applyCommonFiltersAndPagination(
             $query,
             $request,
             ['active', 'search', 'sort']
         );
 
-        return view('admin.customer-account.customer-list', compact('users'));
+        // 2) load ALL profiles so your create‐modal can build the dropdown
+        $profiles = Profile::orderBy('account_name')->get();
+
+        // 3) pass them both into the view
+        return view('admin.customer-account.customer-list', compact('users', 'profiles'));
     }
+
 
     /**
      * Store a newly created customer and their profile in the database.
@@ -63,14 +68,11 @@ class UserController extends Controller
             ]);
             $user->assignRole('customer');
 
-            $profileData = $request->only([
-                'account_name', 'short_name', 'customer_category', 'contract_price',
-                'contracted_demand', 'cooperation_period_start_date', 'cooperation_period_end_date'
-            ]);
-
-            if (count(array_filter($profileData)) > 0) {
-                $profile = Profile::firstOrNew(['customer_id' => $user->customer_id]);
-                $profile->fill($profileData)->save();
+            // Optional: ensure profile exists (but do not create/fill)
+            $profile = Profile::where('customer_id', $user->customer_id)->first();
+            if (!$profile) {
+                DB::rollBack();
+                return redirect()->back()->with('error', 'Selected profile does not exist.');
             }
 
             Mail::to($user->email)->send(new CustomerPasswordMail($password));
@@ -265,7 +267,7 @@ class UserController extends Controller
 
         // Check if the "Resend welcome email" box was ticked in the modal form
         if ($request->boolean('resend_welcome_email')) {
-            $this->sendNewPassword($user); 
+            $this->sendNewPassword($user);
             $successMessage = 'User updated and a new password has been sent.';
         } else {
             $successMessage = 'User details updated successfully.';
@@ -298,7 +300,7 @@ class UserController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
@@ -370,31 +372,31 @@ class UserController extends Controller
     }
     // Add these methods inside your UserController class
 
-/**
- * Sends a new password to a specific user, triggered by an admin.
- * This is for the dedicated "Reset Password" button.
- */
-public function resetPassword(User $user)
-{
-    try {
-        $this->sendNewPassword($user);
-        return redirect()->back()->with('success', 'A new password has been sent to ' . $user->email);
-    } catch (\Exception $e) {
-        Log::error('Admin Password Reset Failed for user ' . $user->id . ': ' . $e->getMessage());
-        return redirect()->back()->with('error', 'Failed to send a new password.');
+    /**
+     * Sends a new password to a specific user, triggered by an admin.
+     * This is for the dedicated "Reset Password" button.
+     */
+    public function resetPassword(User $user)
+    {
+        try {
+            $this->sendNewPassword($user);
+            return redirect()->back()->with('success', 'A new password has been sent to ' . $user->email);
+        } catch (\Exception $e) {
+            Log::error('Admin Password Reset Failed for user ' . $user->id . ': ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to send a new password.');
+        }
     }
-}
 
-/**
- * Reusable private helper to generate, save, and send a new password.
- * This is now the single source of truth for sending password emails.
- */
-private function sendNewPassword(User $user): void
-{
-    $newPassword = Str::random(8);
-    $user->password = bcrypt($newPassword);
-    $user->save();
+    /**
+     * Reusable private helper to generate, save, and send a new password.
+     * This is now the single source of truth for sending password emails.
+     */
+    private function sendNewPassword(User $user): void
+    {
+        $newPassword = Str::random(8);
+        $user->password = bcrypt($newPassword);
+        $user->save();
 
-    Mail::to($user->email)->send(new CustomerPasswordMail($newPassword));
-}
+        Mail::to($user->email)->send(new CustomerPasswordMail($newPassword));
+    }
 }

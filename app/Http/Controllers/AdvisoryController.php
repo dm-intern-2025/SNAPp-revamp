@@ -52,8 +52,6 @@ class AdvisoryController extends Controller
         $validatedRequest = $request->validated();
 
         if ($request->hasFile('attachment')) {
-            // This will use the *default disk* (public locally)
-            // and save to 'snapp-advisory-attachments' folder.
             $filePath = $request->file('attachment')->store('snapp-advisory-attachments');
             $validatedRequest['attachment'] = $filePath;
         }
@@ -76,13 +74,11 @@ class AdvisoryController extends Controller
             'headline'    => $validated['edit_headline'],
             'description' => $validated['edit_description'],
             'content'     => $validated['edit_content'],
+            'link'        => $validated['edit_link'] ?? null, // ← map the edit field
             'is_archive'  => $validated['is_archive'] ?? 0,
         ];
 
         if ($request->hasFile('edit_attachment')) {
-            // As per your clarification, no file deletion from storage (archive only)
-            // This will use the *default disk* (gcs in prod, public locally)
-            // and save to 'snapp-advisory-attachments' folder.
             $data['attachment'] = $request
                 ->file('edit_attachment')
                 ->store('snapp-advisory-attachments');

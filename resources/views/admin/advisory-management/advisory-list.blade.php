@@ -33,6 +33,8 @@
                         data-date="{{ $advisory->created_at->format('M d, Y') }}"
                         data-created-by="{{ $advisory->user->name }}"
                         data-is-archive="{{ $advisory->is_archive ? '1' : '0' }}"
+                            data-link="{{ $advisory->link }}"
+
                         onclick="document.getElementById('open-view-modal').click()">
                         <td>{{ $advisory->id }}</td>
                         <td>{{ $advisory->headline }}</td>

@@ -108,7 +108,17 @@
                     <p class="mt-1 text-red-500 text-xs">{{ $message }}</p>
                     @enderror
                 </flux:field>
-
+                <flux:field>
+                    <flux:label>Link (optional)</flux:label>
+                    <flux:input
+                        type="url"
+                        name="edit_link"
+                        placeholder="https://example.com/…"
+                        class="w-full" />
+                    @error('edit_link')
+                    <p class="mt-1 text-red-500 text-xs">{{ $message }}</p>
+                    @enderror
+                </flux:field>
                 <flux:field>
                     <flux:label>Content</flux:label>
                     <flux:textarea
@@ -176,6 +186,9 @@
                 form.querySelector('input[name="edit_headline"]').value = this.dataset.headline;
                 form.querySelector('textarea[name="edit_description"]').value = this.dataset.description;
                 form.querySelector('textarea[name="edit_content"]').value = this.dataset.content;
+                const linkInput = form.querySelector('input[name="edit_link"]');
+                linkInput.value = this.dataset.link || '';
+
                 Alpine.$data(document.getElementById('advisory-modal-root'))
                     .setExistingPreview(this.dataset.attachmentUrl || null);
 

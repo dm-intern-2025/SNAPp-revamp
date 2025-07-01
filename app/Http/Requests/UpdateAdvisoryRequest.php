@@ -44,7 +44,12 @@ class UpdateAdvisoryRequest extends FormRequest
             'is_archive' => [
                 'nullable',
                 'boolean' // Accepts true/false, 1/0
-            ] 
+            ], 
+            'edit_link' => [
+                'nullable',
+                'url'
+            ]
+
         ];
     }
 }

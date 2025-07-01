@@ -86,13 +86,21 @@
                         <flux:input label="Contract Demand" placeholder="Enter Contract Demand" name="contract_demand" value="{{ old('contract_demand', $profile->contract_demand) }}" readonly variant="filled" />
                         @endcan
 
-                        <!-- Other Info - Customer editable only -->
-                        @can('profile-editable-customer')
-                        <flux:input badge="customer" label="Other Information" placeholder="Enter Additional Info" name="other_information" value="{{ old('other_information', $profile->other_information) }}" />
+                        <!-- Certificate of Contestability No. - AE editable only -->
+                        @can('profile-editable-AE')
+                        <flux:input label="Certificate of Contestability No." placeholder="Enter Certificate No." name="certificate_of_contestability_number" value="{{ old('certificate_of_contestability_number', $profile->certificate_of_contestability_number) }}" />
                         @else
-                        <flux:input badge="customer" label="Other Information" placeholder="Enter Additional Info" name="other_information" value="{{ old('other_information', $profile->other_information) }}" readonly variant="filled" />
+                        <flux:input label="Certificate of Contestability No." placeholder="Enter Certificate No." name="certificate_of_contestability_number" value="{{ old('certificate_of_contestability_number', $profile->certificate_of_contestability_number) }}" readonly variant="filled" />
                         @endcan
                     </flux:field>
+                    <!-- Other Info - Customer editable only -->
+                    @can('profile-editable-customer')
+                    <flux:input badge="customer" label="Other Information" placeholder="Enter Additional Info" name="other_information" value="{{ old('other_information', $profile->other_information) }}" />
+                    @else
+                    <flux:input badge="customer" label="Other Information" placeholder="Enter Additional Info" name="other_information" value="{{ old('other_information', $profile->other_information) }}" readonly variant="filled" />
+                    @endcan
+
+
                 </div>
 
                 <!-- Third Card - Contact Information -->
@@ -128,6 +136,42 @@
                         @else
                         <flux:input badge="customer" label="Mobile Number" placeholder="Enter Mobile Number" type="tel" name="mobile_number" value="{{ old('mobile_number', $profile->mobile_number) }}" readonly variant="filled" />
                         @endcan
+                    </flux:field>
+                </div>
+                <!-- Fourth Card - Secondary Contact -->
+                <div class="flex flex-col bg-white rounded-2xl shadow p-6">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-lg font-bold">Secondary Contact</h2>
+                    </div>
+                    <flux:field>
+                        <!-- Contact Name 1 - Customer editable only -->
+                        @can('profile-editable-customer')
+                        <flux:input badge="secondary" label="Contact Name" placeholder="Enter Contact Name" name="contact_name_1" value="{{ old('contact_name_1', $profile->contact_name_1) }}" />
+                        @else
+                        <flux:input badge="secondary" label="Contact Name" placeholder="Enter Contact Name" name="contact_name_1" value="{{ old('contact_name_1', $profile->contact_name_1) }}" readonly variant="filled" />
+                        @endcan
+
+                        <!-- Designation 1 - Customer editable only -->
+                        @can('profile-editable-customer')
+                        <flux:input badge="secondary" label="Designation" placeholder="Enter Designation" name="designation_1" value="{{ old('designation_1', $profile->designation_1) }}" />
+                        @else
+                        <flux:input badge="secondary" label="Designation" placeholder="Enter Designation" name="designation_1" value="{{ old('designation_1', $profile->designation_1) }}" readonly variant="filled" />
+                        @endcan
+
+                        <!-- Email 1 - Customer editable only -->
+                        @can('profile-editable-customer')
+                        <flux:input badge="secondary" label="Email" placeholder="Enter Email" type="email" name="email_1" value="{{ old('email_1', $profile->email_1) }}" />
+                        @else
+                        <flux:input badge="secondary" label="Email" placeholder="Enter Email" type="email" name="email_1" value="{{ old('email_1', $profile->email_1) }}" readonly variant="filled" />
+                        @endcan
+
+                        <!-- Mobile Number 1 - Customer editable only -->
+                        @can('profile-editable-customer')
+                        <flux:input badge="secondary" label="Mobile Number" placeholder="Enter Mobile Number" type="tel" name="mobile_number_1" value="{{ old('mobile_number_1', $profile->mobile_number_1) }}" />
+                        @else
+                        <flux:input badge="secondary" label="Mobile Number" placeholder="Enter Mobile Number" type="tel" name="mobile_number_1" value="{{ old('mobile_number_1', $profile->mobile_number_1) }}" readonly variant="filled" />
+                        @endcan
+
                     </flux:field>
                 </div>
 
