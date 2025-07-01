@@ -39,7 +39,7 @@
                 Apply Filters
             </flux:button>
         </form>
-        
+
         <!-- Table -->
         <div class="overflow-x-auto rounded-lg border border-gray-200">
             <table>
@@ -58,9 +58,9 @@
                         data-name="{{ $accountExecutive->name }}"
                         data-email="{{ $accountExecutive->email }}"
                         data-customer-id="{{ $accountExecutive->customer_id }}"
+                        data-account-name="{{ $accountExecutive->profile?->account_name }}"
 
-                        onclick="document.getElementById('open-edit-modal').click()"
-                    >
+                        onclick="document.getElementById('open-edit-modal').click()">
                         <td>{{ $accountExecutive->id }}</td>
                         <td>{{ $accountExecutive->name }}</td>
                         <td>{{ $accountExecutive->email }}</td>

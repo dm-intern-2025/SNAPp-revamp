@@ -5,16 +5,14 @@
         $nextTick(() => $flux.modal('edit-customer-modal').show())
     @endif
 ">
-    <flux:modal 
-        name="edit-customer-modal" 
-        class="md:w-96"
-    >
+    <flux:modal
+        name="edit-customer-modal"
+        class="md:w-96">
         <form
             data-base-action="{{ route('users.update', ['user' => ':user_id']) }}"
             method="POST"
             id="edit-customer-form"
-            class="space-y-6"
-        >
+            class="space-y-6">
             @csrf
             @method('PUT')
 
@@ -29,58 +27,55 @@
 
             <flux:field>
                 <flux:label badge="Required">Name</flux:label>
-                <flux:input 
-                    name="edit_name" 
-                    placeholder="Enter customer name" 
-                />
+                <flux:input
+                    name="edit_name"
+                    placeholder="Enter customer name" />
                 @error('edit_name')
-                    <p class="mt-2 text-red-500 text-xs">{{ $message }}</p>
+                <p class="mt-2 text-red-500 text-xs">{{ $message }}</p>
                 @enderror
             </flux:field>
 
             <flux:field>
                 <flux:label badge="Required">Email</flux:label>
-                <flux:input 
-                    name="edit_email" 
-                    type="email" 
-                    placeholder="Enter customer email" 
-                />
+                <flux:input
+                    name="edit_email"
+                    type="email"
+                    placeholder="Enter customer email" />
                 @error('edit_email')
-                    <p class="mt-2 text-red-500 text-xs">{{ $message }}</p>
+                <p class="mt-2 text-red-500 text-xs">{{ $message }}</p>
                 @enderror
             </flux:field>
 
-<flux:field>
-    <div class="mb-4">
-        <label for="edit_customer_id" class="block text-sm font-medium text-gray-700 mb-1">
-            Assign Profile <span class="text-red-500">*</span>
-        </label>
-        <select
-            name="edit_customer_id"
-            id="edit_customer_id"
-            class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-            <option value="">— Select account —</option>
-            @foreach ($profiles as $profile)
-            <option value="{{ $profile->customer_id }}"
-                {{ old('edit_customer_id') == $profile->customer_id ? 'selected' : '' }}>
-                {{ $profile->account_name }} ({{ $profile->short_name }})
-            </option>
-            @endforeach
-        </select>
-        @error('edit_customer_id')
-        <p class="mt-2 text-sm text-red-500 text-xs">{{ $message }}</p>
-        @enderror
-    </div>
-</flux:field>
+            <flux:field>
+                <div class="mb-4">
+                    <label for="edit_customer_id" class="block text-sm font-medium text-gray-700 mb-1">
+                        Assign Profile <span class="text-red-500">*</span>
+                    </label>
+                    <select
+                        name="edit_customer_id"
+                        id="edit_customer_id"
+                        class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                        <option value="">— Select account —</option>
+                        @foreach ($profiles as $profile)
+                        <option value="{{ $profile->customer_id }}"
+                            {{ old('edit_customer_id') == $profile->customer_id ? 'selected' : '' }}>
+                            {{ $profile->account_name }} ({{ $profile->short_name }})
+                        </option>
+                        @endforeach
+                    </select>
+                    @error('edit_customer_id')
+                    <p class="mt-2 text-sm text-red-500 text-xs">{{ $message }}</p>
+                    @enderror
+                </div>
+            </flux:field>
 
 
             <div class="flex">
                 <flux:spacer />
-                <flux:button 
-                    type="submit" 
-                    variant="primary" 
-                    id="save-button"
-                >
+                <flux:button
+                    type="submit"
+                    variant="primary"
+                    id="save-button">
                     Save Changes
                 </flux:button>
             </div>
@@ -93,7 +88,7 @@
             if (!button) return;
 
             const form = document.getElementById('edit-customer-form');
-            const ds   = button.dataset;
+            const ds = button.dataset;
             form.action = form.dataset.baseAction.replace(':user_id', ds.id);
 
             const set = (name, val) => {
@@ -101,12 +96,12 @@
                 if (el) el.value = val || '';
             };
 
-            set('edit_name',        ds.name);
-            set('edit_email',       ds.email);
+            set('edit_name', ds.name);
+            set('edit_email', ds.email);
             set('edit_customer_id', ds.customerId);
         });
 
-        document.getElementById('save-button').addEventListener('click', function (e) {
+        document.getElementById('save-button').addEventListener('click', function(e) {
             e.preventDefault(); // prevent native form submission
             this.disabled = true;
             this.innerText = 'Saving…';

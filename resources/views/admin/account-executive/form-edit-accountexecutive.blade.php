@@ -7,7 +7,7 @@
         class="md:w-96">
 
         <form
-            data-base-action="{{ route('users.update', 
+            data-base-action="{{ route('admin.users.update-account-executive', 
                     ['user' => ':user_id']) }}"
             method="POST"
             id="edit-customer-form"
@@ -49,20 +49,32 @@
             </flux:field>
 
             <flux:field>
-                <flux:label>Customer ID</flux:label>
-                <flux:input
-                    name="edit_customer_id"
-                    value="{{ old('edit_customer_id', '') }}"
-                    placeholder="Enter Account Executive ID" />
-                @error('edit_customer_id')
-                <p class="mt-2 text-red-500 dark:text-red-400 text-xs">{{ $message }}</p>
-                @enderror
+                <div class="mb-4">
+                    <label for="edit_customer_id" class="block text-sm font-medium text-gray-700 mb-1">
+                        Assign Profile <span class="text-red-500">*</span>
+                    </label>
+                    <select
+                        name="edit_customer_id"
+                        id="edit_customer_id"
+                        class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                        <option value="">— Select account —</option>
+                        @foreach ($profiles as $profile)
+                        <option value="{{ $profile->customer_id }}"
+                            {{ old('edit_customer_id') == $profile->customer_id ? 'selected' : '' }}>
+                            {{ $profile->account_name }} ({{ $profile->short_name }})
+                        </option>
+                        @endforeach
+                    </select>
+                    @error('edit_customer_id')
+                    <p class="mt-2 text-sm text-red-500 text-xs">{{ $message }}</p>
+                    @enderror
+                </div>
             </flux:field>
 
             <div class="flex">
                 <flux:spacer />
-                <flux:button 
-                    type="submit" 
+                <flux:button
+                    type="submit"
                     variant="primary">Save Changes</flux:button>
             </div>
         </form>
@@ -87,7 +99,7 @@
             document.querySelector('input[name="user_id"]').value = userId;
             document.querySelector('input[name="edit_name"]').value = userName;
             document.querySelector('input[name="edit_email"]').value = userEmail;
-            document.querySelector('input[name="edit_customer_id"]').value = customerId;
+            document.querySelector('select[name="edit_customer_id"]').value = customerId;
         });
     });
 </script>

@@ -25,11 +25,18 @@
             <!-- Chart (Left) -->
             <div class="col-span-1 md:col-span-3 bg-white rounded-2xl shadow p-6 flex flex-col">
                 <h2 class="text-lg font-bold text-[#1443e0]">At A Glance</h2>
-                <div class="mt-6 h-64 relative">
-                    {{-- Canvas for the chart --}}
-                    <canvas id="energyChart" class="absolute top-0 left-0 w-full h-full border"></canvas>
+                <div class="mt-6 flex-1">
+                    <iframe
+                        src="{{ $lookerUrl }}"
+                        class="w-full h-[300px] rounded-xl border-none"
+                        frameborder="0"
+                        allowfullscreen>
+                    </iframe>
                 </div>
             </div>
+
+
+
 
             <!-- Advisories (Right) -->
             <div class="col-span-1 md:col-span-2 bg-white rounded-2xl shadow p-6 flex flex-col">

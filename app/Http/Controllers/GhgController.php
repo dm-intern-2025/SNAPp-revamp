@@ -14,50 +14,55 @@ class GhgController extends Controller
         $this->oracleInvoiceService = $oracleInvoiceService;
     }
 
-   public function calculateEmissions()
-{
-    $user = Auth::user();
-    $accountName = $user->profile?->account_name;
-    $customerId = $user->customer_id;
+    public function calculateEmissions()
+    {
+        $user = Auth::user();
+        $accountName = $user->profile?->account_name;
+        $customerId = $user->customer_id;
 
-    $invoiceData = $this->oracleInvoiceService->fetchInvoiceData($customerId);
-    if (empty($invoiceData)) {
-        return response()->json(['error' => 'No invoices found for this customer'], 404);
+        $invoiceData = $this->oracleInvoiceService->fetchInvoiceData($customerId);
+        if (empty($invoiceData)) {
+            return response()->json(['error' => 'No invoices found for this customer'], 404);
+        }
+
+        $latestInvoice = $invoiceData[0];
+        $transactionId = $latestInvoice['CustomerTransactionId'] ?? null;
+
+        if (!$transactionId) {
+            return response()->json(['error' => 'Invalid invoice data'], 400);
+        }
+
+        $consumption = $this->oracleInvoiceService->fetchConsumption($transactionId);
+
+        $ERF = 0.709;
+        $BulbReplacementFactor = 37.2;
+        $SequestrationRate = 60;
+        $TrashBagConversionFactor = 23.1;
+
+        $avoidedEmissions = $consumption * $ERF;
+        $bulbReplacement = $consumption / $BulbReplacementFactor;
+        $treesGrown = $avoidedEmissions / $SequestrationRate;
+        $trashBagsRecycled = $avoidedEmissions / $TrashBagConversionFactor;
+
+        $upperAccountName = strtoupper($accountName);
+        $doubleEncoded    = urlencode(urlencode($upperAccountName));
+
+        $baseId   = '4d1cf425-bcf4-4164-bf00-0e16b20bc79a';
+        $pageId   = 'p_n0steo0jnc';
+        $params   = "%7B%22df50%22%3A%22include%25EE%2580%2580IN%25EE%2580%2580{$doubleEncoded}%22%7D";
+
+        // **Notice the `/u/0/`** in the path:
+        $lookerUrl = "https://lookerstudio.google.com/embed/u/0/reporting/{$baseId}/page/{$pageId}?params={$params}";
+
+
+        return view('energy-consumption', [
+            'consumption' => number_format($consumption, 2),
+            'avoidedEmissions' => number_format($avoidedEmissions, 2),
+            'bulbReplacement' => number_format($bulbReplacement, 2),
+            'treesGrown' => number_format($treesGrown, 2),
+            'trashBagsRecycled' => number_format($trashBagsRecycled, 2),
+            'accountName' => $accountName,
+            'lookerUrl' => $lookerUrl,
+        ]);
     }
-
-    $latestInvoice = $invoiceData[0];
-    $transactionId = $latestInvoice['CustomerTransactionId'] ?? null;
-
-    if (!$transactionId) {
-        return response()->json(['error' => 'Invalid invoice data'], 400);
-    }
-
-    $consumption = $this->oracleInvoiceService->fetchConsumption($transactionId);
-
-    $ERF = 0.709;
-    $BulbReplacementFactor = 37.2;
-    $SequestrationRate = 60;
-    $TrashBagConversionFactor = 23.1;
-
-    $avoidedEmissions = $consumption * $ERF;
-    $bulbReplacement = $consumption / $BulbReplacementFactor;
-    $treesGrown = $avoidedEmissions / $SequestrationRate;
-    $trashBagsRecycled = $avoidedEmissions / $TrashBagConversionFactor;
-
-    // 🔥 Dynamic Looker URL
-    $filter = json_encode(['df50' => "include IN $accountName"]);
-    $encodedFilter = rawurlencode($filter);
-    $lookerUrl = "https://lookerstudio.google.com/embed/reporting/4d1cf425-bcf4-4164-bf00-0e16b20bc79a/page/p_n0steo0jnc?params={$encodedFilter}";
-
-    return view('energy-consumption', [
-        'consumption' => number_format($consumption, 2),
-        'avoidedEmissions' => number_format($avoidedEmissions, 2),
-        'bulbReplacement' => number_format($bulbReplacement, 2),
-        'treesGrown' => number_format($treesGrown, 2),
-        'trashBagsRecycled' => number_format($trashBagsRecycled, 2),
-        'accountName' => $accountName,
-        'lookerUrl' => $lookerUrl,
-    ]);
-}
-
 }

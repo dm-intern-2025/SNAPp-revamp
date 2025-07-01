@@ -21,16 +21,18 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         $customerId = $user->customer_id;
+        $accountName = $user->profile?->account_name;
+
 
         // Fetch invoice data
         $items = $this->oracleInvoiceService->fetchInvoiceData($customerId);
         $latestInvoice = collect($items)->first();
 
-        $billingPeriod = isset($latestInvoice['TransactionDate']) 
+        $billingPeriod = isset($latestInvoice['TransactionDate'])
             ? Carbon::parse($latestInvoice['TransactionDate'])->format('F Y')
             : 'N/A';
 
-        $dueDate = isset($latestInvoice['DueDate']) 
+        $dueDate = isset($latestInvoice['DueDate'])
             ? Carbon::parse($latestInvoice['DueDate'])->format('m/d/Y')
             : 'N/A';
 
@@ -46,9 +48,19 @@ class DashboardController extends Controller
 
         // Fetch advisories
         $moreAdvisories = Advisory::latest()
-        ->take(3)
-        ->get();
+            ->take(3)
+            ->get();
+        // Build in your controller:
+        $upper = strtoupper($user->profile->account_name);
+        $filterJson    = json_encode(['df50' => "include IN {$upper}"]);
+        $encodedFilter = rawurlencode($filterJson);
 
+        // NOTE the `/u/0/` here:
+        $lookerUrl = "https://lookerstudio.google.com/embed/u/0/reporting/"
+            . "4d1cf425-bcf4-4164-bf00-0e16b20bc79a/"
+            . "page/p_n0steo0jnc"
+            . "?params={$encodedFilter}";
+            
         return view('dashboard', [
             'customerName'    => $user->name ?? 'Customer',
             'customerId'      => $customerId,
@@ -58,13 +70,14 @@ class DashboardController extends Controller
             'currentAmount'   => number_format($currentAmount, 2),
             'dueDate'         => $dueDate,
             'moreAdvisories' => $moreAdvisories,
+            'lookerUrl' => $lookerUrl,
         ]);
     }
     public function loadMore(Request $request)
-{
-    return Advisory::latest()
-        ->skip($request->skip ?? 0)
-        ->take(3)
-        ->get();
-}
+    {
+        return Advisory::latest()
+            ->skip($request->skip ?? 0)
+            ->take(3)
+            ->get();
+    }
 }

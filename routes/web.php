@@ -62,7 +62,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/users/store-account-executive', [UserController::class, 'storeAE'])->name('admin.users.store-account-executive');
         Route::get('/account-executive-list', [UserController::class, 'showAE'])->name('account-executive-list');
         Route::get('/all-user-list', [UserController::class, 'showAllUsers'])->name('all-user-list');
-        // Add this with your other user-related routes
+        Route::put('/users/{user}/update-account-executive', [UserController::class, 'updateAE'])->name('admin.users.update-account-executive');
         Route::post('/users/{user}/reset-password', [App\Http\Controllers\UserController::class, 'resetPassword'])->name('users.reset-password');
 
         Route::get('/role-permission', [RolePermission::class, 'index'])->name('role.permission.list');

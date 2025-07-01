@@ -55,35 +55,12 @@ class UserController extends Controller
      */
     public function store(StoreCustomerRequest $request)
     {
-        $validated = $request->validated();
-        $password = Str::random(8);
-
-        DB::beginTransaction();
-        try {
-            $user = User::create([
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-                'customer_id' => $validated['customer_id'],
-                'password' => bcrypt($password),
-            ]);
-            $user->assignRole('customer');
-
-            // Optional: ensure profile exists (but do not create/fill)
-            $profile = Profile::where('customer_id', $user->customer_id)->first();
-            if (!$profile) {
-                DB::rollBack();
-                return redirect()->back()->with('error', 'Selected profile does not exist.');
-            }
-
-            Mail::to($user->email)->send(new CustomerPasswordMail($password));
-            DB::commit();
-
-            return redirect()->back()->with('success', 'Customer account created successfully.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Customer Creation Failed: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Failed to create customer account.');
-        }
+        return $this->createUserWithRole(
+            $request,
+            'customer',
+            'Customer account created successfully.',
+            'Failed to create customer account.'
+        );
     }
 
     /**
@@ -155,7 +132,9 @@ class UserController extends Controller
         // This originally had no filters, so we keep it simple.
         // To add filtering, pass the Request object and call the helper method.
         $admins = User::role('admin')->paginate(10);
-        return view('admin.admin-account.admin-list', compact('admins'));
+        $profiles = Profile::orderBy('account_name')->get();
+
+        return view('admin.admin-account.admin-list', compact('admins', 'profiles'));
     }
 
     public function storeAdmins(StoreAdminRequest $request)
@@ -184,15 +163,16 @@ class UserController extends Controller
 
     public function showAE(Request $request)
     {
-        $query = User::query()->role('account executive');
+        $query = User::query()->role('account executive')->with('profile');
 
         $accountExecutives = $this->applyCommonFiltersAndPagination(
             $query,
             $request,
             ['active', 'search', 'sort']
         );
+        $profiles = Profile::orderBy('account_name')->get();
 
-        return view('admin.account-executive.account-executive-list', compact('accountExecutives'));
+        return view('admin.account-executive.account-executive-list', compact('accountExecutives', 'profiles'));
     }
 
     public function storeAE(StoreAccountExecutive $request)
@@ -212,9 +192,11 @@ class UserController extends Controller
         return $this->updateUserSimple(
             $request,
             $user,
-            'ae-list', // Assumed route name, change if different
+            'account-executive-list', // Assumed route name, change if different
             'Account Executive updated successfully.'
         );
+        return redirect()->route('account-executive-list')->with('success', 'Account Executive updated successfully.');
+
     }
 
     //======================================================================
@@ -237,9 +219,10 @@ class UserController extends Controller
             $request,
             ['role', 'active', 'search', 'sort']
         );
+        $profiles = Profile::orderBy('account_name')->get();
 
         $roles = Role::all();
-        return view('admin.all-users.all-users-list', compact('allUsers', 'roles'));
+        return view('admin.all-users.all-users-list', compact('allUsers', 'roles', 'profiles'));
     }
 
     /**

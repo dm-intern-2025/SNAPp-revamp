@@ -41,7 +41,7 @@
 
         <!-- Clickable Table -->
         <div class="overflow-x-auto rounded-lg border border-gray-200">
-            <table class="min-w-full text-left">
+            <table class="min-w-full text-center">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -60,17 +60,11 @@
                         data-customer-id="{{ $user->customer_id }}"
 
                         data-account-name="{{ $user->profile?->account_name }}"
-                        data-short-name="{{ $user->profile?->short_name }}"
-                        data-customer-category="{{ $user->profile?->customer_category }}"
-                        data-contract-price="{{ $user->profile?->contract_price }}"
-                        data-contracted-demand="{{ $user->profile?->contracted_demand }}"
-                        data-start-date="{{ $user->profile?->cooperation_period_start_date }}"
-                        data-end-date="{{ $user->profile?->cooperation_period_end_date }}"
                         onclick="document.getElementById('open-edit-modal').click()">
-                        
+
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
-                        <td>{{ $user->customer_id }}</td>
+                        <td>{{ $user->profile?->account_name ?? '-' }}</td>
                     </tr>
                     @endforeach
                 </tbody>

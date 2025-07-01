@@ -40,7 +40,7 @@
                 Apply Filters
             </flux:button>
         </form>
-        
+
         <!-- Table -->
         <div class="overflow-x-auto rounded-lg border border-gray-200">
             <table>
@@ -59,8 +59,9 @@
                         data-name="{{ $admin->name }}"
                         data-email="{{ $admin->email }}"
                         data-customer-id="{{ $admin->customer_id }}"
-                        onclick="document.getElementById('open-edit-modal').click()"
-                    >
+                        data-account-name="{{ $admin->profile?->account_name }}"
+
+                        onclick="document.getElementById('open-edit-modal').click()">
 
                         <td>{{ $admin->id }}</td>
                         <td>{{ $admin->name }}</td>
@@ -70,7 +71,7 @@
                 </tbody>
             </table>
         </div>
-        
+
         <!-- Hidden Modal Trigger for Edit -->
         <flux:modal.trigger name="edit-admin-modal">
             <button id="open-edit-modal" class="hidden"></button>

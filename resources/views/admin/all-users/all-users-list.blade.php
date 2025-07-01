@@ -52,7 +52,7 @@
 
         <!-- Table -->
         <div class="overflow-x-auto rounded-lg border border-gray-200">
-            <table class="min-w-full text-left">
+            <table class="min-w-full text-center">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -71,6 +71,7 @@
                         data-name="{{ $user->name }}"
                         data-email="{{ $user->email }}"
                         data-customer-id="{{ $user->customer_id }}"
+                        data-account-name="{{ $user->profile?->account_name }}"
                         data-role="{{ $user->roles->pluck('name')->join(', ') }}"
                         data-active="{{ $user->active ? '1' : '0' }}"
                         onclick="document.getElementById('open-edit-modal').click()">
@@ -78,7 +79,7 @@
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->roles->pluck('name')->join(', ') }}</td>
-                        <td>{{ $user->customer_id }}</td>
+                        <td>{{ $user->profile?->account_name ?? '-' }}</td>
                     </tr>
                     @endforeach
                 </tbody>
