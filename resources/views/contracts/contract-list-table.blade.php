@@ -2,7 +2,7 @@
     <table>
         <thead>
             <tr>
-                <th>Reference No.</th>
+                <!-- <th>Reference No.</th> -->
                 <th>Description</th>
                 <th>Contract Period</th>
                 <th>Upload Date</th>
@@ -20,7 +20,7 @@
                 data-contract-name="{{ $item['contract_name'] }}"
                 data-gcs-pdf-url="{{ $item['gcsPdfUrl'] ?? '' }}">
 
-                <td>{{$item['reference_number']}}</td>
+                <!-- <td>{{$item['reference_number']}}</td> -->
                 <td>{{ $item['contract_name'] }}</td>
                 <td>{{$item['contract_period']}}</td>
                 <td>{{$item['upload_date']}}</td>

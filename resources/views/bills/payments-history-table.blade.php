@@ -6,7 +6,7 @@
         <th >Payment Date</th>
         <th >Billing Period</th>
         <th >Amount</th>
-        <th >Bill No</th>
+        <!-- <th >Bill No</th> -->
         <th >Date Posted</th>
     </tr>
 
@@ -18,7 +18,7 @@
                     <td>{{ $item['Payment Reference Date'] }}</td>
                     <td>{{ $item['Billing Period'] }}</td>
                     <td>₱ {{ $item['Amount'] }}</td>
-                    <td>{{ $item['Power Bill No'] }}</td>
+                    <!-- <td>{{ $item['Power Bill No'] }}</td> -->
                     <td>{{ $item['Date Posted'] }}</td>
                 </tr>
             @endforeach
