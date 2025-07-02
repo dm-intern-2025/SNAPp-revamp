@@ -117,7 +117,7 @@
                 @endcan
 
 
-                @can('can view profile')
+                @role('customer')
                 <a
                     href="{{ route('help') }}"
                     class="group flex items-center p-2 rounded-md hover:bg-blue-500 transition-colors"
@@ -125,7 +125,7 @@
                     <flux:icon name="message-circle" class="w-6 h-6 text-white" />
                     <span x-show="!collapsed" class="text-white">{{ __('Help') }}</span>
                 </a>
-                @endcan
+                @endrole
 
                 <!-- Admin Section Links (Now part of the same container) -->
                 @role('admin')
