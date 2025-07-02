@@ -3,7 +3,7 @@
 
         <!-- Header -->
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-semibold text-gray-800">Account Executives</h2>
+            <h2 class="text-xl font-semibold text-gray-800">Account Executive Accounts</h2>
             <div class="flex gap-2">
                 <!-- Add Button -->
                 <flux:modal.trigger name="create-accountexecutive">

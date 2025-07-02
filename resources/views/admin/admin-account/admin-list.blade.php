@@ -3,7 +3,7 @@
 
         <!-- Header with Add Buttons -->
         <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-semibold text-gray-800">Admin List</h2>
+            <h2 class="text-xl font-semibold text-gray-800">Admin Accounts</h2>
             <div class="flex gap-2">
 
                 <!-- Flux Button to Trigger the Modal -->
