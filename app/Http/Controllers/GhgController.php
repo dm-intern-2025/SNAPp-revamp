@@ -44,16 +44,16 @@ class GhgController extends Controller
         $treesGrown = $avoidedEmissions / $SequestrationRate;
         $trashBagsRecycled = $avoidedEmissions / $TrashBagConversionFactor;
 
-        $upperAccountName = strtoupper($accountName);
-        $doubleEncoded    = urlencode(urlencode($upperAccountName));
+        // Build in your controller:
+        $upper = strtoupper($user->profile->account_name);
+        $filterJson    = json_encode(['df50' => "include IN {$upper}"]);
+        $encodedFilter = rawurlencode($filterJson);
 
-        $baseId   = '4d1cf425-bcf4-4164-bf00-0e16b20bc79a';
-        $pageId   = 'p_n0steo0jnc';
-        $params   = "%7B%22df50%22%3A%22include%25EE%2580%2580IN%25EE%2580%2580{$doubleEncoded}%22%7D";
-
-        // **Notice the `/u/0/`** in the path:
-        $lookerUrl = "https://lookerstudio.google.com/embed/u/0/reporting/{$baseId}/page/{$pageId}?params={$params}";
-
+        // NOTE the `/u/0/` here:
+        $lookerUrl = "https://lookerstudio.google.com/embed/u/0/reporting/"
+            . "4d1cf425-bcf4-4164-bf00-0e16b20bc79a/"
+            . "page/p_n0steo0jnc"
+            . "?params={$encodedFilter}";
 
         return view('energy-consumption', [
             'consumption' => number_format($consumption, 2),
