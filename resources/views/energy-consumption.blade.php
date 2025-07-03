@@ -49,19 +49,28 @@
                     <hr class="my-4">
 
                     <div class="flex flex-col gap-4 flex-grow justify-between">
-                        <div class="flex items-center gap-6 flex-1">
-                            <img src="{{ asset('images/bulb-icon.png') }}" alt="Bulb Icon" class="w-6 h-6 md:w-8 md:h-8">
-                            <span class="text-2xl md:text-3xl text-black">{{ $bulbReplacement }}</span>
+                        <div class="flex flex-col items-center gap-1 flex-1">
+                            <p class="text-base text-gray-700 text-center">Incadescent bulbs switched to LED bulbs</p>
+                            <div class="flex items-center gap-2">
+                                <img src="{{ asset('images/bulb-icon.png') }}" alt="Bulb Icon" class="w-6 h-6 md:w-8 md:h-8">
+                                <span class="text-2xl md:text-3xl text-black font-semibold">{{ $bulbReplacement }}</span>
+                            </div>
                         </div>
 
-                        <div class="flex items-center gap-6 flex-1">
-                            <img src="{{ asset('images/co2-icon.png') }}" alt="CO₂ Icon" class="w-6 h-6 md:w-8 md:h-8">
-                            <span class="text-2xl md:text-3xl text-black">{{ $avoidedEmissions }}</span>
+                        <div class="flex flex-col items-center gap-1 flex-1">
+                            <p class="text-base text-gray-700 text-center">Avoided GHG Emissions</p>
+                            <div class="flex items-center gap-2">
+                                <img src="{{ asset('images/co2-icon.png') }}" alt="CO₂ Icon" class="w-6 h-6 md:w-8 md:h-8">
+                                <span class="text-2xl md:text-3xl text-black font-semibold">{{ $avoidedEmissions }}</span>
+                            </div>
                         </div>
 
-                        <div class="flex items-center gap-6 flex-1">
-                            <img src="{{ asset('images/tree-icon.png') }}" alt="Tree Icon" class="w-6 h-6 md:w-8 md:h-8">
-                            <span class="text-2xl md:text-3xl text-black">{{ $treesGrown }}</span>
+                        <div class="flex flex-col items-center gap-1 flex-1">
+                            <p class="text-base text-gray-700 text-center">Tree seedlings grown for 10 years</p>
+                            <div class="flex items-center gap-2">
+                                <img src="{{ asset('images/tree-icon.png') }}" alt="Tree Icon" class="w-6 h-6 md:w-8 md:h-8">
+                                <span class="text-2xl md:text-3xl text-black font-semibold">{{ $treesGrown }}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
