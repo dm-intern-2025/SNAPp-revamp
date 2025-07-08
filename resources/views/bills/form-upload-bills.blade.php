@@ -1,11 +1,11 @@
 <div
   x-data="{}"
   x-init="
-    @if (session('show_modal') === 'form-upload-contract')
-      $nextTick(() => $flux.modal('upload-contract').show())
+    @if (session('show_modal') === 'form-upload-bills')
+      $nextTick(() => $flux.modal('upload-bills').show())
     @endif
   ">
-  <flux:modal name="upload-contract" class="md:max-w-3xl">
+  <flux:modal name="upload-bills" class="md:max-w-3xl">
     <form
       action="{{ route('contracts.store') }}"
       method="POST"

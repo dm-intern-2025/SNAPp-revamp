@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use DateTime; // Import DateTime class for date parsing
+use Exception; // Import Exception for more specific error handling
 
 class OracleInvoiceService
 {
@@ -28,25 +30,66 @@ class OracleInvoiceService
         // You can add a check to fail early if credentials are not set
         if (empty($this->apiAuth[0]) || empty($this->apiAuth[1])) {
             // In a real app, you'd throw a specific exception here.
-            throw new \Exception('Oracle API credentials are not configured.');
+            throw new Exception('Oracle API credentials are not configured.');
         }
     }
 
-    public function fetchInvoiceData($customerId)
+    /**
+     * Fetches invoice data and consistently sorts it by the latest billing period (descending).
+     * This ensures the most recent invoice is always at index [0] of the returned array.
+     *
+     * @param string $customerId
+     * @return array
+     */
+       public function fetchInvoiceData($customerId)
     {
-        // Use the base URL from the config
         $url = $this->baseUrl . 'receivablesInvoices';
 
         $queryParams = [
             'finder' => "invoiceSearch;TransactionSource=SNAP AUTOINVOICE,TransactionType=TRADE-RES,BusinessUnit=SNAPR BU,BillToCustomerNumber={$customerId}",
             'totalResults' => 'true'
+            // No 'orderBy' parameter, as we are doing the reliable chronological sorting in PHP.
         ];
 
         $response = Http::withBasicAuth(...$this->apiAuth)
             ->withHeaders($this->apiHeaders)
             ->get($url, $queryParams);
 
-        return $response->successful() ? $response->json()['items'] ?? [] : [];
+        if ($response->successful()) {
+            $items = $response->json()['items'] ?? [];
+
+            // --- Apply reliable chronological sorting (newest first) ---
+            usort($items, function ($a, $b) {
+                $commentsA = $a['Comments'] ?? '';
+                $commentsB = $b['Comments'] ?? '';
+
+                $partsA = explode(' to ', $commentsA);
+                $partsB = explode(' to ', $commentsB);
+
+                $endDateStrA = $partsA[1] ?? null;
+                $endDateStrB = $partsB[1] ?? null;
+
+                $dateA = $endDateStrA ? DateTime::createFromFormat('d-M-y', $endDateStrA) : false;
+                $dateB = $endDateStrB ? DateTime::createFromFormat('d-M-y', $endDateStrB) : false;
+
+                if ($dateA === false && $dateB === false) return 0;
+                if ($dateA === false) return 1;
+                if ($dateB === false) return -1;
+
+                return $dateB->getTimestamp() - $dateA->getTimestamp();
+            });
+
+            // --- NEW LOGIC: Cut off to only the top 5 most recent items ---
+            // Since the array is now sorted newest-to-oldest, array_slice(0, 5) gets the latest 5.
+            $limitedItems = array_slice($items, 0, 5);
+
+            // You can add a dd() here temporarily to verify the final list:
+            // dd($limitedItems); 
+
+            return $limitedItems; // Return the sorted and limited list of invoices
+        }
+
+        return []; // Return empty array if the API call was not successful
     }
 
     public function fetchConsumption($transactionId)

@@ -16,21 +16,26 @@ class ContractController extends Controller
     {
         $user = auth()->user();
 
-        $contracts = $this->contractService->getContractForUser($user);
+        if ($user->hasRole('admin')) {
+            // Admin: see all contracts
+            $contracts = $this->contractService->getAllContracts();
+        } else {
+            // Customer: see only their own
+            $contracts = $this->contractService->getContractForUser($user);
+        }
 
+        $profiles = Profile::orderBy('account_name')->get();
 
-        return view('my-contracts', compact('contracts'));
+        return view('my-contracts', compact('contracts', 'profiles'));
     }
+
 
     public function store(StoreContractRequest $request)
     {
         $validated = $request->validated();
         $user = auth()->user();
 
-        // pull shortname
-        $profile = Profile::where('customer_id', $user->customer_id)->first();
-        $short = $profile ? $profile->short_name : null;
-        $validated['shortname'] = $short;
+        $short = $validated['shortname'];
 
         // format period
         $start  = Carbon::parse($validated['contract_start']);

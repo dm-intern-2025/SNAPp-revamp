@@ -43,6 +43,11 @@ class StoreContractRequest extends FormRequest
                 'string', 
                 'max:255'
             ],
+            'shortname' => [
+                'required', 
+                'string', 
+                'max:255'
+            ],
 
         ];
     }
