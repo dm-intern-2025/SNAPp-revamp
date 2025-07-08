@@ -15,9 +15,9 @@
       @csrf
 
       <div>
-        <flux:heading size="lg">Upload Contract</flux:heading>
+        <flux:heading size="lg">Upload Bill</flux:heading>
         <flux:text class="mt-2">
-          Contract upload accepts pdf, doc, and docx formats.
+          Bill upload accepts pdf, doc, and docx formats.
         </flux:text>
       </div>
       <flux:field class="md:col-span-2">
@@ -64,7 +64,7 @@
         </flux:field>
 
         <flux:field class="md:col-span-2">
-          <flux:label badge="Required">Description</flux:label>
+          <flux:label badge="Required">Bill Number</flux:label>
           <flux:input
             name="description"
             value="{{ old('description') }}"

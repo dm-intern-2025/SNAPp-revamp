@@ -31,7 +31,6 @@ class GhgController extends Controller
         if (!$transactionId) {
             return response()->json(['error' => 'Invalid invoice data'], 400);
         }
- dd($transactionId);
         $consumption = $this->oracleInvoiceService->fetchConsumption($transactionId);
 
         $ERF = 0.709;

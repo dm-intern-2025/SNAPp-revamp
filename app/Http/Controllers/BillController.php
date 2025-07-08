@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Profile;
 use App\Services\BillingService;
 use App\Services\OracleInvoiceService;
 use Illuminate\Http\Request;
@@ -19,15 +20,20 @@ class BillController extends Controller
 
     public function showBillsPage(Request $request)
     {
-        
+        $user = Auth::user();
         // The controller's only job is to call the service...
         $billsPaginator = $this->billingService->getPaginatedBillsForUser(Auth::user(), $request);
+        $profiles = $user->hasRole('admin')
+            ? Profile::orderBy('account_name')->get()
+            : Profile::where('customer_id', $user->customer_id)->get();
 
         // ...and return the view with the prepared data.
         return view('my-bills', [
             'bills'     => $billsPaginator,
             'payments'  => null,
             'activeTab' => 'bills',
+
+            'profiles'  => $profiles,
         ]);
     }
 
