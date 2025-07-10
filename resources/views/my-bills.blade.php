@@ -28,14 +28,6 @@
                         Payment History
                     </flux:button>
                 </flux:button.group>
-
-                <flux:modal.trigger name="upload-bills">
-                    <flux:button
-                        variant="primary"
-                        icon="arrow-up-tray">
-                        Upload Bills
-                    </flux:button>
-                </flux:modal.trigger>
             </div>
         </div>
 
@@ -61,9 +53,8 @@
             Exporting…
         </button>
     </div>
-    @include('bills.form-upload-bills')
 
-    <!-- JavaScript -->
+    <!-- JavaScript --> 
     <script>
         function downloadThenRedirect(fileUrl, returnUrl) {
             const loader = document.getElementById('export-loader');
