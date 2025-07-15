@@ -21,8 +21,6 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         $customerId = $user->customer_id;
-        $accountName = $user->profile?->account_name;
-
 
         // Fetch invoice data
         $items = $this->oracleInvoiceService->fetchInvoiceData($customerId);
@@ -60,7 +58,7 @@ class DashboardController extends Controller
             . "4d1cf425-bcf4-4164-bf00-0e16b20bc79a/"
             . "page/p_n0steo0jnc"
             . "?params={$encodedFilter}";
-            
+
         return view('dashboard', [
             'customerName'    => $user->name ?? 'Customer',
             'customerId'      => $customerId,
@@ -71,6 +69,8 @@ class DashboardController extends Controller
             'dueDate'         => $dueDate,
             'moreAdvisories' => $moreAdvisories,
             'lookerUrl' => $lookerUrl,
+            'Status'          => ($latestInvoice['InvoiceBalanceAmount'] ?? 0) == 0 ? 'PAID' : 'UNPAID',
+
         ]);
     }
     public function loadMore(Request $request)
