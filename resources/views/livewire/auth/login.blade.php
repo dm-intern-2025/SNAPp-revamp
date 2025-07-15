@@ -88,7 +88,7 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
 <div class="flex flex-col gap-6">
 <div class="mb-3">
-<img src="{{ asset('images/logo.png') }}" alt="Logo" class="mx-auto d-block h-10 w-auto" style="height: 100px !important;">
+<img src="{{ asset('images/new-logo.png') }}" alt="Logo" class="mx-auto d-block h-10 w-auto" style="height: 100px !important;">
             </div>
 
     <x-auth-header 
