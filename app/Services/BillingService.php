@@ -1,12 +1,15 @@
 <?php
 
 namespace App\Services;
+
+use App\Models\Bill;
 use App\Models\Profile;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class BillingService
 {
@@ -15,71 +18,116 @@ class BillingService
         protected GcsService $gcsService
     ) {}
 
+
+    public function getPaginatedUploadedBills(Request $request): LengthAwarePaginator
+    {
+        $disk = config('filesystems.default');
+
+        $dbBills = Bill::with('profile')
+            ->orderBy('created_at', 'desc')
+            ->paginate(5);
+
+        $dbBills->getCollection()->transform(function (Bill $bill) use ($disk) {
+            return [
+                'billNumber'    => $bill->bill_number,
+                'accountName'   => $bill->profile?->account_name ?? 'No Profile',
+                'billingPeriod' => $bill->billing_period,
+                'uploadedAt'    => $bill->created_at->format('d-M-Y'),
+                'gcsPdfUrl' => $this->resolveFileUrl(
+                    "snapp_bills/{$bill->profile?->short_name}_{$bill->billing_period}_{$bill->bill_number}.pdf",
+                    $disk
+                ),
+            ];
+        });
+
+        return $dbBills;
+    }
+
+
+
+
     public function getPaginatedBillsForUser($user, Request $request): LengthAwarePaginator
     {
-        $profile = Profile::where('customer_id', $user->customer_id)->first();
-        $customerShortname = $profile ? $profile->short_name : null;
-        if (empty($customerShortname)) {
-            session()->flash('info_message', 'Please complete your customer profile to enable viewing of bill PDFs.');
+        $customerId = $user->hasRole('admin') && $request->has('customer_id')
+            ? $request->query('customer_id')
+            : $user->customer_id;
+
+        if (!$customerId) {
+            session()->flash('info_message', 'No customer selected.');
+            return $this->paginate(collect(), 5, $request, 'bills.show');
         }
 
-        $rawOracleItems = $this->oracleService->fetchInvoiceData($user->customer_id);
+        $profile = Profile::where('customer_id', $customerId)->first();
+        if (!$profile) {
+            session()->flash('info_message', 'Selected customer has no profile.');
+            return $this->paginate(collect(), 5, $request, 'bills.show');
+        }
 
+        $customerShortname = $profile->short_name;
+
+        // Fetch and format invoice data
+        $rawOracleItems = $this->oracleService->fetchInvoiceData($customerId);
         $allBills = $this->prepareBillData(collect($rawOracleItems), $customerShortname);
 
-        $search = $request->input('search');
-        if (!empty($search)) {
-            $search = strtolower($search);
+        // Optional search filter
+        if ($search = strtolower($request->input('search'))) {
             $allBills = $allBills->filter(
                 fn($bill) =>
                 str_contains(strtolower($bill['Billing Period']), $search) ||
                     str_contains(strtolower($bill['Power Bill Number']), $search)
             );
         }
+
+        // Optional facility filter
+        if ($facility = $request->input('facility')) {
+            $allBills = $allBills->filter(
+                fn($bill) => $bill['Facility'] === $facility
+            );
+        }
+
         return $this->paginate($allBills, 5, $request, 'bills.show');
     }
 
-// In app/Services/BillingService.php
 
-protected function prepareBillData(Collection $items, ?string $customerShortname): Collection
-{
-    return $items->map(function ($item) use ($customerShortname) {
-        
-        $billingPeriodForFile = null;
-        // --- THIS IS THE CORRECTED LOGIC FOR THE FILENAME ---
-        if (isset($item['Comments'])) {
-            // Split the string by " to "
-            $parts = explode(' to ', $item['Comments']);
-            
-            // Check if we have two parts, as expected
-            if (count($parts) === 2) {
-                // Uppercase each date part individually and join them back with a lowercase " to "
-                $billingPeriodForFile = strtoupper(trim($parts[0])) . ' to ' . strtoupper(trim($parts[1]));
-            } else {
-                // Fallback for any unexpected format
-                $billingPeriodForFile = strtoupper($item['Comments']);
+    protected function prepareBillData(Collection $items, ?string $customerShortname): Collection
+    {
+        return $items->map(function ($item) use ($customerShortname) {
+
+            $billingPeriodForFile = null;
+
+            if (isset($item['Comments'])) {
+                // Split the string by " to "
+                $parts = explode(' to ', $item['Comments']);
+
+                // Check if we have two parts, as expected
+                if (count($parts) === 2) {
+                    // Uppercase each date part individually and join them back with a lowercase " to "
+                    $billingPeriodForFile = strtoupper(trim($parts[0])) . ' to ' . strtoupper(trim($parts[1]));
+                } else {
+                    // Fallback for any unexpected format
+                    $billingPeriodForFile = strtoupper($item['Comments']);
+                }
             }
-        }
-        // --- END OF CORRECTION ---
 
-        $documentNumber = $item['DocumentNumber'] ?? ($item['TransactionNumber'] ?? null);
-        $gcsPdfUrl = null;
+            $documentNumber = $item['DocumentNumber'] ?? ($item['TransactionNumber'] ?? null);
+            $gcsPdfUrl = null;
 
-        if ($customerShortname && $billingPeriodForFile && $documentNumber) {
-            $objectPath = "snapp_bills/{$customerShortname}_{$billingPeriodForFile}_{$documentNumber}.pdf";
-            $gcsPdfUrl = $this->gcsService->generateSignedUrl($objectPath);
-        }
+            if ($customerShortname && $billingPeriodForFile && $documentNumber) {
+                $objectPath = "snapp_bills/{$customerShortname}_{$billingPeriodForFile}_{$documentNumber}.pdf";
+                $gcsPdfUrl = $this->gcsService->generateSignedUrl($objectPath);
+            }
 
-        return [
-            'Billing Period'    => $this->formatBillingRangeForDisplay($item['Comments'] ?? null),
-            'Power Bill Number' => $item['DocumentNumber'] ?? '',
-            'Posting Date'      => isset($item['TransactionDate']) ? \Carbon\Carbon::parse($item['TransactionDate'])->format('m/d/Y') : '',
-            'Status'            => ($item['InvoiceBalanceAmount'] ?? 0) == 0 ? 'PAID' : 'UNPAID',
-            'Total Amount'      => number_format($item['EnteredAmount'] ?? 0, 2),
-            'gcsPdfUrl'         => $gcsPdfUrl,
-        ];
-    });
-}
+            return [
+                'Facility'          => $item['SpecialInstructions'] ?? 'N/A',
+                'Billing Period'    => $this->formatBillingRangeForDisplay($item['Comments'] ?? null),
+                'Power Bill Number' => $item['DocumentNumber'] ?? '',
+                'Posting Date'      => isset($item['TransactionDate']) ? \Carbon\Carbon::parse($item['TransactionDate'])->format('m/d/Y') : '',
+                'Status'            => ($item['InvoiceBalanceAmount'] ?? 0) == 0 ? 'PAID' : 'UNPAID',
+                'Total Amount'      => number_format($item['EnteredAmount'] ?? 0, 2),
+                'gcsPdfUrl'         => $gcsPdfUrl,
+            ];
+        });
+    }
 
     private function paginate(Collection $collection, int $perPage, Request $request, string $routeName): LengthAwarePaginator
     {
@@ -95,9 +143,6 @@ protected function prepareBillData(Collection $items, ?string $customerShortname
         );
     }
 
-    /**
-     * This is the new helper method that formats the date range for display.
-     */
     private function formatBillingRangeForDisplay(?string $oracleComments): string
     {
         if (empty($oracleComments)) {
@@ -108,16 +153,12 @@ protected function prepareBillData(Collection $items, ?string $customerShortname
             // 1. Splits "26-Oct-22 to 25-Nov-22" into two parts
             $parts = explode(' to ', $oracleComments);
             if (count($parts) !== 2) {
-                return $oracleComments; // Return original if format is unexpected
+                return $oracleComments; 
             }
 
-            // 2. Carbon::parse() reads each part and understands it
             $startDate = Carbon::parse(trim($parts[0]));
             $endDate = Carbon::parse(trim($parts[1]));
 
-            // 3. Format each date into the style you want and join them
-            //    $startDate->format('m/d/Y') produces "10/26/2022" (mm/dd/yyyy)
-            //    $endDate->format('m/d/y')   produces "11/25/22" (mm/dd/yy)
             return $startDate->format('m/d/Y') . '-' . $endDate->format('m/d/y');
         } catch (\Exception $e) {
             // If parsing fails for any reason, log it and return the original string
@@ -126,14 +167,11 @@ protected function prepareBillData(Collection $items, ?string $customerShortname
         }
     }
 
-    // In app/Services/BillingService.php
 
     public function getPaginatedPaymentHistoryForUser($user, Request $request): LengthAwarePaginator
     {
-        // 1. Fetch raw data from the Oracle Service
         $rawOracleItems = $this->oracleService->fetchInvoiceData($user->customer_id);
 
-        // 2. Map the raw data into the "Payment History" format
         $allPayments = collect($rawOracleItems)->map(function ($item) {
             return [
                 'Payment Reference'      => $item['DocumentNumber'] ?? '',
@@ -145,7 +183,18 @@ protected function prepareBillData(Collection $items, ?string $customerShortname
             ];
         });
 
-        // 3. Paginate the final collection using our reusable helper method
         return $this->paginate($allPayments, 5, $request, 'payments.history');
+    }
+    protected function resolveFileUrl(?string $path, string $disk): ?string
+    {
+        if (is_null($path)) {
+            return null;
+        }
+
+        if ($disk === 'gcs') {
+            return $this->gcsService->generateSignedUrl($path);
+        }
+
+        return Storage::disk($disk)->url($path);
     }
 }

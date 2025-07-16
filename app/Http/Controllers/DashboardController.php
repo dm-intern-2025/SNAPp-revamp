@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Profile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Services\OracleInvoiceService;
@@ -48,12 +49,10 @@ class DashboardController extends Controller
         $moreAdvisories = Advisory::latest()
             ->take(3)
             ->get();
-        // Build in your controller:
         $upper = strtoupper($user->profile->account_name);
         $filterJson    = json_encode(['df50' => "include IN {$upper}"]);
         $encodedFilter = rawurlencode($filterJson);
 
-        // NOTE the `/u/0/` here:
         $lookerUrl = "https://lookerstudio.google.com/embed/u/0/reporting/"
             . "4d1cf425-bcf4-4164-bf00-0e16b20bc79a/"
             . "page/p_n0steo0jnc"

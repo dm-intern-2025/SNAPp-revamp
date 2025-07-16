@@ -9,11 +9,11 @@
     }
 }" @keydown.escape.window="showPdfModal = false">
 
-    {{-- This is your table --}}
     <div class="min-w-full divide-y divide-gray-200">
         <table>
             <thead>
                 <tr>
+                    <th>Facility</th>
                     <th>Bill Number</th>
                     <th>Billing Period</th>
                     <th>Posting Date</th>
@@ -24,46 +24,49 @@
             </thead>
             <tbody>
                 @forelse($bills as $item)
-                    <tr 
-                        @if($item['gcsPdfUrl']) 
-                            class="cursor-pointer hover:bg-gray-100 transition" 
-                            @click="openPdfViewer($el)"
-                        @else
-                            class="hover:bg-gray-100 transition"
-                        @endif
-                        {{-- Data attributes are on the row, so the openPdfViewer function can access them --}}
-                        data-bill-number="{{ $item['Power Bill Number'] }}"
-                        data-billing-period="{{ $item['Billing Period'] }}"
-                        data-posting-date="{{ $item['Posting Date'] }}"
-                        data-status="{{ $item['Status'] }}"
-                        data-total-amount="{{ str_replace(',', '', $item['Total Amount']) }}"
-                        data-gcs-pdf-url="{{ $item['gcsPdfUrl'] ?? '' }}">
+                <tr
+                    @if($item['gcsPdfUrl'])
+                    class="cursor-pointer hover:bg-gray-100 transition"
+                    @click="openPdfViewer($event.currentTarget)"
+                    @else
+                    class="hover:bg-gray-100 transition"
+                    @endif
+                    {{-- Data attributes are on the row, so the openPdfViewer function can access them --}}
+                    data-bill-number="{{ $item['Power Bill Number'] }}"
+                    data-billing-period="{{ $item['Billing Period'] }}"
+                    data-posting-date="{{ $item['Posting Date'] }}"
+                    data-status="{{ $item['Status'] }}"
+                    data-total-amount="{{ str_replace(',', '', $item['Total Amount']) }}"
+                    data-gcs-pdf-url="{{ $item['gcsPdfUrl'] ?? '' }}">
 
-                        <td>{{ $item['Power Bill Number'] }}</td>
-                        <td>{{ $item['Billing Period'] }}</td>
-                        <td>{{ $item['Posting Date'] }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                            <span class="px-2 py-1 rounded-full text-xs {{ $item['Status'] === 'PAID' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                {{ $item['Status'] }}
-                            </span>
-                        </td>
-                        <td>₱{{ $item['Total Amount'] }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-center">
-                            {{-- YOUR original button, now functional for a direct view/download --}}
-                            @if($item['gcsPdfUrl'])
-                                <button
-                                    type="button"
-                                    @click.stop="window.open('{{ $item['gcsPdfUrl'] }}', '_blank')"
-                                    title="View/Download Bill"
-                                    class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-[#1443e0] text-white hover:bg-[#0d3ab9] transition-colors">
-                                    
-                                    <flux:icon name="download" class="h-4 w-4" />
-                                </button>
-                            @endif
-                        </td>
-                    </tr>
+                    <td>{{ $item['Facility'] }}</td>
+                    <td>{{ $item['Power Bill Number'] }}</td>
+                    <td>{{ $item['Billing Period'] }}</td>
+                    <td>{{ $item['Posting Date'] }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <span class="px-2 py-1 rounded-full text-xs {{ $item['Status'] === 'PAID' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                            {{ $item['Status'] }}
+                        </span>
+                    </td>
+                    <td>₱{{ $item['Total Amount'] }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                        {{-- YOUR original button, now functional for a direct view/download --}}
+                        @if($item['gcsPdfUrl'])
+                        <button
+                            type="button"
+                            @click.stop="window.open('{{ $item['gcsPdfUrl'] }}', '_blank')"
+                            title="View/Download Bill"
+                            class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-[#1443e0] text-white hover:bg-[#0d3ab9] transition-colors">
+
+                            <flux:icon name="download" class="h-4 w-4" />
+                        </button>
+                        @endif
+                    </td>
+                </tr>
                 @empty
-                    <tr><td colspan="6" class="text-center py-4 text-gray-500">No bills found.</td></tr>
+                <tr>
+                    <td colspan="6" class="text-center py-4 text-gray-500">No bills found.</td>
+                </tr>
                 @endforelse
             </tbody>
         </table>
@@ -83,10 +86,9 @@
         class="fixed inset-0 z-50 bg-black bg-opacity-75 flex items-center justify-center p-2 sm:p-4"
         style="display: none;"
         role="dialog"
-        aria-modal="true"
-    >
+        aria-modal="true">
         <div @click.outside="showPdfModal = false" class="bg-white rounded-xl shadow-xl w-full max-w-[95vw] h-[95vh] flex flex-col md:flex-row">
-            
+
             <!-- Left Panel: PDF Viewer -->
             <div class="flex-grow h-2/3 md:h-full bg-gray-500 rounded-t-xl md:rounded-l-xl md:rounded-r-none">
                 <template x-if="pdfUrl">
@@ -104,10 +106,12 @@
                 <div class="flex-shrink-0 flex items-start justify-between">
                     <h2 class="text-xl font-bold text-gray-900">Billing Details</h2>
                     <button @click="showPdfModal = false" class="-mt-1 -mr-2 p-2 rounded-full hover:bg-gray-200" aria-label="Close modal">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
                     </button>
                 </div>
-                
+
                 <div class="mt-6 text-sm overflow-y-auto flex-grow">
                     <dl class="space-y-4">
                         <div>
@@ -122,7 +126,7 @@
                             <dt class="font-medium text-gray-500">Posting Date</dt>
                             <dd class="mt-1 text-gray-900 " x-text="selectedBill.postingDate"></dd>
                         </div>
-                         <div>
+                        <div>
                             <dt class="font-medium text-gray-500">Status</dt>
                             <dd class="mt-1"><span class="px-2 py-1 rounded-full text-xs" :class="{ 'bg-green-100 text-green-800': selectedBill.status === 'PAID', 'bg-red-100 text-red-800': selectedBill.status !== 'PAID' }" x-text="selectedBill.status"></span></dd>
                         </div>

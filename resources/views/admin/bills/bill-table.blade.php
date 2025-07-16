@@ -1,0 +1,58 @@
+<div x-data="{
+    showContractModal: false,
+    contractUrl: '',
+    selectedContract: {},
+    openContractViewer(el) {
+        this.selectedContract = el.dataset;
+        this.contractUrl      = el.dataset.gcsPdfUrl;
+        this.showContractModal = true;
+    }
+}" @keydown.escape.window="showContractModal = false">
+
+    {{-- BILL TABLE (identical structure to your contracts table) --}}
+    <div class="min-w-full divide-y divide-gray-200">
+        <table>
+            <thead>
+                <tr>
+                    <th>Customer Name</th>
+                    <th>Billing Period</th>
+                    <th>Bill Number</th>
+                    <th>Uploaded At</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($bills as $item)
+                <tr
+                    @if($item['gcsPdfUrl'])
+                    class="cursor-pointer hover:bg-gray-100 transition"
+                    @click="openContractViewer($el)"
+                    @endif
+                    data-customer-name="{{ $item['accountName'] }}"
+                    data-billing-period="{{ $item['billingPeriod'] }}"
+                    data-bill-number="{{ $item['billNumber'] }}"
+                    data-uploaded-at="{{ $item['uploadedAt'] }}"
+                    data-gcs-pdf-url="{{ $item['gcsPdfUrl'] }}">
+                    <td>{{ $item['accountName'] }}</td>
+                    <td>{{ $item['billingPeriod'] }}</td>
+                    <td>{{ $item['billNumber'] }}</td>
+                    <td>{{ $item['uploadedAt'] }}</td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="4" class="text-center py-4 text-gray-500">No bills found.</td>
+                </tr>
+                @endforelse
+            </tbody>
+
+        </table>
+    </div>
+
+    {{-- PAGINATION --}}
+    @if($bills->hasPages())
+    <div class="mt-4 px-4 py-3 bg-white border-t border-gray-200">
+        {{ $bills->links() }}
+    </div>
+    @endif
+    @include('admin.bills.form-view-pdf')
+
+</div>

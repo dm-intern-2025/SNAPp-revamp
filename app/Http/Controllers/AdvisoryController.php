@@ -10,9 +10,7 @@ use Illuminate\Support\Facades\Storage;
 
 class AdvisoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
         $latestAdvisory = Advisory::where('is_archive', false)
@@ -44,9 +42,7 @@ class AdvisoryController extends Controller
         return view('admin.advisory-management.advisory-list', compact('advisories'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+
     public function store(StoreAdvisoryRequest $request)
     {
         $validatedRequest = $request->validated();
@@ -63,9 +59,7 @@ class AdvisoryController extends Controller
         return redirect()->back()->with('success', 'Advisory created successfully.');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+
     public function update(UpdateAdvisoryRequest $request, Advisory $advisory)
     {
         $validated = $request->validated();
@@ -74,7 +68,7 @@ class AdvisoryController extends Controller
             'headline'    => $validated['edit_headline'],
             'description' => $validated['edit_description'],
             'content'     => $validated['edit_content'],
-            'link'        => $validated['edit_link'] ?? null, // ← map the edit field
+            'link'        => $validated['edit_link'] ?? null,
             'is_archive'  => $validated['is_archive'] ?? 0,
         ];
 

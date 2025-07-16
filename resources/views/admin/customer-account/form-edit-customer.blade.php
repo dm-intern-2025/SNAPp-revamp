@@ -46,28 +46,23 @@
                 @enderror
             </flux:field>
 
-            <flux:field>
-                <div class="mb-4">
-                    <label for="edit_customer_id" class="block text-sm font-medium text-gray-700 mb-1">
-                        Assign Profile <span class="text-red-500">*</span>
-                    </label>
-                    <select
-                        name="edit_customer_id"
-                        id="edit_customer_id"
-                        class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                        <option value="">— Select account —</option>
-                        @foreach ($profiles as $profile)
-                        <option value="{{ $profile->customer_id }}"
-                            {{ old('edit_customer_id') == $profile->customer_id ? 'selected' : '' }}>
-                            {{ $profile->account_name }} ({{ $profile->short_name }})
-                        </option>
-                        @endforeach
-                    </select>
-                    @error('edit_customer_id')
-                    <p class="mt-2 text-sm text-red-500 text-xs">{{ $message }}</p>
-                    @enderror
-                </div>
+            <flux:field label="Assign Profile" for="edit_customer_id" required>
+                <flux:select
+                    id="edit_customer_id"
+                    name="edit_customer_id"
+                    placeholder="— Select account —"
+                    required
+                    :error="$errors->first('edit_customer_id')">
+                    @foreach ($profiles as $profile)
+                    <option value="{{ $profile->customer_id }}"
+                        class="text-black"
+                        @selected(old('edit_customer_id', $existingCustomerId ?? '' )==$profile->customer_id)>
+                        {{ $profile->account_name }} ({{ $profile->short_name }})
+                    </option>
+                    @endforeach
+                </flux:select>
             </flux:field>
+
 
 
             <div class="flex">

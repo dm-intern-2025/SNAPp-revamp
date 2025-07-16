@@ -79,8 +79,7 @@ class OracleInvoiceService
                 return $dateB->getTimestamp() - $dateA->getTimestamp();
             });
 
-            // --- NEW LOGIC: Cut off to only the top 5 most recent items ---
-            // Since the array is now sorted newest-to-oldest, array_slice(0, 5) gets the latest 5.
+            // Cut off to only the top 5 most recent items ---
             $limitedItems = array_slice($items, 0, 5);
 
             // You can add a dd() here temporarily to verify the final list:

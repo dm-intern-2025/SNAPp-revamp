@@ -28,28 +28,23 @@
             <flux:input name="email" value="{{ old('email', '') }}" placeholder="Enter customer email" />
         </flux:field>
 
- <flux:field>
-                <div class="mb-4">
-                    <label for="customer_id" class="block text-sm font-medium text-gray-700 mb-1">
-                        Assign Profile <span class="text-red-500">*</span>
-                    </label>
-                    <select
-                        name="customer_id"
-                        id="customer_id"
-                        class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                        <option value="">— Select account —</option>
-                        @foreach ($profiles as $profile)
-                        <option value="{{ $profile->customer_id }}"
-                            {{ old('customer_id') == $profile->customer_id ? 'selected' : '' }}>
-                            {{ $profile->account_name }} ({{ $profile->short_name }})
-                        </option>
-                        @endforeach
-                    </select>
-                    @error('customer_id')
-                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
-            </flux:field>
+        <flux:field label="Assign Profile" for="customer_id" required>
+            <flux:select
+                id="customer_id"
+                name="customer_id"
+                placeholder="— Select account —"
+                required
+                :error="$errors->first('customer_id')">
+                @foreach ($profiles as $profile)
+                <option value="{{ $profile->customer_id }}"
+                    class="text-black"
+                    @selected(old('customer_id')==$profile->customer_id)>
+                    {{ $profile->account_name }} ({{ $profile->short_name }})
+                </option>
+                @endforeach
+            </flux:select>
+        </flux:field>
+
 
         <flux:field>
             <flux:label>Role</flux:label>
@@ -71,18 +66,17 @@
             <input type="hidden" name="active" id="active-value" value="">
             <flux:error name="active" />
         </flux:field>
-        
+
         {{-- ======================================================= --}}
         {{-- UPDATED CHECKBOX TEXT --}}
         {{-- ======================================================= --}}
         <div class="form-check pt-2">
-            <input 
-                class="form-check-input" 
-                type="checkbox" 
-                name="resend_welcome_email" 
+            <input
+                class="form-check-input"
+                type="checkbox"
+                name="resend_welcome_email"
                 id="resend_welcome_email_modal"
-                value="1"
-            >
+                value="1">
             <label class="form-check-label" for="resend_welcome_email_modal">
                 <strong class="text-sm">Reset Password</strong>
                 <br>
@@ -112,9 +106,9 @@
             const form = document.getElementById('edit-user-form');
             const baseAction = form.dataset.baseAction;
             form.action = baseAction.replace(':user_id', userId);
-            
+
             // This was a minor bug in your original script; it's better to select by name attribute
-            form.querySelector('[name="user_id"]').value = userId; 
+            form.querySelector('[name="user_id"]').value = userId;
             form.querySelector('[name="name"]').value = userName;
             form.querySelector('[name="email"]').value = userEmail;
             form.querySelector('[name="customer_id"]').value = customerId;
@@ -136,7 +130,7 @@
             // Remove old handler if any to prevent stacking listeners
             const newSwitch = switchContainer.cloneNode(true);
             switchContainer.parentNode.replaceChild(newSwitch, switchContainer);
-            
+
             // Toggle on click
             newSwitch.addEventListener('click', () => {
                 isActive = !isActive;

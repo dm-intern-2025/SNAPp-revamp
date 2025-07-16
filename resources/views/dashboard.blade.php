@@ -81,6 +81,17 @@
         <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
             <!-- Billing Statement Card (wider) -->
             <div class="col-span-1 md:col-span-3 bg-white rounded-2xl shadow p-6 flex flex-col justify-center">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="text-[10px] font-semibold leading-tight px-2 py-[1px] rounded-full 
+                        {{ $Status === 'PAID' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                        {{ $Status }}
+                    </span>
+                </div>
+
+
+
+
+
                 <div class="flex flex-wrap md:flex-nowrap items-center justify-center md:justify-between gap-4 md:gap-0">
                     <!-- Total Amount -->
                     <div class="flex-1 text-center min-w-[120px]">

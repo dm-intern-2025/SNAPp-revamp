@@ -39,10 +39,10 @@ return [
         'bucket'     => env('GOOGLE_CLOUD_STORAGE_BUCKET'),
         'key_file'   => storage_path('app/credentials/snap-csg-229610-f2bb5c5c6b21.json'),
     ],
-    
+
     'oracle' => [
         'username' => env('API_USERNAME'),
         'password' => env('API_PASSWORD'),
-        'url'      => 'https://fa-evjn-dev1-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/'
+        'url'      => 'https://fa-evjn-saasfaprod1.fa.ocs.oraclecloud.com/fscmRestApi/resources/11.13.18.05/'
     ],
 ];

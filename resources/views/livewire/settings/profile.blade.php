@@ -15,9 +15,6 @@ new class extends Component {
         $this->name = Auth::user()->name;
         $this->email = Auth::user()->email;
     }
-
-    // Remove updateProfileInformation & resendVerificationNotification
-    // if you want to fully disable edits, or leave them empty.
 };
 ?>
 
@@ -44,7 +41,6 @@ new class extends Component {
                 class="bg-gray-100 cursor-not-allowed" 
             />
 
-            <!-- Remove resend verification and save button -->
             <div class="text-sm text-gray-500">
                 {{ __('Name and email cannot be edited.') }}
             </div>

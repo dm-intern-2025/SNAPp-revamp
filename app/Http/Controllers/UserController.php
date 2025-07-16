@@ -24,16 +24,13 @@ use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
+
     //======================================================================
-    // CUSTOMER MANAGEMENT METHODS
+    // CUSTOMER ACCOUNT MANAGEMENT
     //======================================================================
 
-    /**
-     * Display a paginated list of customers with filtering and sorting.
-     */
     public function index(Request $request)
     {
-        // 1) load the customers grid
         $query = User::query()->role('customer')->with('profile');
         $users = $this->applyCommonFiltersAndPagination(
             $query,
@@ -41,18 +38,11 @@ class UserController extends Controller
             ['active', 'search', 'sort']
         );
 
-        // 2) load ALL profiles so your create‐modal can build the dropdown
         $profiles = Profile::orderBy('account_name')->get();
 
-        // 3) pass them both into the view
         return view('admin.customer-account.customer-list', compact('users', 'profiles'));
     }
 
-
-    /**
-     * Store a newly created customer and their profile in the database.
-     * Note: This logic is unique to customers and is not refactored.
-     */
     public function store(StoreCustomerRequest $request)
     {
         return $this->createUserWithRole(
@@ -163,7 +153,7 @@ class UserController extends Controller
 
     public function showAE(Request $request)
     {
-        $query = User::query()->role('account executive')->with('profile');
+        $query = User::query()->role('account execeutive')->with('profile');
 
         $accountExecutives = $this->applyCommonFiltersAndPagination(
             $query,
@@ -263,14 +253,6 @@ class UserController extends Controller
     // PRIVATE REUSABLE HELPER METHODS
     //======================================================================
 
-    /**
-     * Applies common filtering, sorting, and pagination to a user query.
-     *
-     * @param Builder $query The initial Eloquent query builder.
-     * @param Request $request The incoming HTTP request.
-     * @param array $appendedParams Query parameters to append to pagination links.
-     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
-     */
     private function applyCommonFiltersAndPagination(Builder $query, Request $request, array $appendedParams)
     {
         // Apply active filter
@@ -302,15 +284,6 @@ class UserController extends Controller
         return $query->paginate(10)->appends($request->only($appendedParams));
     }
 
-    /**
-     * Creates a simple user with a specific role inside a database transaction.
-     *
-     * @param FormRequest $request The incoming request with validated data.
-     * @param string $role The role to assign to the new user.
-     * @param string $successMessage The message for a successful operation.
-     * @param string $errorMessage The message for a failed operation.
-     * @return \Illuminate\Http\RedirectResponse
-     */
     private function createUserWithRole(FormRequest $request, string $role, string $successMessage, string $errorMessage)
     {
         DB::beginTransaction();
@@ -332,15 +305,6 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * Updates a simple user's name, email, and customer_id.
-     *
-     * @param FormRequest $request The incoming request with validated data.
-     * @param User $user The user model to update.
-     * @param string $redirectRoute The route name to redirect to on success.
-     * @param string $successMessage The message for a successful operation.
-     * @return \Illuminate\Http\RedirectResponse
-     */
     private function updateUserSimple(FormRequest $request, User $user, string $redirectRoute, string $successMessage)
     {
         $validated = $request->validated();
@@ -353,12 +317,7 @@ class UserController extends Controller
 
         return redirect()->route($redirectRoute)->with('success', $successMessage);
     }
-    // Add these methods inside your UserController class
 
-    /**
-     * Sends a new password to a specific user, triggered by an admin.
-     * This is for the dedicated "Reset Password" button.
-     */
     public function resetPassword(User $user)
     {
         try {
@@ -370,10 +329,6 @@ class UserController extends Controller
         }
     }
 
-    /**
-     * Reusable private helper to generate, save, and send a new password.
-     * This is now the single source of truth for sending password emails.
-     */
     private function sendNewPassword(User $user): void
     {
         $newPassword = Str::random(8);

@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Profile extends Model
 {
-    /** @use HasFactory<\Database\Factories\ProfileFactory> */
     use HasFactory;
     protected $fillable = [
         'account_name',
@@ -40,4 +39,10 @@ class Profile extends Model
     {
         return $this->hasMany(User::class, 'customer_id', 'customer_id');
     }
+
+    public function bills()
+{
+    return $this->hasMany(Bill::class, 'customer_id', 'customer_id');
+}
+
 }
