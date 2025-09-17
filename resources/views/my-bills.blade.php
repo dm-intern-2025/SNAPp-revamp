@@ -93,24 +93,26 @@
                 </flux:dropdown>
                 @endif
             </form>
-            <!-- Export + Tabs -->
-            <div class="flex flex-col sm:flex-row sm:items-center gap-4">
-                <flux:button.group>
+            
+            <!-- Button Group -->
+            <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-2">
+                <flux:button.group class="w-full">
                     <flux:button
                         href="{{ route('bills.show') }}"
-                        variant="{{ $activeTab === 'bills' ? 'primary' : 'outline' }}">
+                        variant="{{ $activeTab === 'bills' ? 'primary' : 'outline' }}"
+                        class="w-full sm:w-auto">
                         Bills Summary
                     </flux:button>
 
                     <flux:button
                         href="{{ route('payments.history') }}"
-                        variant="{{ $activeTab === 'payments' ? 'primary' : 'outline' }}">
+                        variant="{{ $activeTab === 'payments' ? 'primary' : 'outline' }}"
+                        class="w-full sm:w-auto">
                         Payment History
                     </flux:button>
                 </flux:button.group>
-
-
             </div>
+
         </div>
 
         <!-- Tables -->

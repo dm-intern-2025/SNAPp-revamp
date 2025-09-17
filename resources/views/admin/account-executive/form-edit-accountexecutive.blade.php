@@ -48,7 +48,8 @@
                 @enderror
             </flux:field>
 
-            <flux:field label="Assign Profile" for="edit_customer_id" required>
+            <flux:field>
+                <flux:label>Customer</flux:label>
                 <flux:select
                     id="edit_customer_id"
                     name="edit_customer_id"

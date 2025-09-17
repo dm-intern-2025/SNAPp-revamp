@@ -4,18 +4,15 @@
     @if (session('show_modal') === 'create-admin')
         $nextTick(() => $flux.modal('create-admin').show())
     @endif
-"
->
-    <flux:modal 
-        name="create-admin" 
-        class="md:w-96"
-    >
-        <form 
-            action="{{ route('admin.users.store-admin') }}" 
-            method="POST" 
+">
+    <flux:modal
+        name="create-admin"
+        class="md:w-96">
+        <form
+            action="{{ route('admin.users.store-admin') }}"
+            method="POST"
             class="space-y-6"
-            id="create-form"
-        > 
+            id="create-form">
             @csrf
 
             <div>
@@ -30,42 +27,48 @@
 
             <flux:field>
                 <flux:label badge="Required">Name</flux:label>
-                <flux:input 
-                    name="name" 
+                <flux:input
+                    name="name"
                     value="{{ old('name') }}"
-                    placeholder="Enter admin name"/>
+                    placeholder="Enter admin name" />
                 @error('name')
-                    <p class="mt-2 text-red-500 dark:text-red-400 text-xs">{{ $message }}</p>
+                <p class="mt-2 text-red-500 dark:text-red-400 text-xs">{{ $message }}</p>
                 @enderror
             </flux:field>
 
             <flux:field>
                 <flux:label badge="Required">Email</flux:label>
-                <flux:input 
-                    name="email" 
+                <flux:input
+                    name="email"
                     type="email"
                     value="{{ old('email') }}"
-                    placeholder="Enter admin email"/>
+                    placeholder="Enter admin email" />
                 @error('email')
-                    <p class="mt-2 text-red-500 dark:text-red-400 text-xs">{{ $message }}</p>
+                <p class="mt-2 text-red-500 dark:text-red-400 text-xs">{{ $message }}</p>
                 @enderror
             </flux:field>
 
             <flux:field>
-                <flux:label badge="Required">Customer ID</flux:label>
-                <flux:input 
-                    name="customer_id" 
-                    value="{{ old('customer_id') }}"
-                    placeholder="Enter customer ID"/>
-                @error('customer_id')
-                    <p class="mt-2 text-red-500 dark:text-red-400 text-xs">{{ $message }}</p>
-                @enderror
+                <flux:select
+                    id="customer_id"
+                    name="customer_id"
+                    placeholder="— Select account —"
+                    required
+                    :error="$errors->first('customer_id')">
+                    @foreach ($profiles as $profile)
+                    <option value="{{ $profile->customer_id }}"
+                        class="text-black"
+                        @selected(old('customer_id')==$profile->customer_id)>
+                        {{ $profile->account_name }} ({{ $profile->short_name }})
+                    </option>
+                    @endforeach
+                </flux:select>
             </flux:field>
 
             <div class="flex">
                 <flux:spacer />
-                <flux:button 
-                    type="button" 
+                <flux:button
+                    type="button"
                     id="create-button"
                     variant="primary">
                     Create Account
@@ -75,7 +78,7 @@
     </flux:modal>
 
     <script>
-        document.getElementById('create-button').addEventListener('click', function () {
+        document.getElementById('create-button').addEventListener('click', function() {
             const createBtn = this;
             const form = document.getElementById('create-form');
 

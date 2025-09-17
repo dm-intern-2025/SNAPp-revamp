@@ -50,7 +50,7 @@ class UpdateAdminRequest extends FormRequest
     }
     protected function failedValidation(Validator $validator)
     {
-        session()->flash('show_modal', 'edit-admin-modal'); // 👈 Add this
+        session()->flash('show_modal', 'edit-admin-modal');
     
         throw new HttpResponseException(
             redirect()

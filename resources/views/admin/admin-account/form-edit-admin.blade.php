@@ -50,14 +50,21 @@
             </flux:field>
 
             <flux:field>
-                <flux:label>Customer ID</flux:label>
-                <flux:input
+                <flux:label>Customer</flux:label>
+                <flux:select
+                    id="edit_customer_id"
                     name="edit_customer_id"
-                    value="{{ old('customer_id', '') }}"
-                    placeholder="Enter admin ID" />
-                @error('edit_customer_id')
-                <p class="mt-2 text-red-500 dark:text-red-400 text-xs">{{ $message }}</p>
-                @enderror
+                    placeholder="— Select account —"
+                    required
+                    :error="$errors->first('edit_customer_id')">
+                    @foreach ($profiles as $profile)
+                    <option value="{{ $profile->customer_id }}"
+                        class="text-black"
+                        @selected(old('edit_customer_id')==$profile->customer_id)>
+                        {{ $profile->account_name }} ({{ $profile->short_name }})
+                    </option>
+                    @endforeach
+                </flux:select>
             </flux:field>
 
             <div class="flex">

@@ -117,15 +117,14 @@ class UserController extends Controller
     // ADMIN ACCOUNT MANAGEMENT
     //======================================================================
 
-    public function showAdmins()
-    {
-        // This originally had no filters, so we keep it simple.
-        // To add filtering, pass the Request object and call the helper method.
-        $admins = User::role('admin')->paginate(10);
-        $profiles = Profile::orderBy('account_name')->get();
+public function showAdmins()
+{
+    $admins = User::role('admin')->with('profile')->paginate(10);
+    $profiles = Profile::orderBy('account_name')->get();
 
-        return view('admin.admin-account.admin-list', compact('admins', 'profiles'));
-    }
+    return view('admin.admin-account.admin-list', compact('admins', 'profiles'));
+}
+
 
     public function storeAdmins(StoreAdminRequest $request)
     {
@@ -153,7 +152,7 @@ class UserController extends Controller
 
     public function showAE(Request $request)
     {
-        $query = User::query()->role('account execeutive')->with('profile');
+        $query = User::query()->role('account executive')->with('profile');
 
         $accountExecutives = $this->applyCommonFiltersAndPagination(
             $query,
@@ -177,8 +176,6 @@ class UserController extends Controller
 
     public function updateAE(UpdateAERequest $request, User $user)
     {
-        // FIX: The original code redirected to 'admin-list' with an admin message.
-        // This now uses the correct route and message for an Account Executive.
         return $this->updateUserSimple(
             $request,
             $user,

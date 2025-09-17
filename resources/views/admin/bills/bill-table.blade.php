@@ -1,13 +1,13 @@
 <div x-data="{
-    showContractModal: false,
-    contractUrl: '',
+    showBillModal: false,
+    billUrl: '',
     selectedContract: {},
     openContractViewer(el) {
         this.selectedContract = el.dataset;
-        this.contractUrl      = el.dataset.gcsPdfUrl;
-        this.showContractModal = true;
+        this.billUrl      = el.dataset.gcsPdfUrl;
+        this.showBillModal = true;
     }
-}" @keydown.escape.window="showContractModal = false">
+}" @keydown.escape.window="showBillModal = false">
 
     {{-- BILL TABLE (identical structure to your contracts table) --}}
     <div class="min-w-full divide-y divide-gray-200">

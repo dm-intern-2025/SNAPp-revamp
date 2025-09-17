@@ -1,42 +1,42 @@
-{{-- resources/views/admin/bills/form-view-pdf.blade.php --}}
-
-<div x-show="showContractModal" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
-    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+<div
+    x-show="showBillModal"
+    x-transition
+    class="fixed inset-0 z-50 bg-black bg-opacity-75 flex items-center justify-center p-2 sm:p-4"
+    style="display: none;"
+    role="dialog"
+>
+    <div @click.outside="showBillModal = false" class="bg-white dark:bg-neutral-900 rounded-xl shadow-xl w-full max-w-[95vw] h-[95vh] flex flex-col md:flex-row">
+        
+        <!-- Left Panel: PDF Viewer -->
+        <div class="flex-grow h-2/3 md:h-full bg-gray-500 rounded-t-xl md:rounded-l-xl md:rounded-r-none">
+            <template x-if="billUrl">
+                <embed :src="billUrl + '#toolbar=1&navpanes=0'" type="application/pdf" class="w-full h-full rounded-t-xl md:rounded-l-xl md:rounded-r-none" />
+            </template>
+            <template x-if="!billUrl">
+                <div class="w-full h-full flex items-center justify-center text-white font-semibold">PDF not available for this bill.</div>
+            </template>
         </div>
 
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
-            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <div class="sm:flex sm:items-start">
-                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                            Bill Details: <span x-text="selectedContract.billNumber"></span>
-                        </h3>
-                        <div class="mt-2">
-                            {{-- IMPORTANT: Update these x-text bindings to match your bill data- attributes --}}
-                            <p><strong>Customer Name:</strong> <span x-text="selectedContract.customerName"></span></p>
-                            <p><strong>Billing Period:</strong> <span x-text="selectedContract.billingPeriod"></span></p>
-                            <p><strong>Uploaded At:</strong> <span x-text="selectedContract.uploadedAt"></span></p>
-
-                            {{-- This part for the PDF iframe should be correct IF contractUrl has a valid PDF URL --}}
-                            <template x-if="contractUrl">
-                                <div class="mt-4" style="height: 60vh;">
-                                    <iframe :src="contractUrl" frameborder="0" class="w-full h-full"></iframe>
-                                </div>
-                            </template>
-                            <template x-if="!contractUrl">
-                                <p class="text-red-500 mt-4">PDF not available for this bill.</p>
-                            </template>
-                        </div>
-                    </div>
+        <!-- Right Panel: Details & Actions -->
+        <div class="w-full md:max-w-sm flex-shrink-0 p-4 sm:p-6 flex flex-col border-t md:border-t-0 md:border-l border-gray-200 dark:border-neutral-700 h-1/3 md:h-full">
+            <div class="flex-shrink-0 flex items-start justify-between">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-white" x-text="'Bill No: ' + selectedContract.billNumber"></h2>
+                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-300"><strong>Customer:</strong> <span x-text="selectedContract.customerName"></span></p>
+                    <p class="text-sm text-gray-600 dark:text-gray-300"><strong>Period:</strong> <span x-text="selectedContract.billingPeriod"></span></p>
+                    <p class="text-sm text-gray-600 dark:text-gray-300"><strong>Uploaded:</strong> <span x-text="selectedContract.uploadedAt"></span></p>
                 </div>
-            </div>
-            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                <button @click="showContractModal = false" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                    Close
+                <button @click="showBillModal = false" class="-mt-1 -mr-2 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-neutral-700">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                 </button>
+            </div>
+
+            <div class="mt-auto pt-4 flex-shrink-0">
+                <a x-show="billUrl" :href="billUrl" download class="w-full">
+                    <flux:button class="w-full">Download Bill</flux:button>
+                </a>
             </div>
         </div>
     </div>
